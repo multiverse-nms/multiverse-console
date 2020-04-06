@@ -286,6 +286,7 @@
     "storage": "Storage",
     "measurements": "Measurements",
     "collections": "Collections",
+    "rest-api": "REST API",
 
     "auth": "Auth",
     "rating": "Rating",

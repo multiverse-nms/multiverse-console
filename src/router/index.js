@@ -116,6 +116,12 @@ export default new Router({
             },
           ],
         },
+        {
+          name: 'rest-api',
+          path: 'rest-api',
+          component: () => import('../components/dashboard/Dashboard.vue'),
+          default: true,
+        },
         /* {
           name: 'forms',
           path: 'forms',

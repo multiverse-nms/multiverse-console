@@ -8,28 +8,28 @@ export const navigationRoutes = {
       name: 'dashboard',
       displayName: 'menu.dashboard',
       meta: {
-        iconClass: 'vuestic-iconset vuestic-iconset-dashboard',
+        iconClass: 'va-icon fa fa-dashboard',
       },
     },
     {
       name: 'data-streaming',
       displayName: 'menu.data-streaming',
       meta: {
-        iconClass: 'vuestic-iconset vuestic-iconset-forms',
+        iconClass: 'va-icon fa fa-exchange',
       },
     },
     {
       name: 'networking',
       displayName: 'menu.networking',
       meta: {
-        iconClass: 'vuestic-iconset vuestic-iconset-maps',
+        iconClass: 'vuestic-iconset vuestic-iconset-graph',
       },
     },
     {
       name: 'storage',
       displayName: 'menu.storage',
       meta: {
-        iconClass: 'vuestic-iconset vuestic-iconset-tables',
+        iconClass: 'va-icon fa fa-database',
       },
       disabled: true,
       children: [
@@ -48,6 +48,13 @@ export const navigationRoutes = {
           },
         },
       ],
+    },
+    {
+      name: 'rest-api',
+      displayName: 'menu.rest-api',
+      meta: {
+        iconClass: 'va-icon fa fa-desktop',
+      },
     },
     /* {
       name: 'forms',
