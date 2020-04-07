@@ -1,19 +1,13 @@
 <template>
   <div class="dashboard">
-    <!-- dashboard-info-block / -->
-    <dashboard-charts />
   </div>
 </template>
 
 <script>
-import DashboardCharts from './DashboardCharts'
-// import DashboardInfoBlock from './DashboardInfoBlock'
 
 export default {
-  name: 'dashboard',
+  name: 'measurements',
   components: {
-    DashboardCharts,
-    // DashboardInfoBlock,
   },
   methods: {
   },

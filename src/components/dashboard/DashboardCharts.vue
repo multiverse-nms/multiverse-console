@@ -1,23 +1,11 @@
 <template>
   <div class="row row-equal">
-    <div class="flex xs12 xl6">
-      <va-card :title="$t('dashboard.charts.trendyTrends')">
-        <va-button
-          small
-          slot="actions"
-          color="danger"
-          class="mr-0"
-          @click="deleteSection"
-          :disabled="lineChartData.labels.length < 2"
-        >
-          {{ $t('dashboard.charts.showInMoreDetail') }}
-        </va-button>
-        <va-chart class="chart" ref="lineChart" :data="lineChartData" type="line"/>
-      </va-card>
+    <div class="flex xs12 md6 xl3">
+      <dashboard-service-list/>
     </div>
 
     <div class="flex xs12 md6 xl3">
-      <va-card :title="$t('dashboard.charts.loadingSpeed')">
+      <va-card :title="$t('dashboard.serviceActivity')">
         <va-button
           icon="fa fa-print"
           flat
@@ -29,35 +17,39 @@
       </va-card>
     </div>
 
-    <div class="flex xs12 md6 xl3">
-      <dashboard-contributors-chart/>
+    <div class="flex xs12 xl6">
+      <dashboard-service-logs/>
     </div>
   </div>
 </template>
 
 <script>
 import { getDonutChartData } from '../../data/charts/DonutChartData'
-import { getLineChartData } from '../../data/charts/LineChartData'
-import DashboardContributorsChart from './DashboardContributorsList'
+// import { getLineChartData } from '../../data/charts/LineChartData'
+import DashboardServiceList from './DashboardServiceList'
+import DashboardServiceLogs from './DashboardServiceLogs'
 
 export default {
   name: 'dashboard-charts',
-  components: { DashboardContributorsChart },
+  components: {
+    DashboardServiceList,
+    DashboardServiceLogs,
+  },
   data () {
     return {
-      lineChartData: getLineChartData(this.$themes),
+      // lineChartData: getLineChartData(this.$themes),
       donutChartData: getDonutChartData(this.$themes),
       lineChartFirstMonthIndex: 0,
     }
   },
   watch: {
     '$themes.primary' () {
-      this.lineChartData = getLineChartData(this.$themes)
+      // this.lineChartData = getLineChartData(this.$themes)
       this.donutChartData = getDonutChartData(this.$themes)
     },
 
     '$themes.info' () {
-      this.lineChartData = getLineChartData(this.$themes)
+      // this.lineChartData = getLineChartData(this.$themes)
       this.donutChartData = getDonutChartData(this.$themes)
     },
 
@@ -67,9 +59,9 @@ export default {
   },
   methods: {
     deleteSection () {
-      this.lineChartFirstMonthIndex += 1
-      this.lineChartData = getLineChartData(this.$themes, this.lineChartFirstMonthIndex)
-      this.$refs.lineChart.$refs.chart.refresh()
+      // this.lineChartFirstMonthIndex += 1
+      // this.lineChartData = getLineChartData(this.$themes, this.lineChartFirstMonthIndex)
+      // this.$refs.lineChart.$refs.chart.refresh()
     },
     printChart () {
       const win = window.open('', 'Print', 'height=600,width=800')

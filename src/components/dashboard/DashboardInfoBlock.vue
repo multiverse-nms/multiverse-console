@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    <div class="flex xs12 md6 xl3">
+    <div class="flex xs12 md6 xl6">
       <va-card
         stripe="info"
         :title="$t('dashboard.info.componentRichTheme')"
@@ -58,34 +58,6 @@
       </va-card>
     </div>
 
-    <div class="flex xs12 md6 xl3">
-      <va-card
-        :image='images[0]'
-        square
-        titleOnImage
-      >
-        <template slot="header">
-          <va-button
-            flat
-            icon-right="ion ion-ios-arrow-forward"
-            color="primary"
-            class="ma-0"
-            @click="showModal"
-          >
-            {{$t('dashboard.info.exploreGallery')}}
-          </va-button>
-        </template>
-      </va-card>
-    </div>
-    <va-modal v-model="modal">
-      <div style="position: relative;">
-        <va-button @click="showPrevImage" icon="fa fa-chevron-left" flat style="position: absolute; top: 50%;"/>
-        <va-button @click="showNextImage" icon="fa fa-chevron-right" flat style="position: absolute; top: 50%; right: 0;"/>
-        <transition>
-          <img :src="images[currImage]" style="height: 50vh; max-width: 100%;">
-        </transition>
-      </div>
-    </va-modal>
   </div>
 </template>
 

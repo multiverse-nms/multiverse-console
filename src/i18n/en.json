@@ -107,6 +107,10 @@
     "inline": "Inline"
   },
   "dashboard": {
+    "serviceStatus": "Services Status",
+    "serviceLogs": "Services Logs",
+    "serviceActivity": "Service Activity",
+    
     "versions": "Versions",
     "setupRemoteConnections": "Setup Remote Connections",
     "currentVisitors": "Current Visitors",
@@ -173,6 +177,11 @@
     "navigationLayout": "navigation layout",
     "topBarButton": "Top Bar",
     "sideBarButton": "Side Bar"
+  },
+  "restApi": {
+    "request": "Request",
+    "response": "Response",
+    "send": "Send"
   },
   "notificationsPage": {
     "notifications": {
