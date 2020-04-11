@@ -13,8 +13,12 @@ import '../i18n/index'
 import YmapPlugin from 'vue-yandex-maps'
 import VueClipboard from 'vue-clipboard2'
 
+import VertxEventBus from 'vue-vertx3-eventbus-client'
+
 import '../metrics'
 import '../registerServiceWorker'
+
+export const EventBus = new Vue()
 
 if (process.env.VUE_APP_BUILD_VERSION) {
   // eslint-disable-next-line
@@ -25,6 +29,18 @@ if (process.env.VUE_APP_BUILD_VERSION) {
     'color: blue;', 'color: red;', 'color: blue;', 'color: red;', 'color: blue;', 'color: red;', 'color: blue;',
   )
 }
+
+Vue.use(VertxEventBus, {
+  host: 'localhost',
+  path: '/eventbus',
+  port: 9090,
+  options: {
+    transports: [
+      'xhr-polling',
+      'websocket',
+    ],
+  },
+})
 
 Vue.use(VuesticPlugin)
 Vue.use(YmapPlugin)

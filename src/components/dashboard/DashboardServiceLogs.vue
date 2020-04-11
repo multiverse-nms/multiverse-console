@@ -4,7 +4,7 @@
       {{ $t('dashboard.serviceLogs') }}
     </va-list-label>
 
-    <va-item :to="{ name: 'google-maps' }">
+    <va-item>
       <va-item-section>
         <va-item-label>07/04/20 3:30:32 pm</va-item-label>
       </va-item-section>
@@ -18,7 +18,7 @@
       </va-item-section>
     </va-item>
 
-    <va-item :to="{ name: 'google-maps' }">
+    <va-item>
       <va-item-section>
         <va-item-label>07/04/20 3:30:32 pm</va-item-label>
       </va-item-section>
@@ -32,7 +32,7 @@
       </va-item-section>
     </va-item>
 
-    <va-item :to="{ name: 'google-maps' }">
+    <va-item>
       <va-item-section>
         <va-item-label>07/04/20 3:30:32 pm</va-item-label>
       </va-item-section>

@@ -1,0 +1,346 @@
+<template class="route">
+  <div>
+    <va-card :title="title">
+      <div class="row">
+        <div class="flex xs8 md3">
+          <va-button small color="warning" style="max-width: 100%;" @click="addRoute">Add route</va-button>
+        </div>
+        <div class="flex xs12 lg12">
+          <table class="va-table va-table--striped va-table--hoverable">
+            <thead>
+              <tr>
+                <th>Prefix</th>
+                <th>Source node</th>
+                <th>Path</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(route, index) in routes" :key="index">
+                <td>{{ prefixIdNameMap.get(route.prefix) }}</td>
+                <td>{{ nodeIdNameMap.get(route.fromNode) }}</td>
+                <td>
+                  <span v-for="(node, index) in route.path" :key="index">{{'>'+nodeIdNameMap.get(node)}}</span>
+                </td>
+                <td>
+                  <va-badge small color="danger">{{ route.status }}</va-badge>
+                </td>
+                <td>
+                  <va-button small color="danger" @click="deleteRoute(route._id)"> Delete </va-button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </va-card>
+
+    <div class="modal-mask" v-if="showModal" >
+      <div class="modal-wrapper">
+        <div class="modal-container">
+          <section class="form">
+            <h3 class="title is-7"> Create route </h3>
+            <va-separator />
+            <div class="row">
+              <va-notification v-if="error != ''">
+                {{ error }}
+              </va-notification>
+              <div class="flex md6 xs12" >
+                <label class="label"> Prefix </label>
+                <va-select
+                  :label="$t('Select prefix')"
+                  v-model="nRoute.prefix"
+                  textBy="description"
+                  :options="Array.from(prefixNameIdMap.keys())"
+                />
+              </div>
+              <div class="flex md6 xs12" >
+                <label class="label"> From node </label>
+                <va-select
+                  :label="$t('Select a node')"
+                  v-model="nRoute.fromNode"
+                  textBy="description"
+                  :options="Array.from(nodeNameIdMap.keys())"
+                />
+              </div>
+
+              <va-notification  v-if="nRoute.path.length > 0">{{ $t('Current path: ') }}
+                <span v-for="(node, index) in nRoute.path" :key="index">{{'>'+nodeIdNameMap.get(node)}}</span>
+              </va-notification>
+
+              <div class="flex md6 offset--md3 " v-if="showNextHop">
+                <label class="label"> Next hop </label>
+                <va-select
+                  :label="$t('Select node')"
+                  v-model="selectedNext"
+                  textBy="description"
+                  :options="Array.from(nextNodesMap.keys())"
+                />
+              </div>
+
+              <va-notification
+                v-if="prefixReached">{{ $t('Prefix reached.') }}
+              </va-notification>
+
+            </div>
+
+            <div class="row">
+              <div class="flex xs6 md6 offset--md6">
+                <va-button small color="danger" @click="cancelModal"> Cancel </va-button>
+
+                <va-button small @click="setPath" v-if="nRoute.path.length == 0"> Set path </va-button>
+                <va-button small @click="nextHop" v-if="showNextHop"> Next hop</va-button>
+                <va-button small @click="createRoute" v-if="prefixReached">   Submit </va-button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'route',
+  props: ['nodes', 'links', 'prefixes', 'routes'],
+  data: function () {
+    return {
+      title: 'Routes',
+      showModal: false,
+      showNextHop: false,
+
+      prefixNameIdMap: new Map(),
+      prefixIdNameMap: new Map(),
+      nodeNameIdMap: new Map(),
+      nodeIdNameMap: new Map(),
+
+      nRoute: {
+        fromNode: '',
+        fromNodeId: '',
+        prefix: '',
+        prefixId: '',
+        nop: '',
+        path: [],
+      },
+
+      selectedNext: '',
+      nextNodesMap: new Map(),
+      visited: [],
+      error: '',
+    }
+  },
+  created () {},
+  watch: {
+    prefixes: {
+      handler: function () {
+        this.updatePrefixMap()
+      },
+      deep: true,
+    },
+    nodes: {
+      handler: function () {
+        this.updateNodeMap()
+      },
+      deep: true,
+    },
+  },
+  methods: {
+    updatePrefixMap () {
+      this.prefixNameIdMap.clear()
+      this.prefixIdNameMap.clear()
+      this.prefixes.forEach(prefix => {
+        this.prefixNameIdMap.set(prefix.name, prefix._id)
+        this.prefixIdNameMap.set(prefix._id, prefix.name)
+      })
+    },
+    updateNodeMap () {
+      this.nodeNameIdMap.clear()
+      this.nodeIdNameMap.clear()
+      this.nodes.forEach(node => {
+        this.nodeNameIdMap.set(node.name, node._id)
+        this.nodeIdNameMap.set(node._id, node.name)
+      })
+    },
+    addRoute () {
+      this.nRoute.fromNode = ''
+      this.nRoute.fromNodeId = ''
+      this.nRoute.prefix = ''
+      this.nRoute.prefixId = ''
+      this.nRoute.path = []
+
+      this.visited = []
+      this.error = ''
+
+      this.showNextHop = false
+      this.prefixReached = false
+      this.showModal = true
+    },
+    setPath () {
+      this.error = ''
+      this.nRoute.fromNodeId = this.nodeNameIdMap.get(this.nRoute.fromNode)
+      this.nRoute.prefixId = this.prefixNameIdMap.get(this.nRoute.prefix)
+      this.nRoute.nop = this.nodeOfPrefix(this.nRoute.prefixId)
+
+      if (this.nRoute.nop === this.nRoute.fromNodeId) {
+        this.error = 'Selected From node is the source node'
+        return
+      }
+      // start path
+      this.nRoute.path.push(this.nRoute.fromNodeId)
+      this.computeNextNodes(this.nRoute.fromNodeId)
+
+      if (this.nextNodesMap.size === 0) {
+        this.showNextHop = false
+        this.error = 'Prefix is not reachable from selected node'
+        return
+      }
+
+      if (Array.from(this.nextNodesMap.values()).includes(this.nRoute.nop)) {
+        this.nRoute.path.push(this.nRoute.nop)
+        this.prefixReached = true
+        this.showNextHop = false
+        return
+      }
+      this.visited.push(this.nRoute.fromNodeId)
+      this.selectedNext = ''
+      this.showNextHop = true
+    },
+    nextHop () {
+      this.error = ''
+      const selectedNodeId = this.nextNodesMap.get(this.selectedNext)
+      this.nRoute.path.push(selectedNodeId)
+      this.visited.push(selectedNodeId)
+
+      this.computeNextNodes(selectedNodeId)
+      if (this.nextNodesMap.size === 0) {
+        this.showNextHop = false
+        this.error = 'Prefix is not reachable from selected node'
+        return
+      }
+
+      if (Array.from(this.nextNodesMap.values()).includes(this.nRoute.nop)) {
+        this.nRoute.path.push(this.nRoute.nop)
+        this.prefixReached = true
+        this.showNextHop = false
+        return
+      }
+      this.selectedNext = ''
+    },
+    createRoute () {
+      const message = {
+        action: 'add_route',
+        params: {
+          prefix: this.nRoute.prefixId,
+          fromNode: this.nRoute.fromNodeId,
+          path: this.nRoute.path,
+        },
+      }
+      const context = this
+      this.$eventBus.send('nms.routing', message, {}, function (err, reply) {
+        if (err) {
+          console.log('Error in sending message', err)
+          context.showToast('Failed: cannot reach routing service', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 10000,
+          })
+        } else {
+          const repBody = reply.body
+          if (repBody.error) {
+            console.error(repBody.error)
+            context.showToast('Failed: route not created', {
+              icon: 'fa-check',
+              position: 'top-right',
+              duration: 10000,
+            })
+          } else {
+            context.showToast('Route successfuly created', {
+              icon: 'fa-check',
+              position: 'top-right',
+              duration: 10000,
+            })
+          }
+        }
+      })
+      this.showModal = false
+      this.cancelModal()
+    },
+
+    cancelModal () {
+      this.error = ''
+      this.nextNodesMap.clear()
+      this.showModal = false
+    },
+
+    deleteRoute (id) {
+      const message = {
+        action: 'del_route',
+        params: {
+          _id: id,
+        },
+      }
+      const context = this
+      this.$eventBus.send('nms.routing', message, {}, function (err, reply) {
+        if (err) {
+          console.log('Error in sending message', err)
+          context.showToast('Failed: cannot reach routing service', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 10000,
+          })
+        } else {
+          const repBody = reply.body
+          if (repBody.error) {
+            console.error(repBody.error)
+            context.showToast('Failed: route not deleted', {
+              icon: 'fa-check',
+              position: 'top-right',
+              duration: 10000,
+            })
+          } else {
+            context.showToast('Route successfuly deleted', {
+              icon: 'fa-check',
+              position: 'top-right',
+              duration: 10000,
+            })
+          }
+        }
+      })
+    },
+
+    nodeOfPrefix (id) {
+      let node = ''
+      this.prefixes.forEach(p => {
+        if (p._id === id) {
+          node = p.node
+          return node
+        }
+      })
+      return node
+    },
+    computeNextNodes (node) {
+      this.nextNodesMap.clear()
+      this.links.forEach(link => {
+        if (link.source === node) {
+          if (!this.visited.includes(link.target)) {
+            // nextNodes.push(link.target)
+            const nodeName = this.nodeIdNameMap.get(link.target)
+            this.nextNodesMap.set(nodeName, link.target)
+          }
+        } else if (link.target === node) {
+          if (!this.visited.includes(link.source)) {
+            // nextNodes.push(link.source)
+            const nodeName = this.nodeIdNameMap.get(link.source)
+            this.nextNodesMap.set(nodeName, link.source)
+          }
+        }
+      })
+    },
+  },
+
+}
+</script>
+<style lang="scss">
+</style>

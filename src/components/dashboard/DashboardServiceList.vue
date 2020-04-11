@@ -4,7 +4,7 @@
       {{ $t('dashboard.serviceStatus') }}
     </va-list-label>
 
-    <va-item :to="{ name: 'google-maps' }">
+    <va-item>
       <va-item-section side>
         <va-icon name="fa fa-google" color="red" />
       </va-item-section>
@@ -18,7 +18,7 @@
       </va-item-section>
     </va-item>
 
-    <va-item :to="{ name: 'yandex-maps' }">
+    <va-item>
       <va-item-section side>
         <va-icon name="fa fa-map" color="red" />
       </va-item-section>
@@ -32,7 +32,7 @@
       </va-item-section>
     </va-item>
 
-    <va-item :to="{ name: 'leaflet-maps' }">
+    <va-item>
       <va-item-section side>
         <va-icon name="fa fa-map-marker" color="red" />
       </va-item-section>
@@ -46,7 +46,7 @@
       </va-item-section>
     </va-item>
 
-    <va-item :to="{ name: 'leaflet-maps' }">
+    <va-item>
       <va-item-section side>
         <va-icon name="fa fa-map-marker" color="red" />
       </va-item-section>
@@ -60,7 +60,7 @@
       </va-item-section>
     </va-item>
 
-    <va-item :to="{ name: 'leaflet-maps' }">
+    <va-item>
       <va-item-section side>
         <va-icon name="fa fa-map-marker" color="red" />
       </va-item-section>

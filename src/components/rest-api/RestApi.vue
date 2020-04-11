@@ -1,38 +1,34 @@
 <template>
-  <div class="dashboard">
+  <div class="rest-api">
     <div class="row row-equal">
       <div class="flex xs12 lg6">
         <va-card :title="$t('restApi.request')">
           <form>
-            <div class="row">
-              <div class="flex md12 sm12 xs12">
-                <va-medium-editor>
-                  <span class="default-selection">
-                    {{ JSON.stringify(request) }}
-                  </span>
-                </va-medium-editor>
-              </div>
-            </div>
-            <div class="row">
-              <div class="flex md4 sm6 xs12">
-                <va-button> {{ $t('restApi.send') }}</va-button>
-              </div>
-            </div>
+            <va-medium-editor>
+              <pre class="json-body">
+                  {{ request }}
+                </pre>
+            </va-medium-editor>
           </form>
         </va-card>
-        <!-- dashboard-tabs @submit="addAddressToMap"/ -->
+        <va-button color="success" @click="sendRequest()"> {{ $t('restApi.send') }}</va-button>
       </div>
       <div class="flex xs12 lg6">
         <va-card :title="$t('restApi.response')">
-
+          <pre v-if="ok" class="json-body">
+              {{ response }}
+            </pre>
+          <pre v-if="!ok" class="json-body">
+              {{ errors }}
+            </pre>
         </va-card>
-        <!-- dashboard-map ref="dashboardMap"/ -->
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 
 export default {
   name: 'rest-api',
@@ -41,13 +37,33 @@ export default {
   data () {
     return {
       request: {
-        service: 'nms.storage',
-        action: 'get_all_nodes',
-        params: {},
+        service: 'nms.topology',
+        query: {
+          action: 'get_all_nodes',
+          params: {},
+        },
       },
+      response: {},
+      errors: [],
+      ok: true,
     }
   },
+  created () {
+  },
   methods: {
+    sendRequest () {
+      const pre = document.getElementsByClassName('json-body')[0]
+      const sBody = JSON.parse(pre.textContent)
+      axios.post('http://localhost:9090/nms', sBody)
+        .then(response => {
+          this.response = response.data
+          this.ok = true
+        })
+        .catch(e => {
+          this.errors.push(e)
+          this.ok = false
+        })
+    },
   },
 }
 </script>
@@ -55,13 +71,15 @@ export default {
 <style lang="scss">
   .row-equal .flex {
     .va-card {
-      height: 100%;
+      height: 600px;
     }
   }
 
-  .dashboard {
+  .rest-api {
     .va-card {
       margin-bottom: 0 !important;
+      max-height: 600px;
+      overflow: scroll;
     }
   }
 </style>
