@@ -3,7 +3,10 @@
     <va-card :title="title">
       <div class="row">
         <div class="flex xs8 md3">
-          <va-button small color="warning" style="max-width: 100%;" @click="addRoute">Add route</va-button>
+          <va-button small color="info" style="max-width: 100%;" @click="addRoute">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            Add route
+          </va-button>
         </div>
         <div class="flex xs12 lg12">
           <table class="va-table va-table--striped va-table--hoverable">
@@ -11,6 +14,7 @@
               <tr>
                 <th>Prefix</th>
                 <th>Source node</th>
+                <th>From node</th>
                 <th>Path</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -19,12 +23,13 @@
             <tbody>
               <tr v-for="(route, index) in routes" :key="index">
                 <td>{{ prefixIdNameMap.get(route.prefix) }}</td>
+                <td>{{ nodeIdNameMap.get(route.targetNode) }}</td>
                 <td>{{ nodeIdNameMap.get(route.fromNode) }}</td>
                 <td>
-                  <span v-for="(node, index) in route.path" :key="index">{{'>'+nodeIdNameMap.get(node)}}</span>
+                  <span>{{ displayPath(route.path) }}</span>
                 </td>
                 <td>
-                  <va-badge small color="danger">{{ route.status }}</va-badge>
+                  <va-badge small :color="getStatusColor(route.status)">{{ route.status }}</va-badge>
                 </td>
                 <td>
                   <va-button small color="danger" @click="deleteRoute(route._id)"> Delete </va-button>
@@ -54,6 +59,7 @@
                   textBy="description"
                   :options="Array.from(prefixNameIdMap.keys())"
                 />
+                <label class="label" color="danger">Corresponding node: {{ correspNode }}</label>
               </div>
               <div class="flex md6 xs12" >
                 <label class="label"> From node </label>
@@ -64,11 +70,14 @@
                   :options="Array.from(nodeNameIdMap.keys())"
                 />
               </div>
-
+            </div>
+            <div class="row" v-if="error == ''">
               <va-notification  v-if="nRoute.path.length > 0">{{ $t('Current path: ') }}
-                <span v-for="(node, index) in nRoute.path" :key="index">{{'>'+nodeIdNameMap.get(node)}}</span>
+                <span>{{ displayPath(nRoute.path) }}</span>
               </va-notification>
+            </div>
 
+            <div class="row">
               <div class="flex md6 offset--md3 " v-if="showNextHop">
                 <label class="label"> Next hop </label>
                 <va-select
@@ -78,20 +87,21 @@
                   :options="Array.from(nextNodesMap.keys())"
                 />
               </div>
-
+            </div>
+            <div class="row">
               <va-notification
                 v-if="prefixReached">{{ $t('Prefix reached.') }}
               </va-notification>
-
             </div>
 
             <div class="row">
-              <div class="flex xs6 md6 offset--md6">
+              <div class="flex xs12 md12 offset--md4">
                 <va-button small color="danger" @click="cancelModal"> Cancel </va-button>
 
-                <va-button small @click="setPath" v-if="nRoute.path.length == 0"> Set path </va-button>
-                <va-button small @click="nextHop" v-if="showNextHop"> Next hop</va-button>
-                <va-button small @click="createRoute" v-if="prefixReached">   Submit </va-button>
+                <va-button small color="info" @click="autoPath" v-if="nRoute.path.length == 0"> Automatic path </va-button>
+                <va-button small color="warning" @click="setPath" v-if="nRoute.path.length == 0"> Manual path </va-button>
+                <va-button small color="info" @click="nextHop" v-if="showNextHop"> Next hop</va-button>
+                <va-button small color="success" @click="createRoute(false)" v-if="prefixReached">   Submit </va-button>
               </div>
             </div>
           </section>
@@ -131,6 +141,16 @@ export default {
       error: '',
     }
   },
+  computed: {
+    correspNode: function () {
+      if (this.nRoute.prefix === '') {
+        return 'undefined'
+      }
+      const prefixId = this.prefixNameIdMap.get(this.nRoute.prefix)
+      const nopId = this.nodeOfPrefix(prefixId)
+      return this.nodeIdNameMap.get(nopId)
+    },
+  },
   created () {},
   watch: {
     prefixes: {
@@ -147,6 +167,13 @@ export default {
     },
   },
   methods: {
+    displayPath (path) {
+      const arrayPath = []
+      path.forEach(n => {
+        arrayPath.push(this.nodeIdNameMap.get(n))
+      })
+      return arrayPath.join(' > ')
+    },
     updatePrefixMap () {
       this.prefixNameIdMap.clear()
       this.prefixIdNameMap.clear()
@@ -228,15 +255,36 @@ export default {
       }
       this.selectedNext = ''
     },
-    createRoute () {
+    autoPath () {
+      this.error = ''
+      this.nRoute.fromNodeId = this.nodeNameIdMap.get(this.nRoute.fromNode)
+      this.nRoute.prefixId = this.prefixNameIdMap.get(this.nRoute.prefix)
+      this.nRoute.nop = this.nodeOfPrefix(this.nRoute.prefixId)
+
+      if (this.nRoute.nop === this.nRoute.fromNodeId) {
+        this.error = 'Selected From node is the source node'
+        return
+      }
+      this.createRoute(true)
+    },
+    createRoute (autoPath) {
       const message = {
-        action: 'add_route',
+        action: '',
         params: {
           prefix: this.nRoute.prefixId,
           fromNode: this.nRoute.fromNodeId,
-          path: this.nRoute.path,
+          targetNode: this.nRoute.nop,
         },
       }
+      if (autoPath) {
+        console.log('create route with auto path')
+        message.action = 'add_auto_route'
+      } else {
+        console.log('create route with manual path')
+        message.action = 'add_route'
+        message.params.path = this.nRoute.path
+      }
+
       const context = this
       this.$eventBus.send('nms.routing', message, {}, function (err, reply) {
         if (err) {
@@ -337,6 +385,13 @@ export default {
           }
         }
       })
+    },
+
+    getStatusColor (status) {
+      if (status === 'pending') {
+        return 'danger'
+      }
+      return 'success'
     },
   },
 

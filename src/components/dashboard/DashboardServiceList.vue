@@ -6,7 +6,7 @@
 
     <va-item>
       <va-item-section side>
-        <va-icon name="fa fa-google" color="red" />
+        <va-icon name="fa fa-exchange" color="red" />
       </va-item-section>
 
       <va-item-section>
@@ -14,7 +14,7 @@
       </va-item-section>
 
       <va-item-section>
-        <va-badge color="primary">Running</va-badge>
+        <va-badge color="primary">{{ servicesData.dss.status }}</va-badge>
       </va-item-section>
     </va-item>
 
@@ -28,13 +28,13 @@
       </va-item-section>
 
       <va-item-section>
-        <va-badge color="primary">Running</va-badge>
+        <va-badge color="primary">{{ servicesData.topology.status }}</va-badge>
       </va-item-section>
     </va-item>
 
     <va-item>
       <va-item-section side>
-        <va-icon name="fa fa-map-marker" color="red" />
+        <va-icon name="fa fa-send" color="red" />
       </va-item-section>
 
       <va-item-section>
@@ -42,13 +42,13 @@
       </va-item-section>
 
       <va-item-section>
-        <va-badge color="primary">Running</va-badge>
+        <va-badge color="primary">{{ servicesData.routing.status }}</va-badge>
       </va-item-section>
     </va-item>
 
     <va-item>
       <va-item-section side>
-        <va-icon name="fa fa-map-marker" color="red" />
+        <va-icon name="fa fa-database" color="red" />
       </va-item-section>
 
       <va-item-section>
@@ -56,13 +56,13 @@
       </va-item-section>
 
       <va-item-section>
-        <va-badge color="primary">Running</va-badge>
+        <va-badge color="primary">{{ servicesData.storage.status }}</va-badge>
       </va-item-section>
     </va-item>
 
     <va-item>
       <va-item-section side>
-        <va-icon name="fa fa-map-marker" color="red" />
+        <va-icon name="fa fa-desktop" color="red" />
       </va-item-section>
 
       <va-item-section>
@@ -70,7 +70,7 @@
       </va-item-section>
 
       <va-item-section>
-        <va-badge color="primary">Running</va-badge>
+        <va-badge color="primary">{{ servicesData.rest.status }}</va-badge>
       </va-item-section>
     </va-item>
   </va-list>
@@ -80,6 +80,7 @@
 
 export default {
   name: 'DashboardServiceList',
+  props: ['servicesData'],
   data () {
     return {
     }

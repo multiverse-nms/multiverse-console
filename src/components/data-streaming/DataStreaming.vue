@@ -32,7 +32,7 @@ export default {
   data () {
     return {
       capabilities: [],
-      receipts: new Map(),
+      receiptsMap: new Map(),
       receiptsArray: [],
       liveSpec: {},
     }
@@ -40,15 +40,65 @@ export default {
   created () {
   },
   methods: {
+    async getCapabilities () {
+      const ebMsg = {
+        action: 'get_capabilities',
+        params: {},
+      }
+      const context = this
+      await context.$eventBus.send('nms.dss', ebMsg, {}, function (err, reply) {
+        if (err) {
+          console.error('Failed to get capabilities', err)
+          return
+        }
+        const response = reply.body
+        if (response.error) {
+          console.log('failed to get capabilities: ', response.error)
+          return
+        }
+        const caps = response.content.docs
+        for (var i = 0, len = caps.length; i < len; i++) {
+          let lStatus = 'inactive'
+          if (context.receiptsMap.has(caps[i].schema)) {
+            lStatus = 'active'
+          }
+          const cap = { data: caps[i], status: lStatus }
+          context.capabilities.push(cap)
+        }
+      })
+    },
+    async getReceipts () {
+      const ebMsg = {
+        action: 'get_receipts',
+        params: {},
+      }
+      const context = this
+      await context.$eventBus.send('nms.dss', ebMsg, {}, function (err, reply) {
+        if (err) {
+          console.error('Failed to get receipts', err)
+          return
+        }
+        const response = reply.body
+        if (response.error) {
+          console.log('failed to get receipts: ', response.error)
+          return
+        }
+        const rcts = response.content.docs
+        for (var i = 0, len = rcts.length; i < len; i++) {
+          context.receiptsMap.set(rcts[i].schema, rcts[i])
+        }
+        context.receiptsArray = rcts
+      })
+    },
     updateReceipts () {
       this.receiptsArray = []
-      var values = this.receipts.values()
+      var values = this.receiptsMap.values()
       for (var ele of values) {
         this.receiptsArray.push(ele)
       }
     },
     sendSpecification (cap) {
-      if (this.receipts.has(cap.schema)) {
+      if (this.receiptsMap.has(cap.schema)) {
         console.log('spec is active')
         return
       }
@@ -76,7 +126,7 @@ export default {
 
         const receipt = repBody.content.receipt
         if (receipt.errors.length === 0) {
-          context.receipts.set(receipt.schema, receipt)
+          context.receiptsMap.set(receipt.schema, receipt)
           context.updateReceipts()
           for (var i = 0, len = context.capabilities.length; i < len; i++) {
             if (context.capabilities[i].data.schema === receipt.schema) {
@@ -117,7 +167,7 @@ export default {
 
         const receipt = repBody.content.receipt
         if (receipt.errors.length === 0) {
-          context.receipts.delete(receipt.schema)
+          context.receiptsMap.delete(receipt.schema)
           context.updateReceipts()
           for (var i = 0, len = context.capabilities.length; i < len; i++) {
             if (context.capabilities[i].data.schema === receipt.schema) {
@@ -139,31 +189,9 @@ export default {
   },
   eventbus: {
     lifecycleHooks: {
-      created (context, eventbus) {
-        const ebMsg = {
-          action: 'get_capabilities',
-          params: {},
-        }
-        eventbus.send('nms.dss', ebMsg, {}, function (err, reply) {
-          if (err) {
-            console.error('Failed to get capabilities', err)
-            return
-          }
-          const response = reply.body
-          if (response.error) {
-            console.log('failed to get capabilities: ', response.error)
-            return
-          }
-          const caps = response.content.docs
-          for (var i = 0, len = caps.length; i < len; i++) {
-            let lStatus = 'inactive'
-            if (context.receipts.has(caps[i].schema)) {
-              lStatus = 'active'
-            }
-            const cap = { data: caps[i], status: lStatus }
-            context.capabilities.push(cap)
-          }
-        })
+      async created (context, eventbus) {
+        await context.getReceipts()
+        await context.getCapabilities()
       },
     },
   },

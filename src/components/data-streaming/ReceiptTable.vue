@@ -4,7 +4,7 @@
       <table v-if="receipts.length" class="va-table va-table--striped va-table--hoverable">
         <thead>
           <tr>
-            <th v-for="col in headers" :key="col">{{col}} </th>
+            <th v-for="(col, index) in headers" :key="index">{{ col }}</th>
           </tr>
         </thead>
         <tbody>

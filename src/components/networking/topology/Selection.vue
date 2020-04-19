@@ -17,7 +17,9 @@
           <tr>
             <td>{{ data.name }}</td>
             <td>{{ data.agent }}</td>
-            <td>{{ data.status }}</td>
+            <td>
+              <va-badge small :color="getStatusColor(data.status)" >{{ data.status }}</va-badge>
+            </td>
             <td>
               <button class="icon" @click="deleteNode(data._id)" title="delete">
                 <span class="fa fa-trash" aria-hidden="true"> </span>
@@ -36,7 +38,9 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{ data.status }}</td>
+            <td>
+              <va-badge small :color="getStatusColor(data.status)" >{{ data.status }}</va-badge>
+            </td>
             <td>
               <button class="icon" @click="deleteLink(data._id)" title="delete">
                 <span class="fa fa-trash" aria-hidden="true"> </span>
@@ -67,6 +71,13 @@ export default {
     },
     deleteLink (id) {
       this.$emit('action', 'delete-link', [id])
+    },
+
+    getStatusColor (status) {
+      if (status === 'pending') {
+        return 'danger'
+      }
+      return 'success'
     },
   },
   computed: {

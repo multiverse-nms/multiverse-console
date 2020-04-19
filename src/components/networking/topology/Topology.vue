@@ -14,7 +14,7 @@
           </li>
         </ul>
       </div>
-      <div>
+      <div class="topology">
         <d3-network
           ref='net'
           :net-nodes="graphNodes"
@@ -153,8 +153,8 @@ export default {
 
       required: [],
       alert: false,
-      nodeSize: 45,
-      linkWidth: 5,
+      nodeSize: 35,
+      linkWidth: 3,
       canvas: false,
       tools: {
         pointer: {
@@ -170,14 +170,14 @@ export default {
   computed: {
     options () {
       return {
-        force: 8000,
-        size: { w: 1000, h: 600 },
+        force: 5000,
+        size: { w: 1000, h: 400 },
         nodeSize: this.nodeSize,
         nodeLabels: true,
         linkLabels: false,
         canvas: this.canvas,
         linkWidth: this.linkWidth,
-        fontSize: 13,
+        fontSize: 11,
       }
     },
   },
@@ -519,5 +519,9 @@ export default {
 
 .va-select__label {
   color: red;
+}
+
+.topology {
+  max-height: 500px;
 }
 </style>

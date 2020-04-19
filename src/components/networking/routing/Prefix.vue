@@ -3,7 +3,10 @@
     <va-card :title="title">
       <div class="row">
         <div class="flex xs8 md3">
-          <va-button small color="warning" style="max-width: 100%;" @click="addPrefixModal">Add prefix</va-button>
+          <va-button small color="info" style="max-width: 100%;" @click="addPrefixModal">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            Add prefix
+          </va-button>
         </div>
 
         <div class="flex xs12">
@@ -21,10 +24,10 @@
                 <td>{{ prefix.name }}</td>
                 <td>{{ nodeIdNameMap.get(prefix.node) }}</td>
                 <td>
-                  <va-badge small color="green" >{{ prefix.status }}</va-badge>
+                  <va-badge small :color="getStatusColor(prefix.status)" >{{ prefix.status }}</va-badge>
                 </td>
                 <td>
-                  <va-button small color="danger" @click="remove(prefix._id)"> Remove </va-button>
+                  <va-button small color="danger" @click="remove(prefix._id)"> Delete </va-button>
                 </td>
               </tr>
             </tbody>
@@ -185,6 +188,13 @@ export default {
           }
         }
       })
+    },
+
+    getStatusColor (status) {
+      if (status === 'pending') {
+        return 'danger'
+      }
+      return 'success'
     },
   },
 

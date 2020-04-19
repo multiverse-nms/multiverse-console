@@ -50,9 +50,6 @@ export default {
     }
   },
   created () {
-    this.getTopology()
-    this.getPrefixes()
-    this.getRoutes()
   },
 
   methods: {
@@ -122,6 +119,10 @@ export default {
   eventbus: {
     lifecycleHooks: {
       created (context, eventbus) {
+        context.getTopology()
+        context.getPrefixes()
+        context.getRoutes()
+
         // subscribe to topology service info
         eventbus.registerHandler('nms.info.topology', function (err, msg) {
           if (err) {

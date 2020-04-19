@@ -1,19 +1,12 @@
 <template>
   <div class="row row-equal">
     <div class="flex xs12 md6 xl3">
-      <dashboard-service-list/>
+      <dashboard-service-list :servicesData="servicesData"/>
     </div>
 
     <div class="flex xs12 md6 xl3">
       <va-card :title="$t('dashboard.serviceActivity')">
-        <va-button
-          icon="fa fa-print"
-          flat
-          slot="actions"
-          class="mr-0"
-          @click="printChart"
-        />
-        <va-chart class="chart chart--donut" :data="donutChartData" type="donut"/>
+        <va-chart class="chart chart--donut" :data="serviceActivityData" type="donut"/>
       </va-card>
     </div>
 
@@ -24,61 +17,56 @@
 </template>
 
 <script>
-import { getDonutChartData } from '../../data/charts/DonutChartData'
 // import { getLineChartData } from '../../data/charts/LineChartData'
 import DashboardServiceList from './DashboardServiceList'
 import DashboardServiceLogs from './DashboardServiceLogs'
 
+const themes = {
+  primary: '#40e583',
+  secondary: '#002c85',
+  success: '#40e583',
+  info: '#2c82e0',
+  danger: '#e34b4a',
+  warning: '#ffc200',
+  gray: '#babfc2',
+  dark: '#34495e',
+}
+
 export default {
   name: 'dashboard-charts',
+  props: ['servicesData'],
   components: {
     DashboardServiceList,
     DashboardServiceLogs,
   },
   data () {
     return {
-      // lineChartData: getLineChartData(this.$themes),
-      donutChartData: getDonutChartData(this.$themes),
-      lineChartFirstMonthIndex: 0,
+      serviceActivityData: {
+        labels: ['Data Streaming', 'Storage', 'REST API', 'Topology', 'Routing'],
+        datasets: [{
+          label: 'Messages (#)',
+          backgroundColor: [themes.danger, themes.info, themes.primary, themes.dark, themes.warning],
+          data: [0, 0, 0, 0, 0],
+        }],
+      },
     }
   },
   watch: {
-    '$themes.primary' () {
-      // this.lineChartData = getLineChartData(this.$themes)
-      this.donutChartData = getDonutChartData(this.$themes)
+    servicesData: {
+      handler: function () {
+        this.serviceActivityData.datasets[0].data[0] = this.servicesData.dss.activity
+        this.serviceActivityData.datasets[0].data[1] = this.servicesData.storage.activity
+        this.serviceActivityData.datasets[0].data[2] = this.servicesData.rest.activity
+        this.serviceActivityData.datasets[0].data[3] = this.servicesData.topology.activity
+        this.serviceActivityData.datasets[0].data[4] = this.servicesData.routing.activity
+      },
+      deep: true,
     },
 
-    '$themes.info' () {
-      // this.lineChartData = getLineChartData(this.$themes)
-      this.donutChartData = getDonutChartData(this.$themes)
-    },
-
-    '$themes.danger' () {
-      this.donutChartData = getDonutChartData(this.$themes)
-    },
   },
   methods: {
-    deleteSection () {
-      // this.lineChartFirstMonthIndex += 1
-      // this.lineChartData = getLineChartData(this.$themes, this.lineChartFirstMonthIndex)
-      // this.$refs.lineChart.$refs.chart.refresh()
-    },
-    printChart () {
-      const win = window.open('', 'Print', 'height=600,width=800')
-      win.document.write(`<br><img src='${this.donutChartDataURL}'/>`)
-      // TODO: find better solution how to remove timeout
-      setTimeout(() => {
-        win.document.close()
-        win.focus()
-        win.print()
-        win.close()
-      }, 200)
-    },
   },
   computed: {
-    donutChartDataURL () {
-      return document.querySelector('.chart--donut canvas').toDataURL('image/png')
-    },
   },
 }
 </script>
