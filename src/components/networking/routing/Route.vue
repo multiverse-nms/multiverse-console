@@ -133,6 +133,7 @@ export default {
         prefixId: '',
         nop: '',
         path: [],
+        links: [],
       },
 
       selectedNext: '',
@@ -196,6 +197,7 @@ export default {
       this.nRoute.prefix = ''
       this.nRoute.prefixId = ''
       this.nRoute.path = []
+      this.nRoute.links = []
 
       this.visited = []
       this.error = ''
@@ -225,6 +227,9 @@ export default {
       }
 
       if (Array.from(this.nextNodesMap.values()).includes(this.nRoute.nop)) {
+        // add the unique link
+        this.nRoute.links.push(this.getLink(this.nRoute.fromNodeId, this.nRoute.nop))
+
         this.nRoute.path.push(this.nRoute.nop)
         this.prefixReached = true
         this.showNextHop = false
@@ -236,7 +241,15 @@ export default {
     },
     nextHop () {
       this.error = ''
+
+      // get last node as source
+      const source = this.nRoute.path[this.nRoute.path.length - 1]
+      // selectedNodeId is target
       const selectedNodeId = this.nextNodesMap.get(this.selectedNext)
+      // get link for (source, selectedNodeId) and add it to links
+      this.nRoute.links.push(this.getLink(source, selectedNodeId))
+
+      // push new node
       this.nRoute.path.push(selectedNodeId)
       this.visited.push(selectedNodeId)
 
@@ -248,6 +261,9 @@ export default {
       }
 
       if (Array.from(this.nextNodesMap.values()).includes(this.nRoute.nop)) {
+        // add last link
+        this.nRoute.links.push(this.getLink(selectedNodeId, this.nRoute.nop))
+
         this.nRoute.path.push(this.nRoute.nop)
         this.prefixReached = true
         this.showNextHop = false
@@ -283,6 +299,7 @@ export default {
         console.log('create route with manual path')
         message.action = 'add_route'
         message.params.path = this.nRoute.path
+        message.params.links = this.nRoute.links
       }
 
       const context = this
@@ -385,6 +402,19 @@ export default {
           }
         }
       })
+    },
+    getLink (source, target) {
+      let linkId = ''
+      this.links.forEach(link => {
+        if ((link.source === source) && (link.target === target)) {
+          linkId = link._id
+          return linkId
+        } else if ((link.source === target) && (link.target === source)) {
+          linkId = link._id
+          return linkId
+        }
+      })
+      return linkId
     },
 
     getStatusColor (status) {
