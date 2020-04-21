@@ -1,19 +1,27 @@
 <template>
   <div class="dashboard">
-    <!-- dashboard-info-block / -->
-    <dashboard-charts :servicesData="serviceInfo" />
+    <div class="row">
+      <div class="flex xs12 md4 xl4">
+        <dashboard-service-list :data="serviceInfo"/>
+      </div>
+      <div class="flex xs12 md8 xl8 logging">
+        <dashboard-service-logs :data="serviceLogging"/>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import DashboardCharts from './DashboardCharts'
 // import DashboardInfoBlock from './DashboardInfoBlock'
+// import DashboardCharts from './DashboardCharts'
+import DashboardServiceList from './DashboardServiceList'
+import DashboardServiceLogs from './DashboardServiceLogs'
 
 export default {
   name: 'dashboard',
   components: {
-    DashboardCharts,
-    // DashboardInfoBlock,
+    DashboardServiceList,
+    DashboardServiceLogs,
   },
   data: function () {
     return {
@@ -44,6 +52,7 @@ export default {
           activity: 0,
         },
       },
+      serviceLogging: [],
     }
   },
   methods: {
@@ -82,16 +91,20 @@ export default {
           }
           const content = msg.body.content
           // ...
-        })
+        }) */
 
-        eventbus.registerHandler('nms.logs', function (err, msg) {
+        eventbus.registerHandler('nms.logging', function (err, msg) {
           if (err) {
             console.log('VertxEventBus error: ', err)
             return
           }
-          const content = msg.body.content
-          // ...
-        }) */
+          const body = msg.body
+          const logLine = '[' + body.content.timestamp + '] [' + body.service + '] "' + body.content.message + '"'
+          if (context.serviceLogging.length === 20) {
+            context.serviceLogging.shift()
+          }
+          context.serviceLogging.push(logLine)
+        })
       },
     },
   },
@@ -109,5 +122,10 @@ export default {
     .va-card {
       margin-bottom: 0 !important;
     }
+  }
+
+  .logging {
+    height: 600px;
+    max-height: 600px;
   }
 </style>

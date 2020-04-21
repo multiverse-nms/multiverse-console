@@ -1,48 +1,12 @@
 <template>
-  <va-list fit>
+  <va-list fit class="logging-list">
     <va-list-label>
       {{ $t('dashboard.serviceLogs') }}
     </va-list-label>
 
-    <va-item>
+    <va-item v-for="(line, index) in data.slice().reverse()" :key="index" >
       <va-item-section>
-        <va-item-label>07/04/20 3:30:32 pm</va-item-label>
-      </va-item-section>
-
-      <va-item-section>
-        <va-item-label>Topology</va-item-label>
-      </va-item-section>
-
-      <va-item-section>
-        <va-item-label>Node created [/nist/n1]</va-item-label>
-      </va-item-section>
-    </va-item>
-
-    <va-item>
-      <va-item-section>
-        <va-item-label>07/04/20 3:30:32 pm</va-item-label>
-      </va-item-section>
-
-      <va-item-section>
-        <va-item-label>Routing</va-item-label>
-      </va-item-section>
-
-      <va-item-section>
-        <va-item-label>Route created [...]</va-item-label>
-      </va-item-section>
-    </va-item>
-
-    <va-item>
-      <va-item-section>
-        <va-item-label>07/04/20 3:30:32 pm</va-item-label>
-      </va-item-section>
-
-      <va-item-section>
-        <va-item-label>Routing</va-item-label>
-      </va-item-section>
-
-      <va-item-section>
-        <va-item-label>Prefix created [...]</va-item-label>
+        <va-item-label>{{ line }}</va-item-label>
       </va-item-section>
     </va-item>
   </va-list>
@@ -52,6 +16,7 @@
 
 export default {
   name: 'DashboardServiceLogs',
+  props: ['data'],
   data () {
     return {
     }
@@ -64,11 +29,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.dashboard-contributors-list {
+.logging-list {
   flex-direction: column;
-
-  .inner-loading {
-    height: 100%;
-  }
+  height: 100%;
+  overflow: scroll;
 }
 </style>

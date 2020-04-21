@@ -1,25 +1,13 @@
 <template>
-  <div class="row row-equal">
-    <div class="flex xs12 md6 xl3">
-      <dashboard-service-list :servicesData="servicesData"/>
-    </div>
-
-    <div class="flex xs12 md6 xl3">
-      <va-card :title="$t('dashboard.serviceActivity')">
+  <div class="flex xs12 md6 xl3">
+    <!-- va-card :title="$t('dashboard.serviceActivity')">
         <va-chart class="chart chart--donut" :data="serviceActivityData" type="donut"/>
-      </va-card>
-    </div>
-
-    <div class="flex xs12 xl6">
-      <dashboard-service-logs/>
-    </div>
+      </va-card -->
   </div>
 </template>
 
 <script>
 // import { getLineChartData } from '../../data/charts/LineChartData'
-import DashboardServiceList from './DashboardServiceList'
-import DashboardServiceLogs from './DashboardServiceLogs'
 
 const themes = {
   primary: '#40e583',
@@ -34,10 +22,8 @@ const themes = {
 
 export default {
   name: 'dashboard-charts',
-  props: ['servicesData'],
+  props: ['data'],
   components: {
-    DashboardServiceList,
-    DashboardServiceLogs,
   },
   data () {
     return {

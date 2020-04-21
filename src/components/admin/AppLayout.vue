@@ -29,7 +29,9 @@
           slot="content"
           role="main"
         >
-          <router-view/>
+          <keep-alive include="dashboard">
+            <router-view/>
+          </keep-alive>
         </main>
       </div>
     </div>

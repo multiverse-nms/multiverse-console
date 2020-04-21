@@ -14,7 +14,7 @@
       </va-item-section>
 
       <va-item-section>
-        <va-badge color="primary">{{ servicesData.dss.status }}</va-badge>
+        <va-badge color="primary">{{ data.dss.status }}</va-badge>
       </va-item-section>
     </va-item>
 
@@ -28,7 +28,7 @@
       </va-item-section>
 
       <va-item-section>
-        <va-badge color="primary">{{ servicesData.topology.status }}</va-badge>
+        <va-badge color="primary">{{ data.topology.status }}</va-badge>
       </va-item-section>
     </va-item>
 
@@ -42,7 +42,7 @@
       </va-item-section>
 
       <va-item-section>
-        <va-badge color="primary">{{ servicesData.routing.status }}</va-badge>
+        <va-badge color="primary">{{ data.routing.status }}</va-badge>
       </va-item-section>
     </va-item>
 
@@ -56,7 +56,7 @@
       </va-item-section>
 
       <va-item-section>
-        <va-badge color="primary">{{ servicesData.storage.status }}</va-badge>
+        <va-badge color="primary">{{ data.storage.status }}</va-badge>
       </va-item-section>
     </va-item>
 
@@ -70,7 +70,7 @@
       </va-item-section>
 
       <va-item-section>
-        <va-badge color="primary">{{ servicesData.rest.status }}</va-badge>
+        <va-badge color="primary">{{ data.rest.status }}</va-badge>
       </va-item-section>
     </va-item>
   </va-list>
@@ -80,7 +80,7 @@
 
 export default {
   name: 'DashboardServiceList',
-  props: ['servicesData'],
+  props: ['data'],
   data () {
     return {
     }
@@ -93,11 +93,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.dashboard-contributors-list {
-  flex-direction: column;
-
-  .inner-loading {
-    height: 100%;
-  }
-}
 </style>
