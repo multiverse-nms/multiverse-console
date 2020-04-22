@@ -52,7 +52,8 @@ Vue.use(ColorThemePlugin, {
 
 router.beforeEach((to, from, next) => {
   store.commit('setLoading', true)
-  next()
+  setTimeout(() => { next() }, 100)
+  // next()
 })
 
 router.afterEach((to, from) => {

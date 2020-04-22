@@ -29,8 +29,15 @@
           slot="content"
           role="main"
         >
+          <div v-show="isLoading" class="spinner">
+            <half-circle-spinner
+              :animation-duration="500"
+              :size="60"
+              :color="$themes.info"
+            />
+          </div>
           <keep-alive include="dashboard">
-            <router-view/>
+            <router-view v-show="!isLoading"/>
           </keep-alive>
         </main>
       </div>
@@ -39,10 +46,12 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import AppPageLayout from './AppPageLayout'
 import AppNavbar from './app-navbar/AppNavbar'
 import AppTopbar from './app-topbar/AppTopbar'
 import AppSidebar from './app-sidebar/AppSidebar'
+import { HalfCircleSpinner } from 'epic-spinners'
 import { originalTheme, corporateTheme } from 'vuestic-ui/src/services/themes'
 import {
   ColorThemeActionsMixin,
@@ -52,6 +61,7 @@ import {
 export default {
   name: 'app-layout',
   components: {
+    HalfCircleSpinner,
     AppPageLayout,
     AppNavbar,
     AppTopbar,
@@ -63,6 +73,11 @@ export default {
       minimized: false,
       mobileWidth: 767,
     }
+  },
+  computed: {
+    ...mapGetters([
+      'isLoading',
+    ]),
   },
   inject: ['contextConfig'],
   mixins: [ColorThemeActionsMixin, ColorThemeMixin],
@@ -126,5 +141,11 @@ export default {
       margin: 0;
     }
   }
+}
+
+.spinner {
+  position: absolute;
+  top: 50%;
+  right: 50%;
 }
 </style>
