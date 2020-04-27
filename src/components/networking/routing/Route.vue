@@ -3,7 +3,7 @@
     <va-card :title="title">
       <div class="row">
         <div class="flex xs8 md3">
-          <va-button small color="info" style="max-width: 100%;" @click="addRoute">
+          <va-button small color="info" style="max-width: 100%;" @click="initAddRouteModal">
             <i class="fa fa-plus-circle" aria-hidden="true"></i>
             Add route
           </va-button>
@@ -41,85 +41,109 @@
       </div>
     </va-card>
 
-    <div class="modal-mask" v-if="showModal" >
-      <div class="modal-wrapper">
-        <div class="modal-container">
-          <section class="form">
-            <h3 class="title is-7"> Create route </h3>
-            <va-separator />
-            <div class="row">
-              <va-notification v-if="error != ''">
-                {{ error }}
-              </va-notification>
-              <div class="flex md6 xs12" >
-                <label class="label"> Prefix </label>
-                <va-select
-                  :label="$t('Select prefix')"
-                  v-model="nRoute.prefix"
-                  textBy="description"
-                  :options="Array.from(prefixNameIdMap.keys())"
-                />
-                <label class="label" color="danger">Corresponding node: {{ correspNode }}</label>
-              </div>
-              <div class="flex md6 xs12" >
-                <label class="label"> From node </label>
-                <va-select
-                  :label="$t('Select a node')"
-                  v-model="nRoute.fromNode"
-                  textBy="description"
-                  :options="Array.from(nodeNameIdMap.keys())"
-                />
-              </div>
-            </div>
-            <div class="row" v-if="error == ''">
-              <va-notification  v-if="nRoute.path.length > 0">{{ $t('Current path: ') }}
-                <span>{{ displayPath(nRoute.path) }}</span>
-              </va-notification>
-            </div>
+    <va-modal
+      v-model="showModal"
+      size="large"
+      title="Create route"
+      hideDefaultActions
+    >
+      <div class="modal-route">
+        <div class="row">
+          <div class="flex md12 xs12">
+            <d3-network
+              ref='net'
+              :net-nodes="topology.nodes"
+              :net-links="topology.links"
+              :options="options"
+            />
+          </div>
+        </div>
 
-            <div class="row">
-              <div class="flex md6 offset--md3 " v-if="showNextHop">
-                <label class="label"> Next hop </label>
-                <va-select
-                  :label="$t('Select node')"
-                  v-model="selectedNext"
-                  textBy="description"
-                  :options="Array.from(nextNodesMap.keys())"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <va-notification
-                v-if="prefixReached">{{ $t('Prefix reached.') }}
-              </va-notification>
-            </div>
+        <div class="row">
+          <va-notification v-if="error != ''" color="danger">
+            {{ error }}
+          </va-notification>
+        </div>
+        <div class="row">
+          <div class="flex md6 xs12">
+            <label class="label"> To prefix </label>
+            <va-select
+              :label="$t('Select prefix')"
+              v-model="nRoute.prefix"
+              textBy="description"
+              :options="Array.from(prefixNameIdMap.keys())"
+            />
+          </div>
+          <div class="flex md6 xs12">
+            <label class="label"> From node </label>
+            <va-select
+              :label="$t('Select a node')"
+              v-model="nRoute.fromNode"
+              textBy="description"
+              :options="Array.from(nodeNameIdMap.keys())"
+            />
+          </div>
+          <div class="flex md12 xs12" v-if="correspNode != 'undefined'">
+            <va-chip color="info">
+              Source node: {{ correspNode }}
+            </va-chip>
+          </div>
+        </div>
 
-            <div class="row">
-              <div class="flex xs12 md12 offset--md4">
-                <va-button small color="danger" @click="cancelModal"> Cancel </va-button>
+        <div class="row" v-if="error == ''">
+          <va-notification  v-if="nRoute.path.length > 0" color="warning">{{ $t('Current path: ') }}
+            <span>{{ displayPath(nRoute.path) }}</span>
+          </va-notification>
+        </div>
 
-                <va-button small color="info" @click="autoPath" v-if="nRoute.path.length == 0"> Automatic path </va-button>
-                <va-button small color="warning" @click="setPath" v-if="nRoute.path.length == 0"> Manual path </va-button>
-                <va-button small color="info" @click="nextHop" v-if="showNextHop"> Next hop</va-button>
-                <va-button small color="success" @click="createRoute(false)" v-if="prefixReached">   Submit </va-button>
-              </div>
-            </div>
-          </section>
+        <div class="row">
+          <div class="flex md6 offset--md3 " v-if="showNextHop">
+            <label class="label"> Next hop </label>
+            <va-select
+              :label="$t('Select node')"
+              v-model="selectedNext"
+              textBy="description"
+              :options="Array.from(nextNodesMap.keys())"
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <va-notification color="success" v-if="prefixReached">
+            {{ $t('Prefix reached.') }}
+          </va-notification>
+        </div>
+
+        <div class="row">
+          <div class="flex xs12 md12">
+            <va-button small color="danger" @click="cancelModal"> Cancel </va-button>
+
+            <va-button disabled small color="info" @click="autoPath" v-if="nRoute.path.length == 0"> Automatic path </va-button>
+            <va-button small color="warning" @click="setPath" v-if="nRoute.path.length == 0"> Manual path </va-button>
+            <va-button small color="info" @click="nextHop" v-if="showNextHop"> Next hop</va-button>
+            <va-button small color="success" @click="createRoute(false)" v-if="prefixReached">   Submit </va-button>
+          </div>
         </div>
       </div>
-    </div>
+    </va-modal>
   </div>
 </template>
 
 <script>
+import D3Network from 'vue-d3-network/src/vue-d3-network.vue'
+
 export default {
   name: 'route',
   props: ['nodes', 'links', 'prefixes', 'routes'],
+  components: {
+    D3Network,
+  },
   data: function () {
     return {
       title: 'Routes',
       showModal: false,
       showNextHop: false,
+      prefixReached: false,
 
       prefixNameIdMap: new Map(),
       prefixIdNameMap: new Map(),
@@ -136,6 +160,10 @@ export default {
         links: [],
       },
 
+      topology: {
+        nodes: [],
+        links: [],
+      },
       selectedNext: '',
       nextNodesMap: new Map(),
       visited: [],
@@ -150,6 +178,18 @@ export default {
       const prefixId = this.prefixNameIdMap.get(this.nRoute.prefix)
       const nopId = this.nodeOfPrefix(prefixId)
       return this.nodeIdNameMap.get(nopId)
+    },
+    options () {
+      return {
+        force: 2000,
+        size: { w: 500, h: 200 },
+        nodeSize: 20,
+        nodeLabels: true,
+        linkLabels: false,
+        canvas: false,
+        linkWidth: 3,
+        fontSize: 11,
+      }
     },
   },
   created () {},
@@ -168,6 +208,25 @@ export default {
     },
   },
   methods: {
+    processGraph () {
+      this.topology.nodes = []
+      this.topology.links = []
+      this.nodes.forEach(node => {
+        const newNode = {
+          id: node._id,
+          name: node.name,
+        }
+        this.topology.nodes.push(newNode)
+      })
+      this.links.forEach(link => {
+        const newLink = {
+          id: link._id,
+          sid: link.source,
+          tid: link.target,
+        }
+        this.topology.links.push(newLink)
+      })
+    },
     displayPath (path) {
       const arrayPath = []
       path.forEach(n => {
@@ -191,7 +250,7 @@ export default {
         this.nodeIdNameMap.set(node._id, node.name)
       })
     },
-    addRoute () {
+    initAddRouteModal () {
       this.nRoute.fromNode = ''
       this.nRoute.fromNodeId = ''
       this.nRoute.prefix = ''
@@ -204,6 +263,8 @@ export default {
 
       this.showNextHop = false
       this.prefixReached = false
+
+      this.processGraph()
       this.showModal = true
     },
     setPath () {
@@ -428,4 +489,8 @@ export default {
 }
 </script>
 <style lang="scss">
+.modal-route {
+  width: 600px;
+  max-width: 600px;
+}
 </style>

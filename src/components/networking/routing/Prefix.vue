@@ -36,43 +36,46 @@
       </div>
     </va-card>
 
-    <div class="modal-mask" v-if="showModal" >
-      <div class="modal-wrapper">
-        <div class="modal-container">
-          <section class="form">
-            <h3 class="title is-7"> Add prefix </h3>
-            <va-separator />
-            <div class="row">
-              <div class="flex xs12 ">
-                <div class="x">
-                  <label class="label">Node</label>
-                  <div class="x">
-                    <va-select
-                      :label="$t('Select the source node')"
-                      v-model="nPrefix.node"
-                      textBy="node"
-                      :options="Array.from(nodeNameIdMap.keys())"
-                    />
-                  </div>
-                </div>
-                <div class="x">
-                  <label class="label"> Prefix </label>
-                  <div class="x">
-                    <va-input  placeholder="e.g., /a/b" v-model="nPrefix.name"/>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="flex xs6 md6 offset--md6">
-                  <va-button small color="danger"  @click="cancelModal"> Cancel </va-button>
-                  <va-button small  @click="createPrefix"> Submit </va-button>
-                </div>
-              </div>
-            </div>
-          </section>
+    <va-modal
+      v-model="showModal"
+      size="large"
+      title="Register prefix"
+      hideDefaultActions
+    >
+      <div class="modal-prefix">
+        <div class="row">
+          <va-notification color="danger" v-if="error != ''">
+            {{ error }}
+          </va-notification>
+        </div>
+
+        <div class="row">
+          <div class="flex md12 xs12">
+            <label class="label">Node</label>
+            <va-select
+              :label="$t('Select the source node')"
+              v-model="nPrefix.node"
+              textBy="node"
+              :options="Array.from(nodeNameIdMap.keys())"
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="flex md12 xs12">
+            <label class="label"> Prefix </label>
+            <va-input  placeholder="e.g., /a/b" v-model="nPrefix.name"/>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="flex xs12 md12">
+            <va-button small color="danger"  @click="cancelModal"> Cancel </va-button>
+            <va-button small  @click="createPrefix"> Submit </va-button>
+          </div>
         </div>
       </div>
-    </div>
+    </va-modal>
   </div>
 </template>
 <script>
@@ -91,6 +94,7 @@ export default {
         name: '',
         status: '',
       },
+      error: '',
     }
   },
 
@@ -114,6 +118,12 @@ export default {
       })
     },
     addPrefixModal () {
+      this.nPrefix = {
+        node: '',
+        name: '',
+        status: '',
+      }
+      this.error = ''
       this.showModal = true
     },
     createPrefix () {
@@ -203,4 +213,8 @@ export default {
 </script>
 
 <style lang="scss">
+.modal-prefix {
+  width: 300px;
+  max-width: 300px;
+}
 </style>

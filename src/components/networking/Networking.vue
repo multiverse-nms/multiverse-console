@@ -5,6 +5,8 @@
         <Topology
           @action="topologyEvent"
           :topology="{nodes: nodes, links: links}"
+          :prefixes="prefixes"
+          ref="topology"
         />
       </div>
     </div>
@@ -84,6 +86,7 @@ export default {
           const repBody = reply.body
           if (repBody.content) {
             context.prefixes = repBody.content.docs
+            // context.$refs.topology.processPrefixes()
           }
         }
       })
@@ -144,6 +147,7 @@ export default {
           const content = msg.body.content
           if (JSON.stringify(content) !== JSON.stringify(context.prefixes)) {
             context.prefixes = content.docs
+            // context.$refs.topology.processPrefixes()
           }
         })
 

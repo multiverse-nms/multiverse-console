@@ -9,6 +9,7 @@
           <tr>
             <th>Name</th>
             <th>Agent</th>
+            <th>Interfaces</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
@@ -17,6 +18,7 @@
           <tr>
             <td>{{ data.name }}</td>
             <td>{{ data.agent }}</td>
+            <td>{{ data.itfs.join(',') }}</td>
             <td>
               <va-badge small :color="getStatusColor(data.status)" >{{ data.status }}</va-badge>
             </td>
@@ -32,12 +34,16 @@
       <table v-if="type == 'link'" class="va-table va-table--striped va-table--hoverable">
         <thead>
           <tr>
+            <th>Source itf</th>
+            <th>Target itf</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
           <tr>
+            <td>{{ data.sourceItf }}</td>
+            <td>{{ data.targetItf }}</td>
             <td>
               <va-badge small :color="getStatusColor(data.status)" >{{ data.status }}</va-badge>
             </td>
