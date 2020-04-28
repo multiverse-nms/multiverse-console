@@ -48,8 +48,23 @@
       hideDefaultActions
     >
       <div class="modal-route">
-        <div class="row">
-          <div class="flex md12 xs12">
+        <div class="row my-1" v-if="error === '' && nRoute.path.length > 0">
+          <va-chip color="info">
+            Route from [{{ nRoute.fromNode }}] to [{{ correspNode }}]
+          </va-chip>
+          <va-chip color="warning">
+            Current path: {{ displayPath(nRoute.path) }}
+          </va-chip>
+        </div>
+
+        <div class="row my-1">
+          <va-notification v-if="error != ''" color="danger">
+            {{ error }}
+          </va-notification>
+        </div>
+
+        <div class="row px-1">
+          <div class="flex xs12">
             <d3-network
               ref='net'
               :net-nodes="topology.nodes"
@@ -59,13 +74,8 @@
           </div>
         </div>
 
-        <div class="row">
-          <va-notification v-if="error != ''" color="danger">
-            {{ error }}
-          </va-notification>
-        </div>
-        <div class="row">
-          <div class="flex md6 xs12">
+        <div v-if="!showNextHop && !prefixReached" class="row mt-2">
+          <div class="flex xs6 px-1">
             <label class="label"> To prefix </label>
             <va-select
               :label="$t('Select prefix')"
@@ -74,7 +84,7 @@
               :options="Array.from(prefixNameIdMap.keys())"
             />
           </div>
-          <div class="flex md6 xs12">
+          <div class="flex xs6 px-1">
             <label class="label"> From node </label>
             <va-select
               :label="$t('Select a node')"
@@ -83,21 +93,18 @@
               :options="Array.from(nodeNameIdMap.keys())"
             />
           </div>
-          <div class="flex md12 xs12" v-if="correspNode != 'undefined'">
+        </div>
+
+        <div v-if="!showNextHop && !prefixReached" class="row">
+          <div class="flex xs6 px-1">
             <va-chip color="info">
               Source node: {{ correspNode }}
             </va-chip>
           </div>
         </div>
 
-        <div class="row" v-if="error == ''">
-          <va-notification  v-if="nRoute.path.length > 0" color="warning">{{ $t('Current path: ') }}
-            <span>{{ displayPath(nRoute.path) }}</span>
-          </va-notification>
-        </div>
-
-        <div class="row">
-          <div class="flex md6 offset--md3 " v-if="showNextHop">
+        <div class="row my-1">
+          <div class="flex xs6 offset--xs3" v-if="showNextHop">
             <label class="label"> Next hop </label>
             <va-select
               :label="$t('Select node')"
@@ -108,16 +115,15 @@
           </div>
         </div>
 
-        <div class="row">
+        <div class="row my-1">
           <va-notification color="success" v-if="prefixReached">
             {{ $t('Prefix reached.') }}
           </va-notification>
         </div>
 
-        <div class="row">
-          <div class="flex xs12 md12">
+        <div class="row mt-5">
+          <div class="flex xs8 offset--xs4">
             <va-button small color="danger" @click="cancelModal"> Cancel </va-button>
-
             <va-button disabled small color="info" @click="autoPath" v-if="nRoute.path.length == 0"> Automatic path </va-button>
             <va-button small color="warning" @click="setPath" v-if="nRoute.path.length == 0"> Manual path </va-button>
             <va-button small color="info" @click="nextHop" v-if="showNextHop"> Next hop</va-button>
@@ -339,12 +345,21 @@ export default {
       this.nRoute.nop = this.nodeOfPrefix(this.nRoute.prefixId)
 
       if (this.nRoute.nop === this.nRoute.fromNodeId) {
-        this.error = 'Selected From node is the source node'
+        this.error = 'Source node and From node are the same'
         return
       }
       this.createRoute(true)
     },
     createRoute (autoPath) {
+      if (this.nRoute.prefixId === '') {
+        this.error = 'Prefix not specified'
+        return
+      }
+      if (this.nRoute.fromNode === '') {
+        this.error = 'From node not specified'
+        return
+      }
+
       const message = {
         action: '',
         params: {
@@ -354,10 +369,12 @@ export default {
         },
       }
       if (autoPath) {
-        console.log('create route with auto path')
         message.action = 'add_auto_route'
       } else {
-        console.log('create route with manual path')
+        if (this.nRoute.path.length === 0) {
+          this.error = 'Path not specified'
+          return
+        }
         message.action = 'add_route'
         message.params.path = this.nRoute.path
         message.params.links = this.nRoute.links
@@ -366,9 +383,9 @@ export default {
       const context = this
       this.$eventBus.send('nms.routing', message, {}, function (err, reply) {
         if (err) {
-          console.log('Error in sending message', err)
-          context.showToast('Failed: cannot reach routing service', {
-            icon: 'fa-check',
+          console.log('Failed to reach routing service', err)
+          context.showToast('Failed to reach routing service', {
+            icon: 'fa-close',
             position: 'top-right',
             duration: 10000,
           })
@@ -376,13 +393,13 @@ export default {
           const repBody = reply.body
           if (repBody.error) {
             console.error(repBody.error)
-            context.showToast('Failed: route not created', {
-              icon: 'fa-check',
+            context.showToast('Failed to create route', {
+              icon: 'fa-close',
               position: 'top-right',
               duration: 10000,
             })
           } else {
-            context.showToast('Route successfuly created', {
+            context.showToast('Route created', {
               icon: 'fa-check',
               position: 'top-right',
               duration: 10000,
@@ -410,9 +427,9 @@ export default {
       const context = this
       this.$eventBus.send('nms.routing', message, {}, function (err, reply) {
         if (err) {
-          console.log('Error in sending message', err)
-          context.showToast('Failed: cannot reach routing service', {
-            icon: 'fa-check',
+          console.log('Failed to reach routing service', err)
+          context.showToast('Failed to reach routing service', {
+            icon: 'fa-close',
             position: 'top-right',
             duration: 10000,
           })
@@ -420,13 +437,13 @@ export default {
           const repBody = reply.body
           if (repBody.error) {
             console.error(repBody.error)
-            context.showToast('Failed: route not deleted', {
-              icon: 'fa-check',
+            context.showToast('Failed to delete route', {
+              icon: 'fa-close',
               position: 'top-right',
               duration: 10000,
             })
           } else {
-            context.showToast('Route successfuly deleted', {
+            context.showToast('Route deleted', {
               icon: 'fa-check',
               position: 'top-right',
               duration: 10000,

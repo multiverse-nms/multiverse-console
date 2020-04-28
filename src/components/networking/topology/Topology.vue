@@ -45,22 +45,26 @@
         </div>
 
         <div class="row">
-          <div class="flex md6 xs12">
-            <label class="label">Name</label>
+          <div class="flex xs12">
+            <label class="label">Node name</label>
             <va-input placeholder="e.g., /nist/nms/node1" v-model="nNode.name"/>
           </div>
-          <div class="flex md6 xs12">
-            <label class="label">Agent</label>
+        </div>
+        <div class="row">
+          <div class="flex xs12">
+            <label class="label">Agent name</label>
             <va-input placeholder="e.g., agent-n1" v-model="nNode.agent"/>
           </div>
+        </div>
+        <div class="row">
           <div class="flex xs12">
             <label class="label">Interfaces</label>
             <va-input placeholder="e.g., eth0,eth1,eth2" v-model="nNode.itfs"/>
           </div>
         </div>
 
-        <div class="row">
-          <div class="flex xs6 md6 offset--md6">
+        <div class="row mt-5">
+          <div class="flex xs6 offset--xs6">
             <va-button  small color="danger" @click="cancelModal"> Cancel </va-button>
             <va-button  small  @click="addNode"> Submit </va-button>
           </div>
@@ -82,49 +86,51 @@
         </div>
 
         <div class="row">
-          <div class="flex md6 xs12" >
-            <label class="label">Source node</label>
-            <va-select
-              :label="$t('Select source node') "
-              v-model="nLink.source"
-              textBy="source"
-              :options="getNodeNames()"
-            />
+          <div class="flex xs6 px-1" >
+            <div class="row">
+              <label class="label">Source node</label>
+              <va-select
+                :label="$t('Select source node') "
+                v-model="nLink.source"
+                textBy="source"
+                :options="getNodeNames()"
+              />
+            </div>
+            <div class="row" >
+              <label class="label">Source interface</label>
+              <va-select
+                :label="$t('Select source interface') "
+                v-model="nLink.sourceItf"
+                textBy="sInterface"
+                :options="sourceInterfaces"
+              />
+            </div>
           </div>
-          <div class="flex md6 xs12" >
-            <label class="label">Target node</label>
-            <va-select
-              :label="$t('Select target node')"
-              v-model="nLink.target"
-              textBy="target"
-              :options="getNodeNames()"
-            />
+
+          <div class="flex xs6 px-1" >
+            <div class="row">
+              <label class="label">Target node</label>
+              <va-select
+                :label="$t('Select target node')"
+                v-model="nLink.target"
+                textBy="target"
+                :options="getNodeNames()"
+              />
+            </div>
+            <div class="row">
+              <label class="label">Target interface</label>
+              <va-select
+                :label="$t('Select target interface')"
+                v-model="nLink.targetItf"
+                textBy="tInterface"
+                :options="targetInterfaces"
+              />
+            </div>
           </div>
         </div>
 
-        <div class="row">
-          <div class="flex md6 xs12" >
-            <label class="label">Source interface</label>
-            <va-select
-              :label="$t('Select source interface') "
-              v-model="nLink.sourceItf"
-              textBy="sInterface"
-              :options="sourceInterfaces"
-            />
-          </div>
-          <div class="flex md6 xs12" >
-            <label class="label">Target interface</label>
-            <va-select
-              :label="$t('Select target interface')"
-              v-model="nLink.targetItf"
-              textBy="tInterface"
-              :options="targetInterfaces"
-            />
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="flex xs6 md6 offset--md6">
+        <div class="row mt-5">
+          <div class="flex xs6 offset--xs6">
             <va-button small color="danger"  @click="cancelModal"> Cancel </va-button>
             <va-button small  @click="addLink"> Submit </va-button>
           </div>
@@ -161,7 +167,6 @@ export default {
       selectedData: {},
       showSelection: false,
 
-      // to add node
       showModalNode: false,
       nNode: {
         name: '',
@@ -173,7 +178,6 @@ export default {
       sourceInterfaces: [],
       targetInterfaces: [],
 
-      // to add link
       showModalLink: false,
       nLink: {
         source: '',
@@ -236,7 +240,6 @@ export default {
     },
   },
   methods: {
-    // 1: we draw the graph
     processGraph () {
       this.nodes.clear()
       this.nodeToIdMap.clear()
@@ -282,12 +285,10 @@ export default {
         this.graphLinks.push(newLink)
       })
     },
-
     processPrefixes () {
       if (this.graphNodes.length === 0) {
         return
       }
-
       const nodesWithPrfx = new Map()
       this.prefixes.forEach(p => {
         if (nodesWithPrfx.has(p.node)) {
@@ -303,27 +304,7 @@ export default {
           node.name = n[0] + ' ' + '[' + nodesWithPrfx.get(node.id) + ' prefix(es)]'
         }
       })
-      /* this.graphPrfxNodes = []
-      this.graphPrfxLinks = []
-
-      let nodes = []
-      this.prefixes.forEach(p => {
-        if (!nodes.includes(p.node)) {
-          nodes.push(p.node)
-        }
-      })
-      nodes.forEach(n => {
-        const newNode = { id: 'p' + n, name: '', _color: 'gray' }
-        this.graphPrfxNodes.push(newNode)
-
-        const newLink = {
-          sid: n,
-          tid: 'p' + n,
-        }
-        this.graphPrfxLinks.push(newLink)
-      }) */
     },
-
     removeItf (node, itf) {
       const itfs = this.nodes.get(node)
       const index = itfs.indexOf(itf)
@@ -332,8 +313,6 @@ export default {
         this.nodes.set(node, itfs)
       }
     },
-
-    // 2: we can select nodes/links
     nodeClick (event, node) {
       this.selectedType = 'node'
       this.setNodeDetails(node.id)
@@ -342,9 +321,6 @@ export default {
       this.selectedType = 'link'
       this.setLinkDetails(link.id)
     },
-
-    // get detailsfrom local topology object
-    // TODO: get details from topology service
     setNodeDetails (id) {
       this.topology.nodes.forEach(node => {
         if (node._id === id) {
@@ -361,8 +337,6 @@ export default {
         }
       })
     },
-
-    // 3: handle child component: selection
     selectionEvent (action, args) {
       switch (action) {
         case 'close':
@@ -384,7 +358,6 @@ export default {
       }
     },
 
-    // 4: Nodes
     createNodeModal () {
       this.nNode = {
         name: '',
@@ -401,7 +374,7 @@ export default {
         return
       }
       const itfsArray = this.nNode.itfs.split(',')
-      if (itfsArray.isEmpty()) {
+      if (itfsArray.length === 0) {
         this.error = 'Interfaces not specified'
         return
       }
@@ -413,9 +386,9 @@ export default {
       const context = this
       this.$eventBus.send('nms.topology', message, {}, function (err, reply) {
         if (err) {
-          console.log('Error in sending message', err)
-          context.showToast('Failed: cannot reach topology service', {
-            icon: 'fa-check',
+          console.log('Failed to reach topology service', err)
+          context.showToast('Failed to reach topology service', {
+            icon: 'fa-close',
             position: 'top-right',
             duration: 10000,
           })
@@ -423,13 +396,13 @@ export default {
           const repBody = reply.body
           if (repBody.error) {
             console.error(repBody.error)
-            context.showToast('Failed: node not created', {
-              icon: 'fa-check',
+            context.showToast('Failed to create node', {
+              icon: 'fa-close',
               position: 'top-right',
               duration: 10000,
             })
           } else {
-            context.showToast('Node successfuly created', {
+            context.showToast('Node created', {
               icon: 'fa-check',
               position: 'top-right',
               duration: 10000,
@@ -449,9 +422,9 @@ export default {
       const context = this
       this.$eventBus.send('nms.topology', message, {}, function (err, reply) {
         if (err) {
-          console.log('Error in sending message', err)
-          context.showToast('Failed: cannot reach topology service', {
-            icon: 'fa-check',
+          console.log('Failed to reach topology service', err)
+          context.showToast('Failed to reach topology service', {
+            icon: 'fa-close',
             position: 'top-right',
             duration: 10000,
           })
@@ -459,13 +432,13 @@ export default {
           const repBody = reply.body
           if (repBody.error) {
             console.error(repBody.error)
-            context.showToast('Failed: node not deleted', {
-              icon: 'fa-check',
+            context.showToast('Failed to delete node', {
+              icon: 'fa-close',
               position: 'top-right',
               duration: 10000,
             })
           } else {
-            context.showToast('Node successfuly deleted', {
+            context.showToast('Node deleted', {
               icon: 'fa-check',
               position: 'top-right',
               duration: 10000,
@@ -475,7 +448,6 @@ export default {
       })
     },
 
-    // 5: Links
     createLinkModal () {
       this.nLink = {
         source: '',
@@ -513,9 +485,9 @@ export default {
       const context = this
       this.$eventBus.send('nms.topology', message, {}, function (err, reply) {
         if (err) {
-          console.log('Error in sending message', err)
-          context.showToast('Failed: cannot reach topology service', {
-            icon: 'fa-check',
+          console.log('Failed to reach topology service', err)
+          context.showToast('Failed to reach topology service', {
+            icon: 'fa-close',
             position: 'top-right',
             duration: 10000,
           })
@@ -523,13 +495,13 @@ export default {
           const repBody = reply.body
           if (repBody.error) {
             console.error(repBody.error)
-            context.showToast('Failed: link not created', {
-              icon: 'fa-check',
+            context.showToast('Failed to create link', {
+              icon: 'fa-close',
               position: 'top-right',
               duration: 10000,
             })
           } else {
-            context.showToast('Link successfuly created', {
+            context.showToast('Link created', {
               icon: 'fa-check',
               position: 'top-right',
               duration: 10000,
@@ -560,9 +532,9 @@ export default {
       const context = this
       this.$eventBus.send('nms.topology', message, {}, function (err, reply) {
         if (err) {
-          console.log('Error in sending message', err)
-          context.showToast('Failed: cannot reach topology service', {
-            icon: 'fa-check',
+          console.log('Failed to reach topology service', err)
+          context.showToast('Failed to reach topology service', {
+            icon: 'fa-close',
             position: 'top-right',
             duration: 10000,
           })
@@ -570,13 +542,13 @@ export default {
           const repBody = reply.body
           if (repBody.error) {
             console.error(repBody.error)
-            context.showToast('Failed: link not deleted', {
-              icon: 'fa-check',
+            context.showToast('Failed to delete link', {
+              icon: 'fa-close',
               position: 'top-right',
               duration: 10000,
             })
           } else {
-            context.showToast('Link successfuly deleted', {
+            context.showToast('Link deleted', {
               icon: 'fa-check',
               position: 'top-right',
               duration: 10000,
@@ -612,13 +584,13 @@ export default {
 </script>
 <style lang="stylus">
 .modal-node {
-  width: 600px;
-  max-width: 600px;
+  width: 500px;
+  max-width: 500px;
 }
 
 .modal-link {
-  width: 600px;
-  max-width: 600px;
+  width: 500px;
+  max-width: 500px;
 }
 
 .title.is-7 {

@@ -27,7 +27,7 @@
                   <va-badge small :color="getStatusColor(prefix.status)" >{{ prefix.status }}</va-badge>
                 </td>
                 <td>
-                  <va-button small color="danger" @click="remove(prefix._id)"> Delete </va-button>
+                  <va-button small color="danger" @click="deletePrefix(prefix._id)"> Delete </va-button>
                 </td>
               </tr>
             </tbody>
@@ -50,7 +50,7 @@
         </div>
 
         <div class="row">
-          <div class="flex md12 xs12">
+          <div class="flex xs12 px-1">
             <label class="label">Node</label>
             <va-select
               :label="$t('Select the source node')"
@@ -62,14 +62,14 @@
         </div>
 
         <div class="row">
-          <div class="flex md12 xs12">
+          <div class="flex xs12 px-1">
             <label class="label"> Prefix </label>
             <va-input  placeholder="e.g., /a/b" v-model="nPrefix.name"/>
           </div>
         </div>
 
-        <div class="row">
-          <div class="flex xs12 md12">
+        <div class="row mt-5">
+          <div class="flex xs6 offset--xs6">
             <va-button small color="danger"  @click="cancelModal"> Cancel </va-button>
             <va-button small  @click="createPrefix"> Submit </va-button>
           </div>
@@ -127,6 +127,14 @@ export default {
       this.showModal = true
     },
     createPrefix () {
+      if (this.nPrefix.node === '') {
+        this.error = 'Node not specified'
+        return
+      }
+      if (this.nPrefix.name === '') {
+        this.error = 'Prefix not specified'
+        return
+      }
       this.nPrefix.node = this.nodeNameIdMap.get(this.nPrefix.node)
       const message = {
         action: 'add_reg_pref',
@@ -135,9 +143,9 @@ export default {
       const context = this
       this.$eventBus.send('nms.routing', message, {}, function (err, reply) {
         if (err) {
-          console.log('Error in sending message', err)
-          context.showToast('Failed: cannot reach routing service', {
-            icon: 'fa-check',
+          console.log('Failed to reach routing service', err)
+          context.showToast('Failed to reach routing service', {
+            icon: 'fa-close',
             position: 'top-right',
             duration: 10000,
           })
@@ -145,13 +153,13 @@ export default {
           const repBody = reply.body
           if (repBody.error) {
             console.error(repBody.error)
-            context.showToast('Failed: prefix not created', {
-              icon: 'fa-check',
+            context.showToast('Failed to create prefix', {
+              icon: 'fa-close',
               position: 'top-right',
               duration: 10000,
             })
           } else {
-            context.showToast('Prefix successfuly created', {
+            context.showToast('Prefix created', {
               icon: 'fa-check',
               position: 'top-right',
               duration: 10000,
@@ -164,7 +172,7 @@ export default {
     cancelModal () {
       this.showModal = false
     },
-    remove (id) {
+    deletePrefix (id) {
       const message = {
         action: 'del_reg_pref',
         params: {
@@ -174,9 +182,9 @@ export default {
       const context = this
       this.$eventBus.send('nms.routing', message, {}, function (err, reply) {
         if (err) {
-          console.log('Error in sending message', err)
-          context.showToast('Failed: cannot reach routing service', {
-            icon: 'fa-check',
+          console.log('Failed to reach routing service', err)
+          context.showToast('Failed to reach routing service', {
+            icon: 'fa-close',
             position: 'top-right',
             duration: 10000,
           })
@@ -184,13 +192,13 @@ export default {
           const repBody = reply.body
           if (repBody.error) {
             console.error(repBody.error)
-            context.showToast('Failed: prefix not deleted', {
-              icon: 'fa-check',
+            context.showToast('Failed to delete prefix', {
+              icon: 'fa-close',
               position: 'top-right',
               duration: 10000,
             })
           } else {
-            context.showToast('Prefix successfuly deleted', {
+            context.showToast('Prefix deleted', {
               icon: 'fa-check',
               position: 'top-right',
               duration: 10000,
@@ -214,7 +222,7 @@ export default {
 
 <style lang="scss">
 .modal-prefix {
-  width: 300px;
-  max-width: 300px;
+  width: 500px;
+  max-width: 500px;
 }
 </style>
