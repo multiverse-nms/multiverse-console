@@ -124,7 +124,7 @@
         <div class="row mt-5">
           <div class="flex xs8 offset--xs4">
             <va-button small color="danger" @click="cancelModal"> Cancel </va-button>
-            <va-button disabled small color="info" @click="autoPath" v-if="nRoute.path.length == 0"> Automatic path </va-button>
+            <va-button small color="info" @click="autoPath" v-if="nRoute.path.length == 0"> Automatic path </va-button>
             <va-button small color="warning" @click="setPath" v-if="nRoute.path.length == 0"> Manual path </va-button>
             <va-button small color="info" @click="nextHop" v-if="showNextHop"> Next hop</va-button>
             <va-button small color="success" @click="createRoute(false)" v-if="prefixReached">   Submit </va-button>
@@ -393,7 +393,7 @@ export default {
           const repBody = reply.body
           if (repBody.error) {
             console.error(repBody.error)
-            context.showToast('Failed to create route', {
+            context.showToast('Operation falied: ' + repBody.error, {
               icon: 'fa-close',
               position: 'top-right',
               duration: 10000,

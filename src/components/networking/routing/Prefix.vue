@@ -13,16 +13,18 @@
           <table class="va-table va-table--striped va-table--hoverable">
             <thead>
               <tr>
-                <th> Prefix </th>
-                <th> Source node </th>
-                <th> Status </th>
-                <th> Action </th>
+                <th>Prefix</th>
+                <th>Source node</th>
+                <th>Interface</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(prefix, index) in prefixes" :key="index">
                 <td>{{ prefix.name }}</td>
                 <td>{{ nodeIdNameMap.get(prefix.node) }}</td>
+                <td>{{ prefix.interface }}</td>
                 <td>
                   <va-badge small :color="getStatusColor(prefix.status)" >{{ prefix.status }}</va-badge>
                 </td>
@@ -51,6 +53,13 @@
 
         <div class="row">
           <div class="flex xs12 px-1">
+            <label class="label"> Prefix </label>
+            <va-input  placeholder="e.g., /a/b" v-model="nPrefix.name"/>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="flex xs12 px-1">
             <label class="label">Node</label>
             <va-select
               :label="$t('Select the source node')"
@@ -63,8 +72,13 @@
 
         <div class="row">
           <div class="flex xs12 px-1">
-            <label class="label"> Prefix </label>
-            <va-input  placeholder="e.g., /a/b" v-model="nPrefix.name"/>
+            <label class="label">Interface</label>
+            <va-select
+              :label="$t('Select the source interface')"
+              v-model="nPrefix.interface"
+              textBy="interface"
+              :options="nodeInterfaces"
+            />
           </div>
         </div>
 
@@ -89,9 +103,11 @@ export default {
       showModal: false,
       nodeNameIdMap: new Map(),
       nodeIdNameMap: new Map(),
+      nodeInterfaces: [],
       nPrefix: {
-        node: '',
         name: '',
+        node: '',
+        interface: '',
         status: '',
       },
       error: '',
@@ -107,6 +123,10 @@ export default {
       },
       deep: true,
     },
+    'nPrefix.node': function (newVal, oldVal) {
+      this.nPrefix.interface = ''
+      this.getInterfaces(newVal)
+    },
   },
   methods: {
     updateNodeMap () {
@@ -120,6 +140,7 @@ export default {
     addPrefixModal () {
       this.nPrefix = {
         node: '',
+        interface: '',
         name: '',
         status: '',
       }
@@ -129,6 +150,10 @@ export default {
     createPrefix () {
       if (this.nPrefix.node === '') {
         this.error = 'Node not specified'
+        return
+      }
+      if (this.nPrefix.interface === '') {
+        this.error = 'Interface not specified'
         return
       }
       if (this.nPrefix.name === '') {
@@ -204,6 +229,15 @@ export default {
               duration: 10000,
             })
           }
+        }
+      })
+    },
+    getInterfaces (node) {
+      this.nodeInterfaces = []
+      const id = this.nodeNameIdMap.get(node)
+      this.nodes.forEach(n => {
+        if (n._id === id) {
+          this.nodeInterfaces = n.itfs
         }
       })
     },
