@@ -15,10 +15,10 @@
       </div>
       <div class="flex xs12 lg6">
         <va-card :title="$t('restApi.response')">
-          <pre v-if="ok" class="json-body">
+          <pre v-if="!errors.length" class="json-body">
               {{ response }}
             </pre>
-          <pre v-if="!ok" class="json-body">
+          <pre v-if="errors.length" class="json-body">
               {{ errors }}
             </pre>
         </va-card>
@@ -45,18 +45,15 @@ export default {
       },
       response: {},
       errors: [],
-      ok: true,
     }
   },
   created () {
   },
   methods: {
     sendRequest () {
-      const headers = {
-        'content-type': 'application/json; charset=utf-8',
-      }
-
+      const headers = {}
       this.errors = []
+      this.response = {}
       const pre = document.getElementsByClassName('json-body')[0]
       const sBody = JSON.parse(pre.textContent)
       axios.post('http://localhost:9090/nms', sBody, {
@@ -64,11 +61,10 @@ export default {
       })
         .then(response => {
           this.response = response.data
-          this.ok = true
+          console.log(response.data)
         })
         .catch(e => {
           this.errors.push(e)
-          this.ok = false
         })
     },
   },
