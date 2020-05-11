@@ -57,6 +57,7 @@ export default {
           return
         }
         const caps = response.content.docs
+        console.log(caps)
         for (var i = 0, len = caps.length; i < len; i++) {
           let lStatus = 'inactive'
           if (context.receiptsMap.has(caps[i].schema)) {
@@ -146,7 +147,7 @@ export default {
     sendInterrupt (schema) {
       const ebMsg = {
         action: 'send_interrupt',
-        params: { receipt: schema },
+        params: { schema: schema },
       }
       const context = this
       this.$eventBus.send('nms.dss', ebMsg, {}, function (err, reply) {
@@ -156,8 +157,8 @@ export default {
         }
         const repBody = reply.body
         if (repBody.error) {
-          console.log('failed to send interrupt ', repBody.error)
-          context.showToast('Failed: cannot get Receipt', {
+          console.log('error in interrupt processing ', repBody.error)
+          context.showToast('error in interrupt processing', {
             icon: 'fa-check',
             position: 'bottom-right',
             duration: 3000,
@@ -165,22 +166,20 @@ export default {
           return
         }
 
-        const receipt = repBody.content.receipt
-        if (receipt.errors.length === 0) {
-          context.receiptsMap.delete(receipt.schema)
-          context.updateReceipts()
-          for (var i = 0, len = context.capabilities.length; i < len; i++) {
-            if (context.capabilities[i].data.schema === receipt.schema) {
-              context.capabilities[i].status = 'inactive'
-              break
-            }
+        const schema = repBody.content.schema
+        context.receiptsMap.delete(schema)
+        context.updateReceipts()
+        for (var i = 0, len = context.capabilities.length; i < len; i++) {
+          if (context.capabilities[i].data.schema === schema) {
+            context.capabilities[i].status = 'inactive'
+            break
           }
-          context.showToast('Specification stopped.', {
-            icon: 'fa-check',
-            position: 'bottom-right',
-            duration: 3000,
-          })
         }
+        context.showToast('Specification stopped.', {
+          icon: 'fa-check',
+          position: 'bottom-right',
+          duration: 3000,
+        })
       })
     },
     streamLive (rct) {

@@ -52,9 +52,16 @@ export default {
   },
   methods: {
     sendRequest () {
+      const headers = {
+        'content-type': 'application/json; charset=utf-8',
+      }
+
+      this.errors = []
       const pre = document.getElementsByClassName('json-body')[0]
       const sBody = JSON.parse(pre.textContent)
-      axios.post('http://localhost:9090/nms', sBody)
+      axios.post('http://localhost:9090/nms', sBody, {
+        headers: headers,
+      })
         .then(response => {
           this.response = response.data
           this.ok = true
