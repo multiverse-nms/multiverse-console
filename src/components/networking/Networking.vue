@@ -4,7 +4,7 @@
       <div class="flex xs12 lg12">
         <Topology
           @action="topologyEvent"
-          :topology="{nodes: nodes, links: links}"
+          :topology="{nodes: nodes, links: links, linkConns: linkConns}"
           :prefixes="prefixes"
           ref="topology"
         />
@@ -47,6 +47,7 @@ export default {
     return {
       nodes: [],
       links: [],
+      linkConns: [],
       prefixes: [],
       routes: [],
     }
@@ -58,7 +59,7 @@ export default {
     getTopology () {
       const msgGetTopology = {
         action: 'get_topology',
-        params: {},
+        params: { },
       }
       const context = this
       context.$eventBus.send('nms.topology', msgGetTopology, {}, function (err, reply) {
@@ -69,6 +70,7 @@ export default {
           if (repBody.content) {
             context.nodes = repBody.content.nodes
             context.links = repBody.content.links
+            context.linkConns = repBody.content.linkConns
           }
         }
       })

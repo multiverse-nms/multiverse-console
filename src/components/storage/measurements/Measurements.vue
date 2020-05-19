@@ -123,7 +123,7 @@ export default {
     deleteMsr (id) {
       const ebMsg = {
         action: 'del_res_by_opt',
-        params: { id: id },
+        params: { operation_id: id },
       }
       const context = this
       this.$eventBus.send('nms.storage', ebMsg, {}, function (err, reply) {
@@ -153,7 +153,7 @@ export default {
       const context = this
       const ebMsg = {
         action: 'get_res_by_opt',
-        params: { id: id },
+        params: { operation_id: id },
       }
       this.$eventBus.send('nms.storage', ebMsg, {}, function (err, reply) {
         if (err) {
@@ -177,8 +177,8 @@ export default {
     // handle measurements for selected operation
     expandRes (id) {
       const ebMsg = {
-        action: 'get_res_by_id',
-        params: { id: id },
+        action: 'get_result',
+        params: { _id: id },
       }
       const context = this
       this.$eventBus.send('nms.storage', ebMsg, {}, function (err, reply) {
@@ -198,8 +198,8 @@ export default {
     },
     deleteRes (id) {
       const ebMsg = {
-        action: 'del_res_id',
-        params: { id: id },
+        action: 'del_result',
+        params: { _id: id },
       }
       const context = this
       this.$eventBus.send('nms.storage', ebMsg, {}, function (err, reply) {

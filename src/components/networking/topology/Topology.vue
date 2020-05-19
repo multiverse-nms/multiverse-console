@@ -1,19 +1,13 @@
 <template>
   <div>
     <va-card :title="title">
-      <div class="tools">
-        <ul>
-          <li v-for="(t,to) in tools" :key="t.tip">
-            <va-button small  color="info" @click='setTool(to)' >
-              <span  class="fa fa-mouse-pointer" aria-hidden="true"></span>{{ tools[to].tip }}
-            </va-button>
-          </li>
-          <li>
-            <va-button color="info" small @click="createNodeModal()" > <i class="fa fa-plus-circle" aria-hidden="true"></i> Create node  </va-button>
-            <va-button color="info" small @click="createLinkModal()" > <i class="fa fa-plus-circle" aria-hidden="true"></i> Create link </va-button>
-          </li>
-        </ul>
-      </div>
+      <va-button-toggle
+        small
+        outline
+        v-model="kind"
+        :options="kindOptions"
+        color="success"
+      />
       <div class="topology">
         <d3-network
           ref='net'
@@ -23,15 +17,22 @@
           @node-click="nodeClick"
           @link-click="linkClick"
         />
-        <selection
-          v-if="showSelection"
-          @action="selectionEvent"
-          :type="selectedType"
-          :data="selectedData"/>
+      </div>
+
+      <div class="tools">
+        <ul>
+          <li>
+            <va-button color="info" small @click="setSelectTool()" > <i class="fa fa-mouse-pointer" aria-hidden="true"></i> Select</va-button>
+            <va-button color="info" small @click="createNodeModal()" > <i class="fa fa-plus-circle" aria-hidden="true"></i> Create node  </va-button>
+            <va-button color="info" small @click="createLinkModal()" > <i class="fa fa-plus-circle" aria-hidden="true"></i> Create link </va-button>
+          </li>
+        </ul>
       </div>
     </va-card>
+    <node-details :node="nodeDetails" />
+    <link-details :link="linkDetails" />
 
-    <va-modal
+    <!-- va-modal
       v-model="showModalNode"
       size="large"
       title="Create node"
@@ -70,9 +71,9 @@
           </div>
         </div>
       </div>
-    </va-modal>
+    </va-modal -->
 
-    <va-modal
+    <!-- va-modal
       v-model="showModalLink"
       size="large"
       title="Create link"
@@ -136,36 +137,41 @@
           </div>
         </div>
       </div>
-    </va-modal>
+    </va-modal -->
   </div>
 </template>
 
 <script>
+import icons from '../../../assets/icons/graph-icons.json'
 import D3Network from 'vue-d3-network/src/vue-d3-network.vue'
-import Selection from './Selection.vue'
+import LinkDetails from './LinkDetails.vue'
+import NodeDetails from './NodeDetails.vue'
 
 export default {
   name: 'topology',
   props: ['topology', 'prefixes'],
   components: {
     D3Network,
-    Selection,
+    LinkDetails,
+    NodeDetails,
   },
   data: function () {
     return {
       title: 'Network topology',
+      kindOptions: [
+        { label: 'Link', value: 'links' },
+        { label: 'LinkConn', value: 'linkConns' },
+      ],
+      kind: 'links',
 
       graphNodes: [],
       graphLinks: [],
-      nodeToIdMap: new Map(),
-      nodes: new Map(),
 
-      graphPrfxNodes: [],
-      graphPrfxLinks: [],
+      // graphPrfxNodes: [],
+      // graphPrfxLinks: [],
 
-      selectedType: '',
-      selectedData: {},
-      showSelection: false,
+      nodeDetails: {},
+      linkDetails: {},
 
       showModalNode: false,
       nNode: {
@@ -174,9 +180,6 @@ export default {
         itfs: '',
         status: '',
       },
-
-      sourceInterfaces: [],
-      targetInterfaces: [],
 
       showModalLink: false,
       nLink: {
@@ -188,47 +191,43 @@ export default {
       },
 
       error: '',
-
-      tools: {
-        pointer: {
-          tip: 'Select',
-        },
-      },
     }
   },
   created () {
     this.reset()
   },
-
   computed: {
     options () {
       return {
-        force: 5000,
-        size: { w: 1000, h: 400 },
-        nodeSize: 35,
+        force: 6000,
+        size: { w: 1000, h: 500 },
+        nodeSize: 60,
         nodeLabels: true,
         linkLabels: false,
         canvas: false,
         linkWidth: 3,
-        fontSize: 11,
+        fontSize: 18,
       }
     },
   },
   watch: {
+    kind: {
+      handler: function () {
+        this.processGraph()
+      },
+    },
     topology: {
       handler: function () {
         this.processGraph()
-        this.processPrefixes()
       },
       deep: true,
     },
     prefixes: {
       handler: function () {
-        this.processPrefixes()
       },
       deep: true,
     },
-    'nLink.source': function (newVal, oldVal) {
+    /* 'nLink.source': function (newVal, oldVal) {
       const id = this.nodeToIdMap.get(newVal)
       this.sourceInterfaces = this.nodes.get(id)
       this.nLink.sourceItf = ''
@@ -237,25 +236,51 @@ export default {
       const id = this.nodeToIdMap.get(newVal)
       this.targetInterfaces = this.nodes.get(id)
       this.nLink.targetItf = ''
-    },
+    }, */
   },
   methods: {
+    getNode (id) {
+      const message = {
+        action: 'get_nodes',
+        params: {
+          node_ids: [id],
+          level: 2,
+        },
+      }
+      const context = this
+      this.$eventBus.send('nms.topology', message, {}, function (err, reply) {
+        if (err) {
+          console.log('Failed to reach topology service', err)
+          context.showToast('Failed to reach topology service', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 10000,
+          })
+        } else {
+          const repBody = reply.body
+          if (repBody.error) {
+            console.error(repBody.error)
+            context.showToast('Failed to get node details', {
+              icon: 'fa-close',
+              position: 'top-right',
+              duration: 10000,
+            })
+          } else {
+            context.nodeDetails = repBody.content.docs[0]
+          }
+        }
+      })
+    },
     processGraph () {
-      this.nodes.clear()
-      this.nodeToIdMap.clear()
-
       this.graphNodes = []
       this.graphLinks = []
       this.topology.nodes.forEach(node => {
-        this.nodes.set(node._id, node.itfs.slice())
-        this.nodeToIdMap.set(node.name, node._id)
-
-        const newNode = { id: node._id, name: node.name }
-        /* if ( node.agent != '' ) {
-          newNode = Object.assign(node, { svgSym: icon.nodeIcon5, svgIcon: null, svgObj: null })
-        } else {
-          newNode = Object.assign(node, {svgSym: icon.nodeIcon4, svgIcon: null, svgObj: null })
-        } */
+        let newNode = { id: node._id, name: node._id }
+        if (node.type === 'fwd') {
+          newNode = Object.assign(newNode, { svgSym: icons.routerIcon, svgIcon: null, svgObj: null })
+        } else if (node.type === 'switch') {
+          newNode = Object.assign(newNode, { svgSym: icons.switchIcon, svgIcon: null, svgObj: null })
+        }
         if (node.status === 'operational') {
           newNode._color = 'green'
         } else if (node.status === 'pending') {
@@ -265,15 +290,11 @@ export default {
         }
         this.graphNodes.push(newNode)
       })
-
-      this.topology.links.forEach(link => {
-        this.removeItf(link.source, link.sourceItf)
-        this.removeItf(link.target, link.targetItf)
-
+      this.topology[this.kind].forEach(link => {
         const newLink = {
           id: link._id,
-          sid: link.source,
-          tid: link.target,
+          sid: link.sourceNode,
+          tid: link.destNode,
         }
         if (link.status === 'operational') {
           newLink._color = 'green'
@@ -286,7 +307,7 @@ export default {
       })
     },
     processPrefixes () {
-      if (this.graphNodes.length === 0) {
+      /* if (this.graphNodes.length === 0) {
         return
       }
       const nodesWithPrfx = new Map()
@@ -303,53 +324,59 @@ export default {
           const n = node.name.split(' ')
           node.name = n[0] + ' ' + '[' + nodesWithPrfx.get(node.id) + ' prefix(es)]'
         }
-      })
-    },
-    removeItf (node, itf) {
-      const itfs = this.nodes.get(node)
-      const index = itfs.indexOf(itf)
-      if (index > -1) {
-        itfs.splice(index, 1)
-        this.nodes.set(node, itfs)
-      }
+      }) */
     },
     nodeClick (event, node) {
-      this.selectedType = 'node'
-      this.setNodeDetails(node.id)
+      this.getNode(node.id)
     },
     linkClick (event, link) {
-      this.selectedType = 'link'
-      this.setLinkDetails(link.id)
+      this.getLink(link.id)
     },
-    setNodeDetails (id) {
-      this.topology.nodes.forEach(node => {
-        if (node._id === id) {
-          this.selectedData = node
-          this.showSelection = true
-        }
-      })
-    },
-    setLinkDetails (id) {
-      this.topology.links.forEach(link => {
-        if (link._id === id) {
-          this.selectedData = link
-          this.showSelection = true
+    getLink (id) {
+      let act = 'get_linkconn'
+      if (this.kind === 'links') {
+        act = 'get_link'
+      }
+      const message = {
+        action: act,
+        params: {
+          _id: id,
+        },
+      }
+      const context = this
+      this.$eventBus.send('nms.topology', message, {}, function (err, reply) {
+        if (err) {
+          console.log('Failed to reach topology service', err)
+          context.showToast('Failed to reach topology service', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 10000,
+          })
+        } else {
+          const repBody = reply.body
+          if (repBody.error) {
+            console.error(repBody.error)
+            context.showToast('Failed to get link details', {
+              icon: 'fa-close',
+              position: 'top-right',
+              duration: 10000,
+            })
+          } else {
+            context.linkDetails = repBody.content
+          }
         }
       })
     },
     selectionEvent (action, args) {
       switch (action) {
         case 'close':
-          this.selected = {}
           this.showSelection = false
           break
         case 'delete-node':
-          this.selected = {}
           this.showSelection = false
           this.removeNode(args[0])
           break
         case 'delete-link':
-          this.selected = {}
           this.showSelection = false
           this.removeLink(args[0])
           break
@@ -381,7 +408,7 @@ export default {
       this.nNode.itfs = itfsArray
       const message = {
         action: 'add_node',
-        params: this.nNode,
+        params: { node: this.nNode },
       }
       const context = this
       this.$eventBus.send('nms.topology', message, {}, function (err, reply) {
@@ -564,19 +591,10 @@ export default {
       this.showModalLink = false
     },
 
-    setTool (tool) {
+    setSelectTool () {
     },
 
-    // util methods
-    getNodeNames () {
-      const nodeArray = []
-      this.topology.nodes.forEach(node => {
-        nodeArray.push(node.name)
-      })
-      return nodeArray
-    },
     reset () {
-      this.selected = { type: 'none' }
     },
   },
 }
@@ -614,4 +632,5 @@ export default {
 .topology {
   max-height: 500px;
 }
+
 </style>
