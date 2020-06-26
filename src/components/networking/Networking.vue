@@ -1,12 +1,9 @@
 <template>
   <div class="networking">
     <div class="row">
-      <div class="flex xs12 lg12">
+      <div class="flex xs12">
         <Topology
-          @action="topologyEvent"
-          :topology="{nodes: nodes, links: links, linkConns: linkConns}"
-          :prefixes="prefixes"
-          ref="topology"
+          @refresh="topologyEvent"
         />
       </div>
     </div>
@@ -56,7 +53,7 @@ export default {
   },
 
   methods: {
-    getTopology () {
+    /* getTopology () {
       const msgGetTopology = {
         action: 'get_topology',
         params: { },
@@ -109,7 +106,7 @@ export default {
           }
         }
       })
-    },
+    }, */
 
     topologyEvent (action, args) {
       console.log(action, args)
@@ -121,7 +118,7 @@ export default {
       console.log(action, args)
     },
   },
-  eventbus: {
+  /* eventbus: {
     lifecycleHooks: {
       created (context, eventbus) {
         context.getTopology()
@@ -165,7 +162,7 @@ export default {
         })
       },
     },
-  },
+  }, */
 }
 </script>
 
