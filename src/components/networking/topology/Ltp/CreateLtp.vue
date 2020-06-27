@@ -30,7 +30,7 @@
       <div class="row mt-5">
         <div class="flex xs6 offset--xs6">
           <va-button  small color="danger" @click="cancel"> Cancel </va-button>
-          <va-button  small  @click="postLtp"> Submit </va-button>
+          <va-button  small  @click="submit"> Submit </va-button>
         </div>
       </div>
     </div>
@@ -80,7 +80,7 @@ export default {
       this.error = ''
       this.showModal = true
     },
-    postLtp () {
+    submit () {
       if (this.nLtp.name === '') {
         this.error = 'Ltp name not specified'
         return

@@ -23,7 +23,7 @@
       <div class="row mt-5">
         <div class="flex xs6 offset--xs6">
           <va-button  small color="danger" @click="cancel"> Cancel </va-button>
-          <va-button  small  @click="postNode"> Submit </va-button>
+          <va-button  small  @click="submit"> Submit </va-button>
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@ export default {
       this.error = ''
       this.showModal = true
     },
-    postNode () {
+    submit () {
       if (this.nNode.name === '') {
         this.error = 'Node name not specified'
         return

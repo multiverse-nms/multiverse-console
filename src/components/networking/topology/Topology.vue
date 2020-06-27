@@ -1,49 +1,60 @@
 <template>
   <div>
     <div class="row">
-      <div class="flex xs6">
-        <va-button small color="info" @click="initCreateSubnet"> Create Subnet </va-button>
+      <div class="flex xs12">
+        <va-card :title="title">
+          <div class="row mt-1">
+            <va-button small outline :color="colorSelected(subnet.id)" v-for="(subnet, index) in subnets" :key="index" @click="getSubnetIndex(index)"> {{ subnet.name }} </va-button>
+
+            <va-button class="x" small color="warning" @click="initCreateSubnet"> Create subnet </va-button>
+          </div>
+        </va-card>
       </div>
     </div>
 
     <div class="row">
       <div class="flex xs12">
-        <subnet-content :subnetId="selectedSubnetId" @refresh="refresh" />
+        <subnet-item :subnet="selectedSn" :onEdit="initEditSubnet" :onDelete="deleteSubnet" @refresh="refresh" />
       </div>
     </div>
 
-    <create-subnet @onOk="subnetCreated" @onCancel="showCreateSubnet = false" :show="showCreateSubnet" />
+    <create-subnet @onOk="postSubnet" @onCancel="showCreateSubnet = false" :show="showCreateSubnet" />
   </div>
 </template>
 
 <script>
 // import axios from 'axios'
-import SubnetContent from './Subnet/SubnetContent.vue'
+import SubnetItem from './Subnet/SubnetItem.vue'
 import CreateSubnet from './Subnet/CreateSubnet.vue'
 
 export default {
   name: 'topology',
   // props: [],
   components: {
-    SubnetContent,
+    SubnetItem,
     CreateSubnet,
   },
   data: function () {
     return {
-      title: 'Network topology',
-      selectedSubnetId: 'all',
-
+      title: 'Subnets',
+      subnets: [],
+      selectedSn: {},
       showCreateSubnet: false,
     }
   },
   created () {
     this.getAllSubnets()
+    this.getSubnetIndex(0)
   },
   computed: {
   },
   watch: {
   },
   methods: {
+    getSubnetIndex (index) {
+      this.selectedSn = this.subnets[index]
+    },
+    // CRUD Subnet
     getAllSubnets () {
       /* this.response = {}
       axios.get('https://localhost:8787/api/topology/nodes/all')
@@ -54,17 +65,48 @@ export default {
         .catch(e => {
           console.log(e)
         }) */
+      this.subnets = [
+        {
+          id: 0,
+          name: 'all subnets',
+        },
+        {
+          id: 1,
+          name: 'subnet-nist',
+          status: 'UP',
+        },
+        {
+          id: 2,
+          name: 'subnet-antd',
+          status: 'UP',
+        },
+      ]
     },
     initCreateSubnet () {
       this.showCreateSubnet = true
     },
-    subnetCreated (subnet) {
-      console.log('subnet created')
+    postSubnet (subnet) {
+      console.log('subnet created: ', subnet.name)
       this.showCreateSubnet = false
+    },
+    initEditSubnet (subnet) {
+      console.log('init edit subnet: ', subnet.id)
+    },
+    patchSubnet (subnet) {},
+    deleteSubnet (id) {
+      console.log('delete subnetId: ', id)
     },
 
     refresh (type) {
       console.log('refresh ', type)
+    },
+
+    colorSelected (id) {
+      if (id === this.selectedSn.id) {
+        return 'info'
+      } else {
+        return 'gray'
+      }
     },
 
     /*
