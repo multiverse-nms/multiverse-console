@@ -1,14 +1,14 @@
 <template>
-  <div class="link-details">
+  <div class="trail-details">
     <div class="row">
-      <div class="flex lg4">
+      <div class="flex md4">
 
         <va-item>
           <va-item-section side>
             Name:
           </va-item-section>
           <va-item-section>
-            <va-item-label>{{ link.name }}</va-item-label>
+            <va-item-label>{{ trail.name }}</va-item-label>
           </va-item-section>
         </va-item>
 
@@ -17,7 +17,7 @@
             Label:
           </va-item-section>
           <va-item-section>
-            <va-item-label>{{ link.label }}</va-item-label>
+            <va-item-label>{{ trail.label }}</va-item-label>
           </va-item-section>
         </va-item>
 
@@ -26,16 +26,16 @@
             Description:
           </va-item-section>
           <va-item-section>
-            <va-item-label>{{ link.description }}</va-item-label>
+            <va-item-label>{{ trail.description }}</va-item-label>
           </va-item-section>
         </va-item>
 
         <va-item>
           <va-item-section side>
-            Type:
+            Busy:
           </va-item-section>
           <va-item-section>
-            <va-item-label>{{ link.type }}</va-item-label>
+            <va-item-label>{{ trail.busy }}</va-item-label>
           </va-item-section>
         </va-item>
 
@@ -44,7 +44,7 @@
             Status:
           </va-item-section>
           <va-item-section>
-            <va-item-label>{{ link.status }}</va-item-label>
+            <va-item-label>{{ trail.status }}</va-item-label>
           </va-item-section>
         </va-item>
 
@@ -53,7 +53,7 @@
             Info:
           </va-item-section>
           <va-item-section>
-            <va-item-label>{{ link.info }}</va-item-label>
+            <va-item-label>{{ trail.info }}</va-item-label>
           </va-item-section>
         </va-item>
 
@@ -62,7 +62,7 @@
             Created:
           </va-item-section>
           <va-item-section>
-            <va-item-label>{{ link.created }}</va-item-label>
+            <va-item-label>{{ trail.created }}</va-item-label>
           </va-item-section>
         </va-item>
 
@@ -71,20 +71,20 @@
             Updated:
           </va-item-section>
           <va-item-section>
-            <va-item-label>{{ link.updated }}</va-item-label>
+            <va-item-label>{{ trail.updated }}</va-item-label>
           </va-item-section>
         </va-item>
 
-        <div class="row mt-5">
-          <div class="flex xs12">
-            <va-button small color="danger" @click="onDelete(link.id)"> Delete </va-button>
-            <va-button small color="info" @click="onEdit(link)"> Edit </va-button>
-          </div>
+        <div class="row mt-3">
+          <va-button small color="danger" @click="onDelete(trail.id)"> Delete </va-button>
+          <va-button small color="info" @click="onEdit(trail)"> Edit </va-button>
+
+          <!-- va-button small color="warning" @click="initAddXc()"> Add XC </va-button -->
         </div>
       </div>
 
-      <div class="flex lg8">
-        <link-conn-table :lcs="link.vlinkConns" :onSelected="getLc" />
+      <div class="flex md8">
+        <xc-table :xcs="trail.vxcs" :onSelected="getXc" />
       </div>
     </div>
 
@@ -94,28 +94,32 @@
       title="Details"
       hideDefaultActions
     >
-      <link-conn-item :linkConn="selectedLc" :onDelete="deleteLc" :onEdit="initEditLc" />
+      <xc-item :xc="selectedXc" :onDelete="deleteXc" :onEdit="initEditXc" />
     </va-modal>
 
+    <create-xc @onOk="postXc" @onCancel="showCreateXc = false" :show="showCreateXc" :trailId="trail.id" />
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import LinkConnTable from '../LinkConn/LinkConnTable.vue'
-import LinkConnItem from '../LinkConn/LinkConnItem.vue'
+import XcTable from '../Xc/XcTable.vue'
+import XcItem from '../Xc/XcItem.vue'
+import CreateXc from '../Xc/CreateXc.vue'
 
 export default {
-  name: 'LinkItem',
-  props: ['link', 'onEdit', 'onDelete'],
+  name: 'TrailItem',
+  props: ['trail', 'onDelete', 'onEdit'],
   components: {
-    LinkConnTable,
-    LinkConnItem,
+    XcTable,
+    XcItem,
+    CreateXc,
   },
   data: function () {
     return {
       showItem: false,
-      selectedLc: {},
+      showCreateXc: false,
+      selectedXc: {},
     }
   },
   created () {
@@ -123,29 +127,41 @@ export default {
   watch: {
   },
   methods: {
-    // CRUD LinkConn (get/edit/delete only)
-    getLc (id) {
+    // CRUD XC
+    getXc (id) {
       this.showItem = false
-      console.log('get lcId:', id)
-      const lcApi = 'https://localhost:8787/api/topology/linkConn/' + id.toString()
-      axios.get(lcApi)
+      console.log('get xcId:', id)
+      const xcApi = 'https://localhost:8787/api/topology/xc/' + id.toString()
+      axios.get(xcApi)
         .then(response => {
-          this.selectedLc = response.data
+          this.selectedXc = response.data
           this.showItem = true
         })
         .catch(e => {
           console.log(e)
         })
     },
-    initEditLc (lc) {
-      console.log('init edit lc:', lc.id)
+    initAddXc () {
+      console.log('init add XC on ltpId:', this.trail.id)
+      this.showCreateXc = true
     },
-    patchLc (lc) {},
-    deleteLc (id) {
-      console.log('delete lcId:', id)
-      this.$emit('refresh', 'lc.deleted')
+    postXc (xc) {
+      console.log('XC created: ', xc.name)
+      this.showCreateXc = false
+      this.$emit('refresh', 'trail.xc.add')
     },
 
+    initEditXc (xc) {
+      console.log('init edit XC:', xc.name)
+    },
+    patchXc (xc) {},
+
+    deleteXc (id) {
+      console.log('delete XC:', id)
+      this.$emit('refresh', 'trail.xc.delete')
+    },
+
+    // other
     getStatusColor (status) {
       if (status === 'DOWN') {
         return 'danger'
@@ -153,14 +169,9 @@ export default {
       return 'success'
     },
   },
-
   computed: {},
 }
 </script>
 
 <style lang="scss">
-.link-details {
-  width: 800px;
-  max-width: 800px;
-}
 </style>

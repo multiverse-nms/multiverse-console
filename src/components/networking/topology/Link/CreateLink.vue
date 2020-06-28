@@ -20,6 +20,50 @@
           <va-input placeholder="e.g., ..." v-model="nLink.name"/>
         </div>
       </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Label</label>
+          <va-input placeholder="e.g., ..." v-model="nLink.label"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Description</label>
+          <va-input placeholder="e.g., ..." v-model="nLink.description"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Info</label>
+          <va-medium-editor>
+            <pre class="info">
+              {{ infoStr }}
+            </pre>
+          </va-medium-editor>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Source LTP</label>
+          <va-select
+            v-model="srcVltpName"
+            textBy="source"
+            :options="Array.from(ltpsNameToId.keys())"
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Dest LTP</label>
+          <va-select
+            v-model="destVltpName"
+            textBy="source"
+            :options="Array.from(ltpsNameToId.keys())"
+          />
+        </div>
+      </div>
+
       <div class="row mt-5">
         <div class="flex xs6 offset--xs6">
           <va-button  small color="danger" @click="cancel"> Cancel </va-button>
@@ -31,6 +75,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'CreateLink',
   props: ['show'],
@@ -39,9 +85,19 @@ export default {
     return {
       showModal: false,
       error: '',
+      infoStr: '{}',
       nLink: {
         name: '',
+        label: '',
+        description: '',
+        info: {},
+        srcVltpId: 0,
+        destVltpId: 0,
+        type: 'IN',
       },
+      srcVltpName: '',
+      destVltpName: '',
+      ltpsNameToId: new Map(),
     }
   },
 
@@ -56,24 +112,53 @@ export default {
       },
       deep: true,
     },
-    /* 'nPrefix.node': function (newVal, oldVal) {
-      this.nPrefix.interface = ''
-      this.getInterfaces(newVal)
-    }, */
+    srcVltpName: function (newVal, oldVal) {
+      this.nLink.name = newVal + '=' + this.destVltpName
+    },
+    destVltpName: function (newVal, oldVal) {
+      this.nLink.name = this.srcVltpName + '=' + newVal
+    },
   },
   methods: {
     initCreateLink () {
-      console.log('init create link modal')
+      this.getLtps()
       this.nLink = {
         name: '',
-        status: '',
+        label: '',
+        description: '',
+        info: {},
+        srcVltpId: 0,
+        destVltpId: 0,
+        type: 'IN',
       }
+      this.srcVltpName = ''
+      this.destVltpName = ''
       this.error = ''
       this.showModal = true
     },
+    getLtps () {
+      const ltpsApi = 'https://localhost:8787/api/topology/ltps/all'
+      axios.get(ltpsApi)
+        .then(response => {
+          // this.ltps = response.data
+          this.ltpsNameToId = new Map()
+          response.data.forEach(ltp => {
+            this.ltpsNameToId.set(ltp.name, ltp.id)
+          })
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
     submit () {
+      const info = document.getElementsByClassName('info')[0]
+      this.nLink.info = JSON.parse(info.textContent)
+      this.nLink.srcVltpId = this.ltpsNameToId.get(this.srcVltpName)
+      this.nLink.destVltpId = this.ltpsNameToId.get(this.destVltpName)
+      // check node of ltps: must be different
+      console.log('nLink: ', JSON.stringify(this.nLink))
       if (this.nLink.name === '') {
-        this.error = 'Link name not specified'
+        this.error = 'Name is required'
         return
       }
       this.$emit('onOk', this.nLink)

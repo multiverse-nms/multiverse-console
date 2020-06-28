@@ -7,6 +7,7 @@
     noOutsideDismiss
     noEscDismiss
   >
+
     <div class="modal-create-subnet">
       <div class="row">
         <va-notification color="danger" v-if="error != ''">
@@ -20,6 +21,29 @@
           <va-input placeholder="e.g., ..." v-model="nSubnet.name"/>
         </div>
       </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Label</label>
+          <va-input placeholder="e.g., ..." v-model="nSubnet.label"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Description</label>
+          <va-input placeholder="e.g., ..." v-model="nSubnet.description"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Info</label>
+          <va-medium-editor>
+            <pre class="info">
+              {{ infoStr }}
+            </pre>
+          </va-medium-editor>
+        </div>
+      </div>
+
       <div class="row mt-5">
         <div class="flex xs6 offset--xs6">
           <va-button  small color="danger" @click="cancel"> Cancel </va-button>
@@ -39,8 +63,12 @@ export default {
     return {
       showModal: false,
       error: '',
+      infoStr: '{}',
       nSubnet: {
         name: '',
+        label: '',
+        description: '',
+        info: {},
       },
     }
   },
@@ -66,14 +94,19 @@ export default {
       console.log('init create subnet modal')
       this.nSubnet = {
         name: '',
-        status: '',
+        label: '',
+        description: '',
+        info: {},
       }
       this.error = ''
       this.showModal = true
     },
     submit () {
+      const info = document.getElementsByClassName('info')[0]
+      this.nSubnet.info = JSON.parse(info.textContent)
+      console.log('nSubnet: ', JSON.stringify(this.nSubnet))
       if (this.nSubnet.name === '') {
-        this.error = 'Node name not specified'
+        this.error = 'Name is required'
         return
       }
       this.$emit('onOk', this.nSubnet)

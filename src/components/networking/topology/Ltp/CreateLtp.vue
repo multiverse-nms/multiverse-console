@@ -27,6 +27,29 @@
           <va-input placeholder="e.g., ..." v-model="nLtp.name"/>
         </div>
       </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Label</label>
+          <va-input placeholder="e.g., ..." v-model="nLtp.label"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Description</label>
+          <va-input placeholder="e.g., ..." v-model="nLtp.description"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Info</label>
+          <va-medium-editor>
+            <pre class="info">
+              {{ infoStr }}
+            </pre>
+          </va-medium-editor>
+        </div>
+      </div>
+
       <div class="row mt-5">
         <div class="flex xs6 offset--xs6">
           <va-button  small color="danger" @click="cancel"> Cancel </va-button>
@@ -40,15 +63,20 @@
 <script>
 export default {
   name: 'CreateLtp',
-  props: ['show', 'nodeId'],
+  props: ['show', 'nodeId', 'nodeName'],
 
   data: function () {
     return {
       showModal: false,
       error: '',
+      infoStr: '{}',
       nLtp: {
-        vnodeId: 0,
-        name: '',
+        vnodeId: this.nodeId,
+        name: this.nodeName + ':',
+        label: '',
+        description: '',
+        info: {},
+        busy: false,
       },
     }
   },
@@ -74,15 +102,21 @@ export default {
       console.log('init create ltp modal')
       this.nLtp = {
         vnodeId: this.nodeId,
-        name: '',
-        status: '',
+        name: this.nodeName + ':',
+        label: '',
+        description: '',
+        info: {},
+        busy: false,
       }
       this.error = ''
       this.showModal = true
     },
     submit () {
+      const info = document.getElementsByClassName('info')[0]
+      this.nLtp.info = JSON.parse(info.textContent)
+      console.log('nLtp: ', JSON.stringify(this.nLtp))
       if (this.nLtp.name === '') {
-        this.error = 'Ltp name not specified'
+        this.error = 'Name is required'
         return
       }
       this.$emit('onOk', this.nLtp)

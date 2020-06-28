@@ -16,10 +16,64 @@
 
       <div class="row">
         <div class="flex xs12">
+          <label class="label">SubnetId</label>
+          <va-input placeholder="e.g., ..." v-model="nNode.vsubnetId"/>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="flex xs12">
           <label class="label">Name</label>
           <va-input placeholder="e.g., ..." v-model="nNode.name"/>
         </div>
       </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Label</label>
+          <va-input placeholder="e.g., ..." v-model="nNode.label"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Description</label>
+          <va-input placeholder="e.g., ..." v-model="nNode.description"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Info</label>
+          <va-medium-editor>
+            <pre class="info">
+              {{ infoStr }}
+            </pre>
+          </va-medium-editor>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Type</label>
+          <va-input placeholder="e.g., ..." v-model="nNode.type"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Pos X</label>
+          <va-input placeholder="e.g., ..." v-model="nNode.posx"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Pos Y</label>
+          <va-input placeholder="e.g., ..." v-model="nNode.posy"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Location</label>
+          <va-input placeholder="e.g., ..." v-model="nNode.location"/>
+        </div>
+      </div>
+
       <div class="row mt-5">
         <div class="flex xs6 offset--xs6">
           <va-button  small color="danger" @click="cancel"> Cancel </va-button>
@@ -33,14 +87,23 @@
 <script>
 export default {
   name: 'CreateNode',
-  props: ['show'],
+  props: ['show', 'subnetId'],
 
   data: function () {
     return {
       showModal: false,
       error: '',
+      infoStr: '{}',
       nNode: {
+        vsubnetId: this.subnetId,
         name: '',
+        label: '',
+        description: '',
+        info: {},
+        type: '',
+        posx: 0,
+        posy: 0,
+        location: '',
       },
     }
   },
@@ -63,17 +126,26 @@ export default {
   },
   methods: {
     initCreateNode () {
-      console.log('init create node modal')
       this.nNode = {
+        vsubnetId: this.subnetId,
         name: '',
-        status: '',
+        label: '',
+        description: '',
+        info: {},
+        type: '',
+        posx: 0,
+        posy: 0,
+        location: '',
       }
       this.error = ''
       this.showModal = true
     },
     submit () {
+      const info = document.getElementsByClassName('info')[0]
+      this.nNode.info = JSON.parse(info.textContent)
+      console.log('nNode: ', JSON.stringify(this.nNode))
       if (this.nNode.name === '') {
-        this.error = 'Node name not specified'
+        this.error = 'Name is required'
         return
       }
       this.$emit('onOk', this.nNode)

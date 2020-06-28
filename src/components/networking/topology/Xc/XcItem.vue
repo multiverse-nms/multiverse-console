@@ -2,9 +2,10 @@
   <div class="xc-details">
     <div class="row">
       <div class="flex md8">
+
         <va-item>
           <va-item-section side>
-            <va-icon name="fa fa-google" color="red" />
+            Name:
           </va-item-section>
           <va-item-section>
             <va-item-label>{{ xc.name }}</va-item-label>
@@ -13,7 +14,25 @@
 
         <va-item>
           <va-item-section side>
-            <va-icon name="fa fa-google" color="red" />
+            Label:
+          </va-item-section>
+          <va-item-section>
+            <va-item-label>{{ xc.label }}</va-item-label>
+          </va-item-section>
+        </va-item>
+
+        <va-item>
+          <va-item-section side>
+            Description:
+          </va-item-section>
+          <va-item-section>
+            <va-item-label>{{ xc.description }}</va-item-label>
+          </va-item-section>
+        </va-item>
+
+        <va-item>
+          <va-item-section side>
+            Status:
           </va-item-section>
           <va-item-section>
             <va-item-label>{{ xc.status }}</va-item-label>
@@ -22,7 +41,16 @@
 
         <va-item>
           <va-item-section side>
-            <va-icon name="fa fa-google" color="red" />
+            Info:
+          </va-item-section>
+          <va-item-section>
+            <va-item-label>{{ xc.info }}</va-item-label>
+          </va-item-section>
+        </va-item>
+
+        <va-item>
+          <va-item-section side>
+            Created:
           </va-item-section>
           <va-item-section>
             <va-item-label>{{ xc.created }}</va-item-label>
@@ -31,7 +59,7 @@
 
         <va-item>
           <va-item-section side>
-            <va-icon name="fa fa-google" color="red" />
+            Updated:
           </va-item-section>
           <va-item-section>
             <va-item-label>{{ xc.updated }}</va-item-label>

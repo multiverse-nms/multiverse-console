@@ -3,33 +3,23 @@
     <thead>
       <tr>
         <th>Name</th>
+        <th>Created</th>
+        <th>Info</th>
         <th>Status</th>
-        <th>Actions</th>
-
-        <th>Name</th>
-        <th>Status</th>
-        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(ctp, index) in ctps" :key="index">
+      <tr v-for="(ctp, index) in ctps" :key="index" @click="onSelected(ctp.id)" >
         <td>{{ ctp.name }}</td>
+        <td>{{ ctp.created }}</td>
+        <td>{{ ctp.info }}</td>
         <td>
           <va-badge small :color="getStatusColor(ctp.status)" >{{ ctp.status }}</va-badge>
         </td>
-        <td>
-          <va-badge small :color="getStatusColor(ctp.status)" >{{ ctp.status }}</va-badge>
-        </td>
-        <td>
-          <va-badge small :color="getStatusColor(ctp.status)" >{{ ctp.status }}</va-badge>
-        </td>
-        <td>
-          <va-badge small :color="getStatusColor(ctp.status)" >{{ ctp.status }}</va-badge>
-        </td>
-        <td>
+        <!-- td>
           <va-button small color="danger" @click="onDelete(ctp.id)"> Delete </va-button>
           <va-button small color="info" @click="onEdit(ctp)"> Edit </va-button>
-        </td>
+        </td -->
       </tr>
     </tbody>
   </table>
@@ -38,7 +28,7 @@
 <script>
 export default {
   name: 'CtpTable',
-  props: ['ctps', 'onDelete', 'onEdit'],
+  props: ['ctps', 'onSelected'],
   components: {
   },
   data: function () {

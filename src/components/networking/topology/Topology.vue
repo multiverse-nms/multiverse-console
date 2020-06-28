@@ -4,7 +4,16 @@
       <div class="flex xs12">
         <va-card :title="title">
           <div class="row mt-1">
-            <va-button small outline :color="colorSelected(subnet.id)" v-for="(subnet, index) in subnets" :key="index" @click="getSubnetIndex(index)"> {{ subnet.name }} </va-button>
+            <va-button small outline :color="colorSelected(subnetAll.id)" @click="selectAllSubnets()"> {{ subnetAll.name }} </va-button>
+
+            <va-popover v-for="(subnet, index) in subnets" :key="index"
+              :message="subnet.description"
+              placement="right"
+            >
+              <va-button small outline :color="colorSelected(subnet.id)"  @click="getSubnetIndex(index)">
+                {{ subnet.name }}
+              </va-button>
+            </va-popover>
 
             <va-button class="x" small color="warning" @click="initCreateSubnet"> Create subnet </va-button>
           </div>
@@ -23,7 +32,7 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 import SubnetItem from './Subnet/SubnetItem.vue'
 import CreateSubnet from './Subnet/CreateSubnet.vue'
 
@@ -37,6 +46,10 @@ export default {
   data: function () {
     return {
       title: 'Subnets',
+      subnetAll: {
+        id: 0,
+        name: 'all subnets',
+      },
       subnets: [],
       selectedSn: {},
       showCreateSubnet: false,
@@ -44,49 +57,54 @@ export default {
   },
   created () {
     this.getAllSubnets()
-    this.getSubnetIndex(0)
+    this.selectAllSubnets()
   },
   computed: {
   },
   watch: {
   },
   methods: {
+    selectAllSubnets () {
+      this.selectedSn = this.subnetAll
+    },
     getSubnetIndex (index) {
       this.selectedSn = this.subnets[index]
     },
     // CRUD Subnet
     getAllSubnets () {
-      /* this.response = {}
-      axios.get('https://localhost:8787/api/topology/nodes/all')
+      axios.get('https://localhost:8787/api/topology/subnets/all')
         .then(response => {
-          this.response = response.data
+          this.subnets = response.data
           console.log(response.data)
         })
         .catch(e => {
           console.log(e)
-        }) */
-      this.subnets = [
-        {
-          id: 0,
-          name: 'all subnets',
-        },
-        {
-          id: 1,
-          name: 'subnet-nist',
-          status: 'UP',
-        },
-        {
-          id: 2,
-          name: 'subnet-antd',
-          status: 'UP',
-        },
-      ]
+        })
     },
     initCreateSubnet () {
       this.showCreateSubnet = true
     },
     postSubnet (subnet) {
-      console.log('subnet created: ', subnet.name)
+      axios.post('https://localhost:8787/api/topology/subnet', subnet, {
+        headers: {},
+      })
+        .then(response => {
+          // console.log(response.data)
+          this.showToast('Subnet ' + subnet.name + ' created', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 5000,
+          })
+          this.getAllSubnets()
+        })
+        .catch(e => {
+          console.log(e.response)
+          this.showToast('Subnet creation failed', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+        })
       this.showCreateSubnet = false
     },
     initEditSubnet (subnet) {
@@ -95,6 +113,15 @@ export default {
     patchSubnet (subnet) {},
     deleteSubnet (id) {
       console.log('delete subnetId: ', id)
+      axios.delete('https://localhost:8787/api/topology/subnet/' + id.toString())
+        .then(response => {
+          console.log(response.data)
+          this.getAllSubnets()
+          this.selectAllSubnets()
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
 
     refresh (type) {

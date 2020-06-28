@@ -20,6 +20,50 @@
           <va-input placeholder="e.g., ..." v-model="nTrail.name"/>
         </div>
       </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Label</label>
+          <va-input placeholder="e.g., ..." v-model="nTrail.label"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Description</label>
+          <va-input placeholder="e.g., ..." v-model="nTrail.description"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Info</label>
+          <va-medium-editor>
+            <pre class="info">
+              {{ infoStr }}
+            </pre>
+          </va-medium-editor>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Source CTP</label>
+          <va-select
+            v-model="srcVctpName"
+            textBy="source"
+            :options="Array.from(ctpsNameToId.keys())"
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Dest CTP</label>
+          <va-select
+            v-model="destVctpName"
+            textBy="source"
+            :options="Array.from(ctpsNameToId.keys())"
+          />
+        </div>
+      </div>
+
       <div class="row mt-5">
         <div class="flex xs6 offset--xs6">
           <va-button  small color="danger" @click="cancel"> Cancel </va-button>
@@ -31,6 +75,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'CreateTrail',
   props: ['show'],
@@ -39,9 +85,18 @@ export default {
     return {
       showModal: false,
       error: '',
+      infoStr: '{}',
       nTrail: {
         name: '',
+        label: '',
+        description: '',
+        info: {},
+        srcVctpId: 0,
+        destVctpId: 0,
       },
+      srcVctpName: '',
+      destVctpName: '',
+      ctpsNameToId: new Map(),
     }
   },
 
@@ -56,24 +111,53 @@ export default {
       },
       deep: true,
     },
-    /* 'nPrefix.node': function (newVal, oldVal) {
-      this.nPrefix.interface = ''
-      this.getInterfaces(newVal)
-    }, */
+    srcVctpName: function (newVal, oldVal) {
+      this.nTrail.name = newVal + '#' + this.destVctpName
+    },
+    destVctpName: function (newVal, oldVal) {
+      this.nTrail.name = this.srcVctpName + '#' + newVal
+    },
   },
   methods: {
     initCreateTrail () {
+      this.getCtps()
       console.log('init create trail modal')
       this.nTrail = {
         name: '',
-        status: '',
+        label: '',
+        description: '',
+        info: {},
+        srcVctpId: 0,
+        destVctpId: 0,
       }
+      this.srcVctpName = ''
+      this.destVctpName = ''
       this.error = ''
       this.showModal = true
     },
+    getCtps () {
+      const ctpsApi = 'https://localhost:8787/api/topology/ctps/all'
+      axios.get(ctpsApi)
+        .then(response => {
+          // this.ltps = response.data
+          this.ctpsNameToId = new Map()
+          response.data.forEach(ctp => {
+            this.ctpsNameToId.set(ctp.name, ctp.id)
+          })
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
     submit () {
+      const info = document.getElementsByClassName('info')[0]
+      this.nTrail.info = JSON.parse(info.textContent)
+      this.nTrail.srcVctpId = this.ctpsNameToId.get(this.srcVctpName)
+      this.nTrail.destVctpId = this.ctpsNameToId.get(this.destVctpName)
+      // check nodes of ctps: must be different nodes
+      console.log('nTrail: ', JSON.stringify(this.nTrail))
       if (this.nTrail.name === '') {
-        this.error = 'Trail name not specified'
+        this.error = 'Name is required'
         return
       }
       this.$emit('onOk', this.nTrail)

@@ -20,13 +20,35 @@
           <va-input placeholder="e.g., ..." v-model="nCtp.vltpId"/>
         </div>
       </div>
-
       <div class="row">
         <div class="flex xs12">
           <label class="label">Name</label>
           <va-input placeholder="e.g., ..." v-model="nCtp.name"/>
         </div>
       </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Label</label>
+          <va-input placeholder="e.g., ..." v-model="nCtp.label"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Description</label>
+          <va-input placeholder="e.g., ..." v-model="nCtp.description"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Info</label>
+          <va-medium-editor>
+            <pre class="info">
+              {{ infoStr }}
+            </pre>
+          </va-medium-editor>
+        </div>
+      </div>
+
       <div class="row mt-5">
         <div class="flex xs6 offset--xs6">
           <va-button  small color="danger" @click="cancel"> Cancel </va-button>
@@ -40,15 +62,19 @@
 <script>
 export default {
   name: 'CreateCtp',
-  props: ['show', 'ltpId'],
+  props: ['show', 'ltpId', 'ltpName'],
 
   data: function () {
     return {
       showModal: false,
       error: '',
+      infoStr: '{}',
       nCtp: {
-        vltpId: 0,
-        name: '',
+        vltpId: this.ltpId,
+        name: this.ltpName + ':',
+        label: '',
+        description: '',
+        info: {},
       },
     }
   },
@@ -74,15 +100,20 @@ export default {
       console.log('init create ctp modal')
       this.nCtp = {
         vltpId: this.ltpId,
-        name: '',
-        status: '',
+        name: this.ltpName + ':',
+        label: '',
+        description: '',
+        info: {},
       }
       this.error = ''
       this.showModal = true
     },
     submit () {
+      const info = document.getElementsByClassName('info')[0]
+      this.nCtp.info = JSON.parse(info.textContent)
+      console.log('nCtp: ', JSON.stringify(this.nCtp))
       if (this.nCtp.name === '') {
-        this.error = 'Ctp name not specified'
+        this.error = 'Name is required'
         return
       }
       this.$emit('onOk', this.nCtp)

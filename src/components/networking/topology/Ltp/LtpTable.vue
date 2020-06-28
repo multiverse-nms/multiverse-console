@@ -3,25 +3,18 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th>Status</th>
-        <th>Actions</th>
-
-        <th>Name</th>
+        <th>Created</th>
+        <th>Busy</th>
+        <th>Info</th>
         <th>Status</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="(ltp, index) in ltps" :key="index" @click="onSelected(ltp.id)">
         <td>{{ ltp.name }}</td>
-        <td>
-          <va-badge small :color="getStatusColor(ltp.status)" >{{ ltp.status }}</va-badge>
-        </td>
-        <td>
-          <va-badge small :color="getStatusColor(ltp.status)" >{{ ltp.status }}</va-badge>
-        </td>
-        <td>
-          <va-badge small :color="getStatusColor(ltp.status)" >{{ ltp.status }}</va-badge>
-        </td>
+        <td>{{ ltp.created }}</td>
+        <td>{{ ltp.busy }}</td>
+        <td>{{ ltp.info }}</td>
         <td>
           <va-badge small :color="getStatusColor(ltp.status)" >{{ ltp.status }}</va-badge>
         </td>

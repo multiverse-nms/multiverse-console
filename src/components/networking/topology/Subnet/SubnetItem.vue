@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="row row-equal">
-      <div class="flex lg9">
+      <div class="flex lg8">
         <va-card :title="tTopology">
-          <div class="row mt-1">
+          <div v-if="subnet.id != 0" class="row mt-1">
             <va-button small color="danger" @click="onDelete(subnet.id)"> Delete </va-button>
             <va-button small color="info" @click="onEdit(subnet)"> Edit </va-button>
           </div>
@@ -29,7 +29,7 @@
             </div>
           </div>
 
-          <div class="row">
+          <div v-if="subnet.id != 0" class="row">
             <div class="subnet-options">
               <ul>
                 <li>
@@ -47,10 +47,8 @@
           </div>
         </va-card>
       </div>
-      <!-- /div -->
 
-      <!-- div class="row row-equal" -->
-      <div class="flex lg3">
+      <div class="flex lg4">
         <va-card :title="tTrails">
           <div class="row mt-1">
             <va-button small color="warning" @click="initCreateTrail">
@@ -59,7 +57,7 @@
             </va-button>
           </div>
           <div class="row">
-            <trail-table :trails="trails" :onEdit="initEditTrail" :onDelete="deleteTrail"/>
+            <trail-table :trails="trails" :onSelected="getTrail" />
           </div>
         </va-card>
       </div>
@@ -74,9 +72,10 @@
       <node-item v-if="type === 1" :node="selectedNode" :onEdit="initEditNode" :onDelete="deleteNode" @refresh="refresh" />
       <link-item v-if="type === 2" :link="selectedLink" :onEdit="initEditLink" :onDelete="deleteLink" @refresh="refresh"/>
       <link-conn-item v-if="type === 3" :linkConn="selectedLc" :onEdit="initEditLc" :onDelete="deleteLc" @refresh="refresh" />
+      <trail-item v-if="type === 4" :trail="selectedTrail" :onEdit="initEditTrail" :onDelete="deleteTrail" @refresh="refresh" />
     </va-modal>
 
-    <create-node @onOk="postNode" @onCancel="showCreateNode = false" :show="showCreateNode" />
+    <create-node @onOk="postNode" @onCancel="showCreateNode = false" :show="showCreateNode" :subnetId="subnet.id" />
     <create-link @onOk="postLink" @onCancel="showCreateLink = false" :show="showCreateLink"/>
     <create-link-conn @onOk="postLc" @onCancel="showCreateLc = false" :show="showCreateLc"/>
     <create-trail @onOk="postTrail" @onCancel="showCreateTrail = false" :show="showCreateTrail" />
@@ -85,8 +84,8 @@
 </template>
 
 <script>
-// import axios from 'axios'
-// import icons from '../../../assets/icons/graph-icons.json'
+import axios from 'axios'
+import icons from '../../../../assets/icons/graph-icons.json'
 
 import D3Network from 'vue-d3-network/src/vue-d3-network.vue'
 import LinkItem from '../Link/LinkItem'
@@ -96,6 +95,7 @@ import CreateLinkConn from '../LinkConn/CreateLinkConn.vue'
 import NodeItem from '../Node/NodeItem.vue'
 import CreateNode from '../Node/CreateNode.vue'
 import TrailTable from '../Trail/TrailTable.vue'
+import TrailItem from '../Trail/TrailItem.vue'
 import CreateTrail from '../Trail/CreateTrail.vue'
 
 export default {
@@ -107,6 +107,7 @@ export default {
     LinkConnItem,
     NodeItem,
     TrailTable,
+    TrailItem,
     CreateTrail,
     CreateNode,
     CreateLink,
@@ -115,7 +116,7 @@ export default {
   data: function () {
     return {
       tTopology: 'Topology',
-      tTrail: 'Trails',
+      tTrails: 'Trails',
 
       kind: 'link',
       kindOptions: [
@@ -135,6 +136,7 @@ export default {
       selectedNode: {},
       selectedLink: {},
       selectedLc: {},
+      selectedTrail: {},
 
       showCreateNode: false,
       showCreateLink: false,
@@ -173,42 +175,45 @@ export default {
   },
   methods: {
     getSubnetContent () {
-      /* this.response = {}
-      axios.get('https://localhost:8787/api/topology/nodes/all')
+      let nodesApi = 'https://localhost:8787/api/topology/nodes'
+      let linksApi = 'https://localhost:8787/api/topology/' + this.kind + 's'
+      if (this.subnet.id === 0) {
+        nodesApi = nodesApi + '/all'
+        linksApi = linksApi + '/all'
+      } else {
+        nodesApi = nodesApi + '/subnet/' + this.subnet.id.toString()
+        linksApi = linksApi + '/subnet/' + this.subnet.id.toString()
+      }
+      axios.get(nodesApi)
         .then(response => {
-          this.response = response.data
-          console.log(response.data)
+          // console.log('nodes: ' + response.data)
+          this.nodes = response.data
+          axios.get(linksApi)
+            .then(response => {
+              // console.log('links: ' + response.data)
+              this.links = response.data
+              this.processGraph()
+            })
+            .catch(e => {
+              console.log(e)
+            })
         })
         .catch(e => {
           console.log(e)
-        }) */
+        })
       this.getTrails()
-      this.nodes = [
-        { id: 1, name: 'A', status: 'UP' },
-        { id: 2, name: 'B', status: 'UP' },
-      ]
-      this.links = [
-        { id: 1, name: 'A-B', srcVnodeId: 1, destVnodeId: 2, status: 'UP' },
-      ]
-      this.processGraph()
     },
     processGraph () {
       this.graphNodes = []
       this.graphLinks = []
       this.nodes.forEach(node => {
-        const newNode = { id: node.id, name: node.name }
-        /* if (node.type === 'fwd') {
+        let newNode = { id: node.id, name: node.name }
+        if (node.type === 'fwd') {
           newNode = Object.assign(newNode, { svgSym: icons.routerIcon, svgIcon: null, svgObj: null })
         } else if (node.type === 'switch') {
-          newNode = Object.assign(newNode, { svgSym: icons.switchIcon, svgIcon: null, svgObj: null })
-        } */
-        if (node.status === 'UP') {
-          newNode._color = 'green'
-        } else if (node.status === 'DOWN') {
-          newNode._color = '#ff5349'
-        } else {
-          newNode._color = 'yellow'
+          newNode = Object.assign(newNode, { svgSym: icons.routerIcon, svgIcon: null, svgObj: null })
         }
+        newNode._color = this.getStatusColor(node.status)
         this.graphNodes.push(newNode)
       })
       this.links.forEach(link => {
@@ -217,13 +222,7 @@ export default {
           sid: link.srcVnodeId,
           tid: link.destVnodeId,
         }
-        if (link.status === 'UP') {
-          newLink._color = 'green'
-        } else if (link.status === 'DOWN') {
-          newLink._color = '#ff5349'
-        } else {
-          newLink._color = 'yellow'
-        }
+        newLink._color = this.getStatusColor(link.status)
         this.graphLinks.push(newLink)
       })
     },
@@ -232,57 +231,54 @@ export default {
     getNode (id) {
       this.showItem = false
       console.log('get nodeId:', id)
-      this.selectedNode = {
-        id: 1,
-        name: 'A',
-        status: 'UP',
-        vsubnetId: 12,
-        created: '132355',
-        updated: '132355',
-        ltps: [
-          {
-            id: 1,
-            name: 'A:ltp0',
-            status: 'UP',
-          },
-          {
-            id: 2,
-            name: 'A:ltp0',
-            status: 'UP',
-          },
-          {
-            id: 3,
-            name: 'A:ltp0',
-            status: 'UP',
-          },
-        ],
-        xcs: [
-          {
-            id: 1,
-            name: 'A:xc0',
-            status: 'UP',
-          },
-          {
-            id: 2,
-            name: 'A:xc0',
-            status: 'UP',
-          },
-          {
-            id: 3,
-            name: 'A:xc0',
-            status: 'UP',
-          },
-        ],
-      }
-      this.showItem = true
-      this.type = 1
+
+      const nodeApi = 'https://localhost:8787/api/topology/node/' + id.toString()
+      const xcsApi = 'https://localhost:8787/api/topology/xcs/node/' + id.toString()
+
+      axios.get(nodeApi)
+        .then(response => {
+          // console.log('nodes: ' + response.data)
+          this.selectedNode = response.data
+          axios.get(xcsApi)
+            .then(response => {
+              // console.log('links: ' + response.data)
+              this.selectedNode.vxcs = response.data
+              this.showItem = true
+              this.type = 1
+            })
+            .catch(e => {
+              console.log(e)
+            })
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
     initCreateNode () {
       this.showCreateNode = true
     },
     postNode (node) {
+      axios.post('https://localhost:8787/api/topology/node', node, {
+        headers: {},
+      })
+        .then(response => {
+          console.log(response.data)
+          this.showToast('Node ' + node.name + ' created', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 5000,
+          })
+          this.getSubnetContent()
+        })
+        .catch(e => {
+          console.log(e)
+          this.showToast('Node creation failed', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+        })
       this.showCreateNode = false
-      console.log('node created: ' + node.name)
     },
     initEditNode (node) {
       console.log('init edit node:', node.id)
@@ -296,32 +292,39 @@ export default {
     getLink (id) {
       this.showItem = false
       console.log('get linkId:', id)
-      this.selectedLink = {
-        id: 1,
-        name: 'A-B',
-        vsubnetId: 12,
-        srcVnodeId: 1,
-        destVnodeId: 2,
-        status: 'UP',
-        vlcs: [
-          {
-            id: 1,
-            name: 'A:ltp0:ctp0-B:ltp0:ctp0',
-            status: 'UP',
-          },
-          {
-            id: 2,
-            name: 'A:ltp0:ctp0-B:ltp0:ctp0',
-            status: 'DOWN',
-          },
-        ],
-      }
-      this.showItem = true
-      this.type = 2
+      const linkApi = 'https://localhost:8787/api/topology/link/' + id.toString()
+      axios.get(linkApi)
+        .then(response => {
+          this.selectedLink = response.data
+          this.showItem = true
+          this.type = 2
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
     postLink (link) {
+      axios.post('https://localhost:8787/api/topology/link', link, {
+        headers: {},
+      })
+        .then(response => {
+          console.log(response.data)
+          this.showToast('Link ' + link.name + ' created', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 5000,
+          })
+          this.getSubnetContent()
+        })
+        .catch(e => {
+          console.log(e)
+          this.showToast('Link creation failed', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+        })
       this.showCreateLink = false
-      console.log('link created: ' + link.name)
     },
     initEditLink (link) {
       console.log('init edit link:', link.id)
@@ -335,19 +338,39 @@ export default {
     getLc (id) {
       this.showItem = false
       console.log('get linkConnId:', id)
-      this.selectedLc = {
-        id: 1,
-        name: 'A-B',
-        srcVnodeId: 1,
-        destVnodeId: 2,
-        status: 'UP',
-      }
-      this.showItem = true
-      this.type = 3
+      const lcApi = 'https://localhost:8787/api/topology/linkConn/' + id.toString()
+      axios.get(lcApi)
+        .then(response => {
+          this.selectedLc = response.data
+          this.showItem = true
+          this.type = 3
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
     postLc (lc) {
+      axios.post('https://localhost:8787/api/topology/linkConn', lc, {
+        headers: {},
+      })
+        .then(response => {
+          console.log(response.data)
+          this.showToast('LinkConn ' + lc.name + ' created', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 5000,
+          })
+          this.getSubnetContent()
+        })
+        .catch(e => {
+          console.log(e)
+          this.showToast('LinkConn creation failed', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+        })
       this.showCreateLc = false
-      console.log('linkConn created: ' + lc.name)
     },
     initEditLc (lc) {
       console.log('init edit linkConn:', lc.id)
@@ -378,26 +401,61 @@ export default {
 
     // CRUD Trail
     getTrails () {
-      console.log('get trails for subnetId:', this.subnet.id)
-      this.trails = [
-        {
-          id: 1,
-          name: 'T1',
-          status: 'UP',
-        },
-        {
-          id: 2,
-          name: 'T2',
-          status: 'DOWN',
-        },
-      ]
+      let trailsApi = 'https://localhost:8787/api/topology/trails'
+      if (this.subnet.id === 0) {
+        trailsApi = trailsApi + '/all'
+      } else {
+        trailsApi = trailsApi + '/subnet/' + this.subnet.id.toString()
+      }
+      axios.get(trailsApi)
+        .then(response => {
+          // console.log('trails: ' + response.data)
+          this.trails = response.data
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
+
+    getTrail (id) {
+      this.showItem = false
+      console.log('get trailId:', id)
+      const trailApi = 'https://localhost:8787/api/topology/trail/' + id.toString()
+      axios.get(trailApi)
+        .then(response => {
+          this.selectedTrail = response.data
+          this.showItem = true
+          this.type = 4
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
     initCreateTrail () {
       this.showCreateTrail = true
     },
     postTrail (trail) {
+      axios.post('https://localhost:8787/api/topology/trail', trail, {
+        headers: {},
+      })
+        .then(response => {
+          console.log(response.data)
+          this.showToast('Trail ' + trail.name + ' created', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 5000,
+          })
+          this.getTrails()
+        })
+        .catch(e => {
+          console.log(e)
+          this.showToast('Trail creation failed', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+        })
       this.showCreateTrail = false
-      console.log('trail created: ', trail.name)
     },
     initEditTrail (trail) {
       console.log('init edit trail: ', trail.id)
@@ -409,6 +467,16 @@ export default {
 
     refresh (type) {
       console.log('refresh ', type)
+    },
+
+    getStatusColor (status) {
+      if (status === 'UP') {
+        return 'green'
+      } else if (status === 'DOWN') {
+        return '#ff5349'
+      } else {
+        return 'yellow'
+      }
     },
   },
 }
