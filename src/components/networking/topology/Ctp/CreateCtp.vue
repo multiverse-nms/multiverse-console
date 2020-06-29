@@ -75,6 +75,7 @@ export default {
         label: '',
         description: '',
         info: {},
+        busy: false,
       },
     }
   },
@@ -104,6 +105,7 @@ export default {
         label: '',
         description: '',
         info: {},
+        busy: false,
       }
       this.error = ''
       this.showModal = true

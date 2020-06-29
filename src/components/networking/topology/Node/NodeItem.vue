@@ -2,6 +2,9 @@
   <div class="node-details">
     <div class="row">
       <div class="flex lg4">
+        <div class="text-center">
+          Node Details
+        </div>
 
         <va-item>
           <va-item-section side>
@@ -53,7 +56,7 @@
             Position:
           </va-item-section>
           <va-item-section>
-            <va-item-label>{{ node.posx }},{{ node.posy }}</va-item-label>
+            <va-item-label>[ {{ node.posx }} , {{ node.posy }} ]</va-item-label>
           </va-item-section>
         </va-item>
 
@@ -102,23 +105,28 @@
       </div>
 
       <div class="flex lg8">
-        <va-tabs grow v-model="tabValue">
-          <va-tab>
-            LTPs
-          </va-tab>
-          <va-tab>
-            XCs
-          </va-tab>
-        </va-tabs>
+        <div class="text-center">
+          <va-tabs grow v-model="tabValue">
+            <va-tab>
+              LTPs
+            </va-tab>
+            <va-tab>
+              XCs
+            </va-tab>
+          </va-tabs>
 
-        <div v-if="tabValue == 0" >
-          <ltp-table :ltps="node.vltps" :onSelected="getLtp" />
-          <va-button small color="warning" @click="initAddLtp()"> Add LTP </va-button>
-        </div>
-
-        <div v-if="tabValue == 1" >
-          <xc-table :xcs="node.vxcs" :onSelected="getXc" />
-          <va-button small color="warning" @click="initAddXc()"> Add XC </va-button>
+          <div v-if="tabValue == 0">
+            <ltp-table :ltps="node.vltps" :onSelected="getLtp" />
+            <va-button small color="warning" @click="initAddLtp()">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+              Add LTP </va-button>
+          </div>
+          <div v-if="tabValue == 1">
+            <xc-table :xcs="node.vxcs" :onSelected="getXc" />
+            <va-button small color="warning" @click="initAddXc()">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+              Add XC </va-button>
+          </div>
         </div>
       </div>
     </div>
@@ -126,7 +134,6 @@
     <va-modal
       v-model="showItem"
       size="large"
-      title="Details"
       hideDefaultActions
     >
       <ltp-item v-if="type === 1" :ltp="selectedLtp" :onDelete="deleteLtp" :onEdit="initEditLtp" />
@@ -191,7 +198,7 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
-          this.$emit('refresh', 'node.ltp.add')
+          // this.$emit('refresh', 'node.ltp.add')
           this.getLtpsByNode()
         })
         .catch(e => {
@@ -224,7 +231,16 @@ export default {
     patchLtp (ltp) {},
     deleteLtp (id) {
       console.log('delete LTP:', id)
-      this.$emit('refresh', 'ltp.delete')
+      axios.delete('https://localhost:8787/api/topology/ltp/' + id.toString())
+        .then(response => {
+          console.log(response.data)
+          this.$emit('refresh', 'ltp.delete')
+          this.showItem = false
+          this.getLtpsByNode()
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
 
     // CRUD XC
@@ -243,7 +259,7 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
-          this.$emit('refresh', 'node.xc.add')
+          // this.$emit('refresh', 'node.xc.add')
           this.getXcsByNode()
         })
         .catch(e => {
@@ -276,7 +292,16 @@ export default {
     patchXc (xc) {},
     deleteXc (id) {
       console.log('delete XC:', id)
-      this.$emit('refresh', 'xc.delete')
+      axios.delete('https://localhost:8787/api/topology/xc/' + id.toString())
+        .then(response => {
+          console.log(response.data)
+          // this.$emit('refresh', 'xc.delete')
+          this.showItem = false
+          this.getLtpsByNode()
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
 
     // other
@@ -301,8 +326,30 @@ export default {
         })
     },
 
+    /* createCtpOnLtp(ltpId, ctpName) {
+      const ctp = {
+        vltpId: ltpId,
+        name: ctpName,
+        label: 'auto_ctp',
+        description: 'automatically generated CTP',
+        info: {},
+        busy: false,
+      }
+      axios.post('https://localhost:8787/api/topology/ctp', ctp)
+        .then(response => {
+          console.log(response.data)
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    }, */
+
     refresh (type) {
       console.log('node refresh ', type)
+      if (type === 'ltp.ctp.delete') {
+        // notify subnet:
+        this.$emit('refresh', type)
+      }
     },
     getStatusColor (status) {
       if (status === 'DOWN') {

@@ -185,10 +185,6 @@ export default {
           this.ctpsNameToId = new Map()
           response.data.forEach(ctp => {
             this.ctpsNameToId.set(ctp.name, ctp.id)
-            /* const nodeName = ctp.name.split(':')[0]
-            if (nodeName === this.nodeName) {
-              this.ctpsNameToId.set(ctp.name, ctp.id)
-            } */
           })
         })
         .catch(e => {

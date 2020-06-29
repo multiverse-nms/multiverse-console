@@ -2,7 +2,9 @@
   <div class="trail-details">
     <div class="row">
       <div class="flex md4">
-
+        <div class="text-center">
+          Trail Details
+        </div>
         <va-item>
           <va-item-section side>
             Name:
@@ -83,15 +85,22 @@
         </div>
       </div>
 
-      <div class="flex md8">
-        <xc-table :xcs="trail.vxcs" :onSelected="getXc" />
+      <div class="flex lg8">
+        <div class="text-center">
+          <span>
+            Cross Connections
+          </span>
+          <div>
+            <xc-table :xcs="trail.vxcs" :onSelected="getXc" />
+          </div>
+        </div>
       </div>
+
     </div>
 
     <va-modal
       v-model="showItem"
       size="large"
-      title="Details"
       hideDefaultActions
     >
       <xc-item :xc="selectedXc" :onDelete="deleteXc" :onEdit="initEditXc" />
@@ -148,7 +157,7 @@ export default {
     postXc (xc) {
       console.log('XC created: ', xc.name)
       this.showCreateXc = false
-      this.$emit('refresh', 'trail.xc.add')
+      // this.$emit('refresh', 'trail.xc.add')
     },
 
     initEditXc (xc) {
@@ -158,7 +167,27 @@ export default {
 
     deleteXc (id) {
       console.log('delete XC:', id)
-      this.$emit('refresh', 'trail.xc.delete')
+      axios.delete('https://localhost:8787/api/topology/xc/' + id.toString())
+        .then(response => {
+          console.log(response.data)
+          // this.$emit('refresh', 'trail.xc.delete')
+          this.showItem = false
+          this.getXcsByTrail()
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
+
+    getXcsByTrail () {
+      const xcsApi = 'https://localhost:8787/api/topology/xcs/trail/' + this.trail.id.toString()
+      axios.get(xcsApi)
+        .then(response => {
+          this.trail.vxcs = response.data
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
 
     // other

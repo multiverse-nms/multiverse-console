@@ -142,7 +142,9 @@ export default {
           // this.ltps = response.data
           this.ctpsNameToId = new Map()
           response.data.forEach(ctp => {
-            this.ctpsNameToId.set(ctp.name, ctp.id)
+            if (!ctp.busy) {
+              this.ctpsNameToId.set(ctp.name, ctp.id)
+            }
           })
         })
         .catch(e => {
@@ -150,16 +152,22 @@ export default {
         })
     },
     submit () {
-      const info = document.getElementsByClassName('info')[0]
-      this.nLc.info = JSON.parse(info.textContent)
-      this.nLc.srcVctpId = this.ctpsNameToId.get(this.srcVctpName)
-      this.nLc.destVctpId = this.ctpsNameToId.get(this.destVctpName)
-      // check nodes of ctps: must be different
-      console.log('nLc: ', JSON.stringify(this.nLc))
+      const srcNode = this.srcVctpName.split(':')[0]
+      const destNode = this.destVctpName.split(':')[0]
+      if (srcNode === destNode) {
+        this.error = 'Source and destination nodes must be different'
+        return
+      }
       if (this.nLc.name === '') {
         this.error = 'Name is required'
         return
       }
+      const info = document.getElementsByClassName('info')[0]
+      this.nLc.info = JSON.parse(info.textContent)
+      this.nLc.srcVctpId = this.ctpsNameToId.get(this.srcVctpName)
+      this.nLc.destVctpId = this.ctpsNameToId.get(this.destVctpName)
+
+      console.log('nLc: ', JSON.stringify(this.nLc))
       this.$emit('onOk', this.nLc)
       this.showModal = false
     },

@@ -1,7 +1,10 @@
 <template>
   <div class="ltp-details">
     <div class="row">
-      <div class="flex md4">
+      <div class="flex lg4">
+        <div class="text-center">
+          LTP Details
+        </div>
 
         <va-item>
           <va-item-section side>
@@ -78,20 +81,29 @@
         <div class="row mt-3">
           <va-button small color="danger" @click="onDelete(ltp.id)"> Delete </va-button>
           <va-button small color="info" @click="onEdit(ltp)"> Edit </va-button>
-
-          <va-button small color="warning" @click="initAddCtp()"> Add CTP </va-button>
         </div>
       </div>
 
-      <div class="flex md8">
-        <ctp-table :ctps="ltp.vctps" :onSelected="getCtp" />
+      <div class="flex lg8">
+        <div class="text-center">
+          <span>
+            CTPs
+          </span>
+          <div>
+            <ctp-table :ctps="ltp.vctps" :onSelected="getCtp" />
+            <va-button small color="warning" @click="initAddCtp()">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+              Add CTP
+            </va-button>
+          </div>
+        </div>
       </div>
+
     </div>
 
     <va-modal
       v-model="showItem"
       size="large"
-      title="Details"
       hideDefaultActions
     >
       <ctp-item :ctp="selectedCtp" :onDelete="deleteCtp" :onEdit="initEditCtp" />
@@ -157,7 +169,7 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
-          this.$emit('refresh', 'ltp.ctp.add')
+          // this.$emit('refresh', 'ltp.ctp.add')
           this.getCtpsByLtp()
         })
         .catch(e => {
@@ -178,7 +190,16 @@ export default {
 
     deleteCtp (id) {
       console.log('delete CTP:', id)
-      this.$emit('refresh', 'ltp.ctp.delete')
+      axios.delete('https://localhost:8787/api/topology/ctp/' + id.toString())
+        .then(response => {
+          console.log(response.data)
+          this.$emit('refresh', 'ltp.ctp.delete')
+          this.showItem = false
+          this.getCtpsByLtp()
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
 
     getCtpsByLtp () {

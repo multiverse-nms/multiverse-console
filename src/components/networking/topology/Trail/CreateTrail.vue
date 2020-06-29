@@ -150,16 +150,22 @@ export default {
         })
     },
     submit () {
-      const info = document.getElementsByClassName('info')[0]
-      this.nTrail.info = JSON.parse(info.textContent)
-      this.nTrail.srcVctpId = this.ctpsNameToId.get(this.srcVctpName)
-      this.nTrail.destVctpId = this.ctpsNameToId.get(this.destVctpName)
-      // check nodes of ctps: must be different nodes
-      console.log('nTrail: ', JSON.stringify(this.nTrail))
+      const srcNode = this.srcVctpName.split(':')[0]
+      const destNode = this.destVctpName.split(':')[0]
+      if (srcNode === destNode) {
+        this.error = 'Source and destination nodes must be different'
+        return
+      }
       if (this.nTrail.name === '') {
         this.error = 'Name is required'
         return
       }
+      const info = document.getElementsByClassName('info')[0]
+      this.nTrail.info = JSON.parse(info.textContent)
+      this.nTrail.srcVctpId = this.ctpsNameToId.get(this.srcVctpName)
+      this.nTrail.destVctpId = this.ctpsNameToId.get(this.destVctpName)
+
+      console.log('nTrail: ', JSON.stringify(this.nTrail))
       this.$emit('onOk', this.nTrail)
       this.showModal = false
     },

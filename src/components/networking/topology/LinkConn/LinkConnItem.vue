@@ -2,7 +2,9 @@
   <div class="lc-details">
     <div class="row">
       <div class="flex lg12">
-
+        <div class="text-center">
+          LinkConn Details
+        </div>
         <va-item>
           <va-item-section side>
             Name:

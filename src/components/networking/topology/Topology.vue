@@ -15,7 +15,10 @@
               </va-button>
             </va-popover>
 
-            <va-button class="x" small color="warning" @click="initCreateSubnet"> Create subnet </va-button>
+            <va-button class="x" small color="warning" @click="initCreateSubnet">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+              Create subnet
+            </va-button>
           </div>
         </va-card>
       </div>
@@ -162,17 +165,4 @@ export default {
 
 </script>
 <style lang="stylus">
-.title.is-7 {
-  font-size: 1.5rem;
-  text-align: center;
-}
-
-.title {
-  font-size: 0.625rem;
-  letter-spacing: 0.6px;
-  line-height: 1.6;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
 </style>

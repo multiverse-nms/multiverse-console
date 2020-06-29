@@ -143,7 +143,9 @@ export default {
           // this.ltps = response.data
           this.ltpsNameToId = new Map()
           response.data.forEach(ltp => {
-            this.ltpsNameToId.set(ltp.name, ltp.id)
+            if (!ltp.busy) {
+              this.ltpsNameToId.set(ltp.name, ltp.id)
+            }
           })
         })
         .catch(e => {
@@ -151,16 +153,22 @@ export default {
         })
     },
     submit () {
-      const info = document.getElementsByClassName('info')[0]
-      this.nLink.info = JSON.parse(info.textContent)
-      this.nLink.srcVltpId = this.ltpsNameToId.get(this.srcVltpName)
-      this.nLink.destVltpId = this.ltpsNameToId.get(this.destVltpName)
-      // check node of ltps: must be different
-      console.log('nLink: ', JSON.stringify(this.nLink))
+      const srcNode = this.srcVltpName.split(':')[0]
+      const destNode = this.destVltpName.split(':')[0]
+      if (srcNode === destNode) {
+        this.error = 'Source and destination nodes must be different'
+        return
+      }
       if (this.nLink.name === '') {
         this.error = 'Name is required'
         return
       }
+      const info = document.getElementsByClassName('info')[0]
+      this.nLink.info = JSON.parse(info.textContent)
+      this.nLink.srcVltpId = this.ltpsNameToId.get(this.srcVltpName)
+      this.nLink.destVltpId = this.ltpsNameToId.get(this.destVltpName)
+
+      console.log('nLink: ', JSON.stringify(this.nLink))
       this.$emit('onOk', this.nLink)
       this.showModal = false
     },

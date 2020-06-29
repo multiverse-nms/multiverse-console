@@ -2,7 +2,9 @@
   <div class="ctp-details">
     <div class="row">
       <div class="flex lg12">
-
+        <div class="text-center">
+          CTP Details
+        </div>
         <va-item>
           <va-item-section side>
             Name:
@@ -27,6 +29,15 @@
           </va-item-section>
           <va-item-section>
             <va-item-label>{{ ctp.description }}</va-item-label>
+          </va-item-section>
+        </va-item>
+
+        <va-item>
+          <va-item-section side>
+            Busy:
+          </va-item-section>
+          <va-item-section>
+            <va-item-label>{{ ctp.busy }}</va-item-label>
           </va-item-section>
         </va-item>
 

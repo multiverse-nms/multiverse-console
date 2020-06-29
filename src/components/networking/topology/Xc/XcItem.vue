@@ -2,7 +2,9 @@
   <div class="xc-details">
     <div class="row">
       <div class="flex md8">
-
+        <div class="text-center">
+          XC Details
+        </div>
         <va-item>
           <va-item-section side>
             Name:

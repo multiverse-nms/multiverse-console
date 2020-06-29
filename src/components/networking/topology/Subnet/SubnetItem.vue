@@ -3,10 +3,6 @@
     <div class="row row-equal">
       <div class="flex lg8">
         <va-card :title="tTopology">
-          <div v-if="subnet.id != 0" class="row mt-1">
-            <va-button small color="danger" @click="onDelete(subnet.id)"> Delete </va-button>
-            <va-button small color="info" @click="onEdit(subnet)"> Edit </va-button>
-          </div>
           <div class="row mt-1">
             <va-button-toggle
               small
@@ -30,19 +26,20 @@
           </div>
 
           <div v-if="subnet.id != 0" class="row">
-            <div class="subnet-options">
-              <ul>
-                <li>
-                  <va-button color="warning" small @click="initCreateNode" >
-                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                    Create node
-                  </va-button>
-                  <va-button color="warning" small @click="initCreateLink" >
-                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                    Create {{ kind }}
-                  </va-button>
-                </li>
-              </ul>
+            <div class="md4">
+              <va-button small color="danger" @click="onDelete(subnet.id)"> Delete </va-button>
+              <va-button small color="info" @click="onEdit(subnet)"> Edit </va-button>
+            </div>
+
+            <div v-if="subnet.id != 0" class="md4 offset--md4">
+              <va-button color="warning" small @click="initCreateNode" >
+                <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                Create node
+              </va-button>
+              <va-button color="warning" small @click="initCreateLink" >
+                <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                Create {{ kind }}
+              </va-button>
             </div>
           </div>
         </va-card>
@@ -66,7 +63,6 @@
     <va-modal
       v-model="showItem"
       size="large"
-      title="Details"
       hideDefaultActions
     >
       <node-item v-if="type === 1" :node="selectedNode" :onEdit="initEditNode" :onDelete="deleteNode" @refresh="refresh" />
@@ -150,14 +146,14 @@ export default {
   computed: {
     options () {
       return {
-        force: 6000,
-        size: { w: 1000, h: 500 },
-        nodeSize: 60,
+        force: 4000,
+        size: { w: 800, h: 400 },
+        nodeSize: 40,
         nodeLabels: true,
-        linkLabels: false,
+        linkLabels: true,
         canvas: false,
         linkWidth: 3,
-        fontSize: 18,
+        fontSize: 16,
       }
     },
   },
@@ -286,6 +282,15 @@ export default {
     patchNode (node) {},
     deleteNode (id) {
       console.log('delete nodeId:', id)
+      axios.delete('https://localhost:8787/api/topology/node/' + id.toString())
+        .then(response => {
+          console.log(response.data)
+          this.getSubnetContent()
+          this.showItem = false
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
 
     // CRUD Link
@@ -314,6 +319,8 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
+          this.setLtpToBusy(link.srcVltpId)
+          this.setLtpToBusy(link.destVltpId)
           this.getSubnetContent()
         })
         .catch(e => {
@@ -332,6 +339,15 @@ export default {
     patchLink (link) {},
     deleteLink (id) {
       console.log('delete linkId:', id)
+      axios.delete('https://localhost:8787/api/topology/link/' + id.toString())
+        .then(response => {
+          console.log(response.data)
+          this.getSubnetContent()
+          this.showItem = false
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
 
     // CRUD LinkConn
@@ -360,6 +376,8 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
+          this.setCtpToBusy(lc.srcVctpId)
+          this.setCtpToBusy(lc.destVctpId)
           this.getSubnetContent()
         })
         .catch(e => {
@@ -377,6 +395,15 @@ export default {
     },
     deleteLc (id) {
       console.log('delete linkConnId:', id)
+      axios.delete('https://localhost:8787/api/topology/linkConn/' + id.toString())
+        .then(response => {
+          console.log(response.data)
+          this.getSubnetContent()
+          this.showItem = false
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
     // for both link and lc
     initCreateLink () {
@@ -463,10 +490,70 @@ export default {
     patchTrail (trail) {},
     deleteTrail (id) {
       console.log('delete trailId: ', id)
+      axios.delete('https://localhost:8787/api/topology/trail/' + id.toString())
+        .then(response => {
+          console.log(response.data)
+          this.getTrails()
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
+
+    setLtpToBusy (ltpId) {
+      const ltp = {
+        id: ltpId,
+        busy: true,
+      }
+      axios.patch('https://localhost:8787/api/topology/ltp', ltp, {
+        headers: {},
+      })
+        .then(response => {
+          console.log(response.data)
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
+
+    setCtpToBusy (ctpId) {
+      const ctp = {
+        id: ctpId,
+        busy: true,
+      }
+      axios.patch('https://localhost:8787/api/topology/ctp', ctp, {
+        headers: {},
+      })
+        .then(response => {
+          console.log(response.data)
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
+
+    /* createLtpOnNode(nodeId, ltpName) {
+      const ltp = {
+        vnodeId: nodeId,
+        name: ltpName,
+        label: 'auto_ltp',
+        description: 'automatically generated LTP',
+        info: {},
+        busy: false,
+      }
+      axios.post('https://localhost:8787/api/topology/ltp', ltp)
+        .then(response => {
+          console.log(response.data)
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    }, */
 
     refresh (type) {
       console.log('refresh ', type)
+      this.getSubnetContent()
+      this.getTrails()
     },
 
     getStatusColor (status) {

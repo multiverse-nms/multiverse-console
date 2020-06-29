@@ -2,7 +2,9 @@
   <div class="link-details">
     <div class="row">
       <div class="flex lg4">
-
+        <div class="text-center">
+          Link Details
+        </div>
         <va-item>
           <va-item-section side>
             Name:
@@ -84,14 +86,21 @@
       </div>
 
       <div class="flex lg8">
-        <link-conn-table :lcs="link.vlinkConns" :onSelected="getLc" />
+        <div class="text-center">
+          <span>
+            Link Connections
+          </span>
+          <div>
+            <link-conn-table :lcs="link.vlinkConns" :onSelected="getLc" />
+          </div>
+        </div>
       </div>
+
     </div>
 
     <va-modal
       v-model="showItem"
       size="large"
-      title="Details"
       hideDefaultActions
     >
       <link-conn-item :linkConn="selectedLc" :onDelete="deleteLc" :onEdit="initEditLc" />
@@ -143,7 +152,28 @@ export default {
     patchLc (lc) {},
     deleteLc (id) {
       console.log('delete lcId:', id)
-      this.$emit('refresh', 'lc.deleted')
+      axios.delete('https://localhost:8787/api/topology/xc/' + id.toString())
+        .then(response => {
+          console.log(response.data)
+          // notify subnet:
+          this.$emit('refresh', 'lc.deleted')
+          this.showItem = false
+          this.getLcsByLink()
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
+
+    getLcsByLink () {
+      const lcsApi = 'https://localhost:8787/api/topology/linkConns/link/' + this.link.id.toString()
+      axios.get(lcsApi)
+        .then(response => {
+          this.link.vlinkConns = response.data
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
 
     getStatusColor (status) {
