@@ -17,29 +17,19 @@
       <div class="row">
         <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input placeholder="e.g., ..." v-model="nLc.name"/>
+          <va-input v-model="nLc.name"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Label</label>
-          <va-input placeholder="e.g., ..." v-model="nLc.label"/>
+          <va-input v-model="nLc.label"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Description</label>
-          <va-input placeholder="e.g., ..." v-model="nLc.description"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Info</label>
-          <va-medium-editor>
-            <pre class="info">
-              {{ infoStr }}
-            </pre>
-          </va-medium-editor>
+          <va-input v-model="nLc.description"/>
         </div>
       </div>
 
@@ -55,12 +45,20 @@
       </div>
       <div class="row">
         <div class="flex xs12">
-          <label class="label">Dest CTP</label>
+          <label class="label">Destination CTP</label>
           <va-select
             v-model="destVctpName"
             textBy="source"
             :options="Array.from(ctpsNameToId.keys())"
           />
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Info (JSON)</label>
+          <va-medium-editor>
+            <pre class="info">{{ infoStr.trim() }}</pre>
+          </va-medium-editor>
         </div>
       </div>
 
@@ -136,7 +134,7 @@ export default {
       this.showModal = true
     },
     getCtps () {
-      const ctpsApi = 'https://localhost:8787/api/topology/ctps/all'
+      const ctpsApi = 'https://localhost:8787/api/topology/ctps'
       axios.get(ctpsApi)
         .then(response => {
           // this.ltps = response.data

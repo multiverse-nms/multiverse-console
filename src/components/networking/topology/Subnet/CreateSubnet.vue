@@ -35,11 +35,9 @@
       </div>
       <div class="row">
         <div class="flex xs12">
-          <label class="label">Info</label>
+          <label class="label">Info (JSON)</label>
           <va-medium-editor>
-            <pre class="info">
-              {{ infoStr }}
-            </pre>
+            <pre class="info">{{ infoStr.trim() }}</pre>
           </va-medium-editor>
         </div>
       </div>

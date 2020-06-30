@@ -1,97 +1,105 @@
 <template>
-  <div class="ltp-details">
+  <div class="ltp-details mt-3">
     <div class="row">
-      <div class="flex lg4">
+      <div class="lg4">
         <div class="text-center">
-          LTP Details
+          <p class="display-5">LTP Details</p>
+        </div>
+        <div class="mt-3">
+          <va-item>
+            <va-item-section side>
+              <b>Name:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ ltp.name }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Label:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ ltp.label }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Description:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ ltp.description }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>In Node:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ ltp.vnodeId }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Busy:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ ltp.busy }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Status:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ ltp.status }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Info:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ ltp.info }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Created:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ ltp.created }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Updated:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ ltp.updated }}</va-item-label>
+            </va-item-section>
+          </va-item>
         </div>
 
-        <va-item>
-          <va-item-section side>
-            Name:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ ltp.name }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Label:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ ltp.label }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Description:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ ltp.description }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Busy:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ ltp.busy }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Status:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ ltp.status }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Info:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ ltp.info }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Created:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ ltp.created }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Updated:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ ltp.updated }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <div class="row mt-3">
+        <div class="text-center mt-3">
           <va-button small color="danger" @click="onDelete(ltp.id)"> Delete </va-button>
           <va-button small color="info" @click="onEdit(ltp)"> Edit </va-button>
         </div>
       </div>
 
-      <div class="flex lg8">
+      <div class="lg8">
         <div class="text-center">
-          <span>
-            CTPs
-          </span>
-          <div>
+          <p class="display-5">CTPs</p>
+          <div class="mt-3">
             <ctp-table :ctps="ltp.vctps" :onSelected="getCtp" />
-            <va-button small color="warning" @click="initAddCtp()">
+            <va-button small class="mt-3" color="warning" @click="initAddCtp()">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
               Add CTP
             </va-button>
@@ -159,6 +167,7 @@ export default {
       this.showCreateCtp = true
     },
     postCtp (ctp) {
+      // check if name already exists...
       axios.post('https://localhost:8787/api/topology/ctp', ctp, {
         headers: {},
       })
@@ -203,7 +212,7 @@ export default {
     },
 
     getCtpsByLtp () {
-      const ctpsApi = 'https://localhost:8787/api/topology/ctps/ltp/' + this.ltp.id.toString()
+      const ctpsApi = 'https://localhost:8787/api/topology/ltp/' + this.ltp.id.toString() + '/ctps'
       axios.get(ctpsApi)
         .then(response => {
           this.ltp.vctps = response.data

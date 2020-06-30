@@ -17,7 +17,7 @@
       <div class="row">
         <div class="flex xs12">
           <label class="label">NodeId</label>
-          <va-input placeholder="e.g., ..." v-model="nXc.vnodeId"/>
+          <va-input disabled v-model="nXc.vnodeId"/>
         </div>
       </div>
       <div class="row">
@@ -34,35 +34,25 @@
       <div class="row">
         <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input placeholder="e.g., ..." v-model="nXc.name"/>
+          <va-input v-model="nXc.name"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Label</label>
-          <va-input placeholder="e.g., ..." v-model="nXc.label"/>
+          <va-input v-model="nXc.label"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Description</label>
-          <va-input placeholder="e.g., ..." v-model="nXc.description"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Info</label>
-          <va-medium-editor>
-            <pre class="info">
-              {{ infoStr }}
-            </pre>
-          </va-medium-editor>
+          <va-input v-model="nXc.description"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Type</label>
-          <va-input placeholder="e.g., ..." v-model="nXc.type"/>
+          <va-input v-model="nXc.type"/>
         </div>
       </div>
 
@@ -78,7 +68,7 @@
       </div>
       <div class="row">
         <div class="flex xs12">
-          <label class="label">Dest CTP</label>
+          <label class="label">Destination CTP</label>
           <va-select
             v-model="destVctpName"
             textBy="source"
@@ -96,11 +86,19 @@
           />
         </div>
       </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Info (JSON)</label>
+          <va-medium-editor>
+            <pre class="info">{{ infoStr.trim() }}</pre>
+          </va-medium-editor>
+        </div>
+      </div>
 
       <div class="row mt-5">
         <div class="flex xs6 offset--xs6">
-          <va-button  small color="danger" @click="cancel"> Cancel </va-button>
-          <va-button  small  @click="submit"> Submit </va-button>
+          <va-button small color="danger" @click="cancel"> Cancel </va-button>
+          <va-button small @click="submit"> Submit </va-button>
         </div>
       </div>
     </div>
@@ -179,7 +177,7 @@ export default {
       this.showModal = true
     },
     getCtpsByNode () {
-      const ctpsApi = 'https://localhost:8787/api/topology/ctps/node/' + this.nodeId
+      const ctpsApi = 'https://localhost:8787/api/topology/node/' + this.nodeId.toString() + '/ctps'
       axios.get(ctpsApi)
         .then(response => {
           this.ctpsNameToId = new Map()
@@ -192,7 +190,7 @@ export default {
         })
     },
     getTrails () {
-      const trailsApi = 'https://localhost:8787/api/topology/trails/all'
+      const trailsApi = 'https://localhost:8787/api/topology/trails'
       axios.get(trailsApi)
         .then(response => {
           this.trailsNameToId = new Map()

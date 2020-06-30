@@ -17,32 +17,21 @@
       <div class="row">
         <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input placeholder="e.g., ..." v-model="nLink.name"/>
+          <va-input v-model="nLink.name"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Label</label>
-          <va-input placeholder="e.g., ..." v-model="nLink.label"/>
+          <va-input v-model="nLink.label"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Description</label>
-          <va-input placeholder="e.g., ..." v-model="nLink.description"/>
+          <va-input v-model="nLink.description"/>
         </div>
       </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Info</label>
-          <va-medium-editor>
-            <pre class="info">
-              {{ infoStr }}
-            </pre>
-          </va-medium-editor>
-        </div>
-      </div>
-
       <div class="row">
         <div class="flex xs12">
           <label class="label">Source LTP</label>
@@ -55,12 +44,20 @@
       </div>
       <div class="row">
         <div class="flex xs12">
-          <label class="label">Dest LTP</label>
+          <label class="label">Destination LTP</label>
           <va-select
             v-model="destVltpName"
             textBy="source"
             :options="Array.from(ltpsNameToId.keys())"
           />
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Info (JSON)</label>
+          <va-medium-editor>
+            <pre class="info">{{ infoStr.trim() }}</pre>
+          </va-medium-editor>
         </div>
       </div>
 
@@ -137,7 +134,7 @@ export default {
       this.showModal = true
     },
     getLtps () {
-      const ltpsApi = 'https://localhost:8787/api/topology/ltps/all'
+      const ltpsApi = 'https://localhost:8787/api/topology/ltps'
       axios.get(ltpsApi)
         .then(response => {
           // this.ltps = response.data

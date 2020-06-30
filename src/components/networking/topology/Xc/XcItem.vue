@@ -1,74 +1,112 @@
 <template>
-  <div class="xc-details">
+  <div class="xc-details mt-3">
     <div class="row">
-      <div class="flex md8">
+      <div class="flex lg12">
         <div class="text-center">
-          XC Details
+          <p class="display-5">Cross Connection Details</p>
         </div>
-        <va-item>
-          <va-item-section side>
-            Name:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ xc.name }}</va-item-label>
-          </va-item-section>
-        </va-item>
+        <div class="mt-3">
+          <va-item>
+            <va-item-section side>
+              <b>Name:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ xc.name }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Label:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ xc.label }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Label:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ xc.label }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Description:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ xc.description }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Description:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ xc.description }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Status:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ xc.status }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>In Node:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ xc.vnodeId }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Info:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ xc.info }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Source CTP:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ xc.srcVctpId }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Created:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ xc.created }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Destination CTP:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ xc.destVctpId }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Updated:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ xc.updated }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Drop CTP:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ xc.dropVctpId }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <div class="row mt-3">
+          <va-item>
+            <va-item-section side>
+              <b>Status:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ xc.status }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Info:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ xc.info }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Created:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ xc.created }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Updated:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ xc.updated }}</va-item-label>
+            </va-item-section>
+          </va-item>
+        </div>
+
+        <div class="text-center mt-3">
           <va-button small color="danger" @click="onDelete(xc.id)"> Delete </va-button>
           <va-button small color="info" @click="onEdit(xc)"> Edit </va-button>
         </div>

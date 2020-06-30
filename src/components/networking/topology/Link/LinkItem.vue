@@ -1,96 +1,103 @@
 <template>
-  <div class="link-details">
+  <div class="link-details mt-3">
     <div class="row">
-      <div class="flex lg4">
+      <div class="lg4">
         <div class="text-center">
-          Link Details
+          <p class="display-5">Link Details</p>
         </div>
-        <va-item>
-          <va-item-section side>
-            Name:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ link.name }}</va-item-label>
-          </va-item-section>
-        </va-item>
+        <div class="mt-3">
+          <va-item>
+            <va-item-section side>
+              <b>Name:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ link.name }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Label:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ link.label }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Label:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ link.label }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Description:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ link.description }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Description:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ link.description }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Type:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ link.type }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Source LTP:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ link.srcVltpId }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Status:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ link.status }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Destination LTP:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ link.destVltpId }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Info:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ link.info }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Status:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ link.status }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Created:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ link.created }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Info:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ link.info }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Updated:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ link.updated }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Created:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ link.created }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <div class="row mt-5">
-          <div class="flex xs12">
-            <va-button small color="danger" @click="onDelete(link.id)"> Delete </va-button>
-            <va-button small color="info" @click="onEdit(link)"> Edit </va-button>
-          </div>
+          <va-item>
+            <va-item-section side>
+              <b>Updated:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ link.updated }}</va-item-label>
+            </va-item-section>
+          </va-item>
+        </div>
+
+        <div class="text-center mt-3">
+          <va-button small color="danger" @click="onDelete(link.id)"> Delete </va-button>
+          <va-button small color="info" @click="onEdit(link)"> Edit </va-button>
         </div>
       </div>
 
-      <div class="flex lg8">
+      <div class="lg8">
         <div class="text-center">
-          <span>
-            Link Connections
-          </span>
-          <div>
+          <p class="display-5">Link Connections</p>
+          <div class="mt-3">
             <link-conn-table :lcs="link.vlinkConns" :onSelected="getLc" />
           </div>
         </div>
@@ -152,7 +159,7 @@ export default {
     patchLc (lc) {},
     deleteLc (id) {
       console.log('delete lcId:', id)
-      axios.delete('https://localhost:8787/api/topology/xc/' + id.toString())
+      axios.delete('https://localhost:8787/api/topology/linkConn/' + id.toString())
         .then(response => {
           console.log(response.data)
           // notify subnet:
@@ -166,7 +173,7 @@ export default {
     },
 
     getLcsByLink () {
-      const lcsApi = 'https://localhost:8787/api/topology/linkConns/link/' + this.link.id.toString()
+      const lcsApi = 'https://localhost:8787/api/topology/link/' + this.link.id.toString() + '/linkConns'
       axios.get(lcsApi)
         .then(response => {
           this.link.vlinkConns = response.data

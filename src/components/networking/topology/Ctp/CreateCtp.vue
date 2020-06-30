@@ -17,34 +17,32 @@
       <div class="row">
         <div class="flex xs12">
           <label class="label">LtpId</label>
-          <va-input placeholder="e.g., ..." v-model="nCtp.vltpId"/>
+          <va-input disabled v-model="nCtp.vltpId"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input placeholder="e.g., ..." v-model="nCtp.name"/>
+          <va-input v-model="nCtp.name"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Label</label>
-          <va-input placeholder="e.g., ..." v-model="nCtp.label"/>
+          <va-input v-model="nCtp.label"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Description</label>
-          <va-input placeholder="e.g., ..." v-model="nCtp.description"/>
+          <va-input v-model="nCtp.description"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
-          <label class="label">Info</label>
+          <label class="label">Info (JSON)</label>
           <va-medium-editor>
-            <pre class="info">
-              {{ infoStr }}
-            </pre>
+            <pre class="info">{{ infoStr.trim() }}</pre>
           </va-medium-editor>
         </div>
       </div>

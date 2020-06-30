@@ -3,23 +3,23 @@
     <div class="row">
       <div class="flex xs12">
         <va-card :title="title">
-          <div class="row mt-1">
-            <va-button small outline :color="colorSelected(subnetAll.id)" @click="selectAllSubnets()"> {{ subnetAll.name }} </va-button>
 
-            <va-popover v-for="(subnet, index) in subnets" :key="index"
-              :message="subnet.description"
-              placement="right"
-            >
-              <va-button small outline :color="colorSelected(subnet.id)"  @click="getSubnetIndex(index)">
-                {{ subnet.name }}
-              </va-button>
-            </va-popover>
+          <va-button v-if="subnets.length > 0" small outline :color="colorSelected(subnetAll.id)" @click="selectAllSubnets()"> {{ subnetAll.name }} </va-button>
+          <va-chip v-if="subnets.length == 0" color="gray">No Subnets to show</va-chip>
 
-            <va-button class="x" small color="warning" @click="initCreateSubnet">
-              <i class="fa fa-plus-circle" aria-hidden="true"></i>
-              Create subnet
+          <va-popover v-for="(subnet, index) in subnets" :key="index"
+            :message="subnet.description"
+            placement="right"
+          >
+            <va-button small outline :color="colorSelected(subnet.id)"  @click="getSubnetIndex(index)">
+              {{ subnet.name }}
             </va-button>
-          </div>
+          </va-popover>
+
+          <va-button class="x" small color="warning" @click="initCreateSubnet">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            Create subnet
+          </va-button>
         </va-card>
       </div>
     </div>
@@ -75,7 +75,7 @@ export default {
     },
     // CRUD Subnet
     getAllSubnets () {
-      axios.get('https://localhost:8787/api/topology/subnets/all')
+      axios.get('https://localhost:8787/api/topology/subnets')
         .then(response => {
           this.subnets = response.data
           console.log(response.data)
@@ -88,6 +88,7 @@ export default {
       this.showCreateSubnet = true
     },
     postSubnet (subnet) {
+      // check if name already exists...
       axios.post('https://localhost:8787/api/topology/subnet', subnet, {
         headers: {},
       })

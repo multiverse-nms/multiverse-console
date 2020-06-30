@@ -47,14 +47,12 @@
 
       <div class="flex lg4">
         <va-card :title="tTrails">
-          <div class="row mt-1">
+          <trail-table :trails="trails" :onSelected="getTrail" />
+          <div v-if="subnet.id != 0" class="text-center mt-5">
             <va-button small color="warning" @click="initCreateTrail">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
               Create trail
             </va-button>
-          </div>
-          <div class="row">
-            <trail-table :trails="trails" :onSelected="getTrail" />
           </div>
         </va-card>
       </div>
@@ -81,7 +79,7 @@
 
 <script>
 import axios from 'axios'
-import icons from '../../../../assets/icons/graph-icons.json'
+// import icons from '../../../../assets/icons/graph-icons.json'
 
 import D3Network from 'vue-d3-network/src/vue-d3-network.vue'
 import LinkItem from '../Link/LinkItem'
@@ -171,14 +169,14 @@ export default {
   },
   methods: {
     getSubnetContent () {
-      let nodesApi = 'https://localhost:8787/api/topology/nodes'
-      let linksApi = 'https://localhost:8787/api/topology/' + this.kind + 's'
+      let nodesApi = 'https://localhost:8787/api/topology/'
+      let linksApi = 'https://localhost:8787/api/topology/'
       if (this.subnet.id === 0) {
-        nodesApi = nodesApi + '/all'
-        linksApi = linksApi + '/all'
+        nodesApi = nodesApi + 'nodes'
+        linksApi = linksApi + this.kind + 's'
       } else {
-        nodesApi = nodesApi + '/subnet/' + this.subnet.id.toString()
-        linksApi = linksApi + '/subnet/' + this.subnet.id.toString()
+        nodesApi = nodesApi + 'subnet/' + this.subnet.id.toString() + '/nodes'
+        linksApi = linksApi + 'subnet/' + this.subnet.id.toString() + '/' + this.kind + 's'
       }
       axios.get(nodesApi)
         .then(response => {
@@ -203,12 +201,12 @@ export default {
       this.graphNodes = []
       this.graphLinks = []
       this.nodes.forEach(node => {
-        let newNode = { id: node.id, name: node.name }
-        if (node.type === 'fwd') {
+        const newNode = { id: node.id, name: node.name }
+        /* if (node.type === 'fwd') {
           newNode = Object.assign(newNode, { svgSym: icons.routerIcon, svgIcon: null, svgObj: null })
         } else if (node.type === 'switch') {
           newNode = Object.assign(newNode, { svgSym: icons.routerIcon, svgIcon: null, svgObj: null })
-        }
+        } */
         newNode._color = this.getStatusColor(node.status)
         this.graphNodes.push(newNode)
       })
@@ -229,7 +227,7 @@ export default {
       console.log('get nodeId:', id)
 
       const nodeApi = 'https://localhost:8787/api/topology/node/' + id.toString()
-      const xcsApi = 'https://localhost:8787/api/topology/xcs/node/' + id.toString()
+      const xcsApi = 'https://localhost:8787/api/topology/node/' + id.toString() + '/xcs'
 
       axios.get(nodeApi)
         .then(response => {
@@ -254,6 +252,7 @@ export default {
       this.showCreateNode = true
     },
     postNode (node) {
+      // check if name already exists...
       axios.post('https://localhost:8787/api/topology/node', node, {
         headers: {},
       })
@@ -309,6 +308,7 @@ export default {
         })
     },
     postLink (link) {
+      // check if name already exists...
       axios.post('https://localhost:8787/api/topology/link', link, {
         headers: {},
       })
@@ -366,6 +366,7 @@ export default {
         })
     },
     postLc (lc) {
+      // check if name already exists...
       axios.post('https://localhost:8787/api/topology/linkConn', lc, {
         headers: {},
       })
@@ -428,11 +429,11 @@ export default {
 
     // CRUD Trail
     getTrails () {
-      let trailsApi = 'https://localhost:8787/api/topology/trails'
+      let trailsApi = 'https://localhost:8787/api/topology'
       if (this.subnet.id === 0) {
-        trailsApi = trailsApi + '/all'
+        trailsApi = trailsApi + '/trails'
       } else {
-        trailsApi = trailsApi + '/subnet/' + this.subnet.id.toString()
+        trailsApi = trailsApi + '/subnet/' + this.subnet.id.toString() + '/trails'
       }
       axios.get(trailsApi)
         .then(response => {
@@ -462,6 +463,7 @@ export default {
       this.showCreateTrail = true
     },
     postTrail (trail) {
+      // check if name already exists...
       axios.post('https://localhost:8787/api/topology/trail', trail, {
         headers: {},
       })
@@ -502,10 +504,9 @@ export default {
 
     setLtpToBusy (ltpId) {
       const ltp = {
-        id: ltpId,
         busy: true,
       }
-      axios.patch('https://localhost:8787/api/topology/ltp', ltp, {
+      axios.patch('https://localhost:8787/api/topology/ltp/' + ltpId.toString(), ltp, {
         headers: {},
       })
         .then(response => {
@@ -518,10 +519,9 @@ export default {
 
     setCtpToBusy (ctpId) {
       const ctp = {
-        id: ctpId,
         busy: true,
       }
-      axios.patch('https://localhost:8787/api/topology/ctp', ctp, {
+      axios.patch('https://localhost:8787/api/topology/ctp/' + ctpId.toString(), ctp, {
         headers: {},
       })
         .then(response => {
@@ -531,24 +531,6 @@ export default {
           console.log(e)
         })
     },
-
-    /* createLtpOnNode(nodeId, ltpName) {
-      const ltp = {
-        vnodeId: nodeId,
-        name: ltpName,
-        label: 'auto_ltp',
-        description: 'automatically generated LTP',
-        info: {},
-        busy: false,
-      }
-      axios.post('https://localhost:8787/api/topology/ltp', ltp)
-        .then(response => {
-          console.log(response.data)
-        })
-        .catch(e => {
-          console.log(e)
-        })
-    }, */
 
     refresh (type) {
       console.log('refresh ', type)

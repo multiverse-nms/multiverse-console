@@ -1,106 +1,114 @@
 <template>
-  <div class="node-details">
+  <div class="node-details mt-3">
     <div class="row">
-      <div class="flex lg4">
+      <div class="lg4">
         <div class="text-center">
-          Node Details
+          <p class="display-5">Node Details</p>
+        </div>
+        <div class="mt-3">
+          <va-item>
+            <va-item-section side>
+              <b>Name:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ node.name }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Label:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ node.label }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Description:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ node.description }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>In Subnet:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ node.vsubnetId }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Type:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ node.type }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Location:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ node.location }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Position:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>[ {{ node.posx }} , {{ node.posy }} ]</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Status:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ node.status }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Info:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ node.info }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Created:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ node.created }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>Updated:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ node.updated }}</va-item-label>
+            </va-item-section>
+          </va-item>
         </div>
 
-        <va-item>
-          <va-item-section side>
-            Name:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ node.name }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Label:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ node.label }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Description:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ node.description }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Type:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ node.type }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Location:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ node.location }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Position:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>[ {{ node.posx }} , {{ node.posy }} ]</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Status:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ node.status }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Info:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ node.info }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Created:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ node.created }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <va-item>
-          <va-item-section side>
-            Updated:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ node.updated }}</va-item-label>
-          </va-item-section>
-        </va-item>
-
-        <div class="row mt-5">
-          <div class="flex xs12">
-            <va-button small color="danger" @click="onDelete(node.id)"> Delete </va-button>
-            <va-button small color="info" @click="onEdit(node)"> Edit </va-button>
-          </div>
+        <div class="text-center mt-3">
+          <va-button small color="danger" @click="onDelete(node.id)"> Delete </va-button>
+          <va-button small color="info" @click="onEdit(node)"> Edit </va-button>
         </div>
       </div>
 
@@ -108,20 +116,20 @@
         <div class="text-center">
           <va-tabs grow v-model="tabValue">
             <va-tab>
-              LTPs
+              <p class="display-5">LTPs</p>
             </va-tab>
             <va-tab>
-              XCs
+              <p class="display-5">XCs</p>
             </va-tab>
           </va-tabs>
 
-          <div v-if="tabValue == 0">
+          <div class="mt-3" v-if="tabValue == 0">
             <ltp-table :ltps="node.vltps" :onSelected="getLtp" />
             <va-button small color="warning" @click="initAddLtp()">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
               Add LTP </va-button>
           </div>
-          <div v-if="tabValue == 1">
+          <div class="mt-3" v-if="tabValue == 1">
             <xc-table :xcs="node.vxcs" :onSelected="getXc" />
             <va-button small color="warning" @click="initAddXc()">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
@@ -188,6 +196,7 @@ export default {
       this.showCreateLtp = true
     },
     postLtp (ltp) {
+      // check if name already exists...
       axios.post('https://localhost:8787/api/topology/ltp', ltp, {
         headers: {},
       })
@@ -245,10 +254,29 @@ export default {
 
     // CRUD XC
     initAddXc () {
-      console.log('init add XC for nodeId:', this.node.id)
-      this.showCreateXc = true
+      axios.get('https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/ctps')
+        .then(response => {
+          if (response.data.length < 3) {
+            this.showToast('Not enough CTPs ', {
+              icon: 'fa-close',
+              position: 'top-right',
+              duration: 5000,
+            })
+          } else {
+            console.log('init add XC for nodeId:', this.node.id)
+            this.showCreateXc = true
+          }
+        })
+        .catch(e => {
+          this.showToast('Error', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+        })
     },
     postXc (xc) {
+      // check if name already exists...
       axios.post('https://localhost:8787/api/topology/xc', xc, {
         headers: {},
       })
@@ -306,7 +334,7 @@ export default {
 
     // other
     getLtpsByNode () {
-      const ltpsApi = 'https://localhost:8787/api/topology/ltps/node/' + this.node.id.toString()
+      const ltpsApi = 'https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/ltps'
       axios.get(ltpsApi)
         .then(response => {
           this.node.vltps = response.data
@@ -316,7 +344,7 @@ export default {
         })
     },
     getXcsByNode () {
-      const xcsApi = 'https://localhost:8787/api/topology/xcs/node/' + this.node.id.toString()
+      const xcsApi = 'https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/xcs'
       axios.get(xcsApi)
         .then(response => {
           this.node.vxcs = response.data
@@ -325,24 +353,6 @@ export default {
           console.log(e)
         })
     },
-
-    /* createCtpOnLtp(ltpId, ctpName) {
-      const ctp = {
-        vltpId: ltpId,
-        name: ctpName,
-        label: 'auto_ctp',
-        description: 'automatically generated CTP',
-        info: {},
-        busy: false,
-      }
-      axios.post('https://localhost:8787/api/topology/ctp', ctp)
-        .then(response => {
-          console.log(response.data)
-        })
-        .catch(e => {
-          console.log(e)
-        })
-    }, */
 
     refresh (type) {
       console.log('node refresh ', type)

@@ -1,96 +1,103 @@
 <template>
-  <div class="trail-details">
+  <div class="trail-details mt-3">
     <div class="row">
-      <div class="flex md4">
+      <div class="lg4">
         <div class="text-center">
-          Trail Details
+          <p class="display-5">Trail Details</p>
         </div>
-        <va-item>
-          <va-item-section side>
-            Name:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ trail.name }}</va-item-label>
-          </va-item-section>
-        </va-item>
+        <div class="mt-3">
+          <va-item>
+            <va-item-section side>
+              <b>Name:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ trail.name }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Label:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ trail.label }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Label:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ trail.label }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Description:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ trail.description }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Description:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ trail.description }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Busy:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ trail.busy }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Source CTP:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ trail.srcVctpId }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Status:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ trail.status }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Destination CTP:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ trail.destVctpId }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Info:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ trail.info }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Status:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ trail.status }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Created:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ trail.created }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Info:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ trail.info }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <va-item>
-          <va-item-section side>
-            Updated:
-          </va-item-section>
-          <va-item-section>
-            <va-item-label>{{ trail.updated }}</va-item-label>
-          </va-item-section>
-        </va-item>
+          <va-item>
+            <va-item-section side>
+              <b>Created:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ trail.created }}</va-item-label>
+            </va-item-section>
+          </va-item>
 
-        <div class="row mt-3">
+          <va-item>
+            <va-item-section side>
+              <b>Updated:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ trail.updated }}</va-item-label>
+            </va-item-section>
+          </va-item>
+        </div>
+
+        <div class="text-center mt-3">
           <va-button small color="danger" @click="onDelete(trail.id)"> Delete </va-button>
           <va-button small color="info" @click="onEdit(trail)"> Edit </va-button>
-
-          <!-- va-button small color="warning" @click="initAddXc()"> Add XC </va-button -->
         </div>
       </div>
 
-      <div class="flex lg8">
+      <div class="lg8">
         <div class="text-center">
-          <span>
-            Cross Connections
-          </span>
-          <div>
+          <p class="display-5">Cross Connections</p>
+          <div class="mt-3">
             <xc-table :xcs="trail.vxcs" :onSelected="getXc" />
           </div>
         </div>
@@ -180,7 +187,7 @@ export default {
     },
 
     getXcsByTrail () {
-      const xcsApi = 'https://localhost:8787/api/topology/xcs/trail/' + this.trail.id.toString()
+      const xcsApi = 'https://localhost:8787/api/topology/trail/' + this.trail.id.toString() + '/xcs'
       axios.get(xcsApi)
         .then(response => {
           this.trail.vxcs = response.data

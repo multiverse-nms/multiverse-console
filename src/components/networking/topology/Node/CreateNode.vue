@@ -17,60 +17,56 @@
       <div class="row">
         <div class="flex xs12">
           <label class="label">SubnetId</label>
-          <va-input placeholder="e.g., ..." v-model="nNode.vsubnetId"/>
+          <va-input disabled v-model="nNode.vsubnetId"/>
         </div>
       </div>
 
       <div class="row">
         <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input placeholder="e.g., ..." v-model="nNode.name"/>
+          <va-input v-model="nNode.name"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Label</label>
-          <va-input placeholder="e.g., ..." v-model="nNode.label"/>
+          <va-input v-model="nNode.label"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Description</label>
-          <va-input placeholder="e.g., ..." v-model="nNode.description"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Info</label>
-          <va-medium-editor>
-            <pre class="info">
-              {{ infoStr }}
-            </pre>
-          </va-medium-editor>
+          <va-input v-model="nNode.description"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Type</label>
-          <va-input placeholder="e.g., ..." v-model="nNode.type"/>
+          <va-input v-model="nNode.type"/>
         </div>
       </div>
       <div class="row">
-        <div class="flex xs12">
+        <div class="flex xs5">
           <label class="label">Pos X</label>
-          <va-input placeholder="e.g., ..." v-model="nNode.posx"/>
+          <va-input v-model="nNode.posx"/>
         </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
+        <div class="flex xs5 offset--xs2">
           <label class="label">Pos Y</label>
-          <va-input placeholder="e.g., ..." v-model="nNode.posy"/>
+          <va-input v-model="nNode.posy"/>
         </div>
       </div>
       <div class="row">
         <div class="flex xs12">
           <label class="label">Location</label>
-          <va-input placeholder="e.g., ..." v-model="nNode.location"/>
+          <va-input v-model="nNode.location"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Info (JSON)</label>
+          <va-medium-editor>
+            <pre class="info">{{ infoStr.trim() }}</pre>
+          </va-medium-editor>
         </div>
       </div>
 

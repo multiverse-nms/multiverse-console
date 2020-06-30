@@ -7,7 +7,7 @@
         />
       </div>
     </div>
-    <div class="row">
+    <!-- div class="row">
       <div class="flex xs12 lg6">
         <Prefix
           @action="prefixEvent"
@@ -24,21 +24,21 @@
           :routes="routes"
         />
       </div>
-    </div>
+    </div -->
   </div>
 </template>
 
 <script>
 import Topology from './topology/Topology.vue'
-import Prefix from './routing/Prefix.vue'
-import Route from './routing/Route.vue'
+// import Prefix from './routing/Prefix.vue'
+// import Route from './routing/Route.vue'
 
 export default {
   name: 'networking',
   components: {
     Topology,
-    Prefix,
-    Route,
+    // Prefix,
+    // Route,
   },
   data: function () {
     return {
