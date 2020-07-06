@@ -17,7 +17,7 @@
       <div class="row">
         <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input v-model="nTrail.name"/>
+          <va-input disabled v-model="nTrail.name"/>
         </div>
       </div>
       <div class="row">
@@ -104,6 +104,8 @@ export default {
       handler: function () {
         if (this.show === true) {
           this.initCreateTrail()
+        } else {
+          this.showModal = false
         }
       },
       deep: true,
@@ -147,8 +149,8 @@ export default {
         })
     },
     submit () {
-      const srcNode = this.srcVctpName.split(':')[0]
-      const destNode = this.destVctpName.split(':')[0]
+      const srcNode = this.srcVctpName.split(':')[1]
+      const destNode = this.destVctpName.split(':')[1]
       if (srcNode === destNode) {
         this.error = 'Source and destination nodes must be different'
         return
@@ -164,7 +166,7 @@ export default {
 
       console.log('nTrail: ', JSON.stringify(this.nTrail))
       this.$emit('onOk', this.nTrail)
-      this.showModal = false
+      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

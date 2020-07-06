@@ -16,15 +16,8 @@
 
       <div class="row">
         <div class="flex xs12">
-          <label class="label">SubnetId</label>
-          <va-input disabled v-model="nNode.vsubnetId"/>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input v-model="nNode.name"/>
+          <va-input disabled v-model="nNode.name"/>
         </div>
       </div>
       <div class="row">
@@ -83,7 +76,7 @@
 <script>
 export default {
   name: 'CreateNode',
-  props: ['show', 'subnetId'],
+  props: ['show', 'subnetId', 'name'],
 
   data: function () {
     return {
@@ -111,6 +104,8 @@ export default {
       handler: function () {
         if (this.show === true) {
           this.initCreateNode()
+        } else {
+          this.showModal = false
         }
       },
       deep: true,
@@ -124,7 +119,7 @@ export default {
     initCreateNode () {
       this.nNode = {
         vsubnetId: this.subnetId,
-        name: '',
+        name: this.name,
         label: '',
         description: '',
         info: {},
@@ -145,7 +140,7 @@ export default {
         return
       }
       this.$emit('onOk', this.nNode)
-      this.showModal = false
+      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

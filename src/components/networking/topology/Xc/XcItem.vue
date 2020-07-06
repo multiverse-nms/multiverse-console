@@ -74,7 +74,7 @@
               <b>Status:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ xc.status }}</va-item-label>
+              <va-item-label> <va-badge small :color="getStatusColor(xc.status)" > {{ xc.status }} </va-badge> </va-item-label>
             </va-item-section>
           </va-item>
 

@@ -16,12 +16,6 @@
 
       <div class="row">
         <div class="flex xs12">
-          <label class="label">NodeId</label>
-          <va-input disabled v-model="nXc.vnodeId"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
           <label class="label">Trail</label>
           <va-select
             v-model="trailName"
@@ -34,7 +28,7 @@
       <div class="row">
         <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input v-model="nXc.name"/>
+          <va-input disabled v-model="nXc.name"/>
         </div>
       </div>
       <div class="row">
@@ -110,7 +104,7 @@ import axios from 'axios'
 
 export default {
   name: 'CreateXc',
-  props: ['show', 'nodeId', 'nodeName'],
+  props: ['show', 'nodeId', 'name'],
 
   data: function () {
     return {
@@ -120,7 +114,7 @@ export default {
       nXc: {
         vnodeId: this.nodeId,
         vtrailId: 0,
-        name: this.nodeName + '#',
+        name: '',
         label: '',
         description: '',
         info: {},
@@ -145,6 +139,8 @@ export default {
       handler: function () {
         if (this.show === true) {
           this.initModal()
+        } else {
+          this.showModal = false
         }
       },
       deep: true,
@@ -164,7 +160,7 @@ export default {
       this.nXc = {
         vnodeId: this.nodeId,
         vtrailId: 0,
-        name: this.nodeName + 'x',
+        name: this.name,
         label: '',
         description: '',
         info: {},
@@ -207,15 +203,20 @@ export default {
       this.nXc.info = JSON.parse(info.textContent)
       this.nXc.srcVctpId = this.ctpsNameToId.get(this.srcVctpName)
       this.nXc.destVctpId = this.ctpsNameToId.get(this.destVctpName)
-      this.nXc.dropVctpId = this.ctpsNameToId.get(this.dropVctpName)
       this.nXc.vtrailId = this.trailsNameToId.get(this.trailName)
+
+      // optional
+      if (this.dropVctpName !== '') {
+        this.nXc.dropVctpId = this.ctpsNameToId.get(this.dropVctpName)
+      }
+
       console.log('nXc: ', JSON.stringify(this.nXc))
       if (this.nXc.name === '') {
         this.error = 'Name is required'
         return
       }
       this.$emit('onOk', this.nXc)
-      this.showModal = false
+      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

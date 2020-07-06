@@ -47,7 +47,7 @@
               <b>Busy:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ ltp.busy }}</va-item-label>
+              <va-item-label> <va-badge small :color="getBusyColor(ltp.busy)" > {{ ltp.busy }} </va-badge> </va-item-label>
             </va-item-section>
           </va-item>
 
@@ -56,7 +56,7 @@
               <b>Status:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ ltp.status }}</va-item-label>
+              <va-item-label> <va-badge small :color="getStatusColor(ltp.status)" > {{ ltp.status }} </va-badge> </va-item-label>
             </va-item-section>
           </va-item>
 
@@ -117,7 +117,7 @@
       <ctp-item :ctp="selectedCtp" :onDelete="deleteCtp" :onEdit="initEditCtp" />
     </va-modal>
 
-    <create-ctp @onOk="postCtp" @onCancel="showCreateCtp = false" :show="showCreateCtp" :ltpId="ltp.id" :ltpName="ltp.name" />
+    <create-ctp @onOk="postCtp" @onCancel="showCreateCtp = false" :show="showCreateCtp" :ltpId="ltp.id" :name="nextCtpName" />
   </div>
 </template>
 
@@ -140,6 +140,7 @@ export default {
       showItem: false,
       showCreateCtp: false,
       selectedCtp: {},
+      nextCtpName: '',
     }
   },
   created () {
@@ -163,11 +164,23 @@ export default {
     },
 
     initAddCtp () {
-      console.log('init add CTP on ltpId:', this.ltp.id)
+      // console.log('init add CTP on ltpId:', this.ltp.id)
+      this.getNextCtpName()
       this.showCreateCtp = true
     },
     postCtp (ctp) {
       // check if name already exists...
+      for (var i = 0, len = this.ltp.vctps.length; i < len; i++) {
+        if (this.ltp.vctps[i].name === ctp.name) {
+          this.showToast('Name ' + ctp.name + ' already exists', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+          return
+        }
+      }
+
       axios.post('https://localhost:8787/api/topology/ctp', ctp, {
         headers: {},
       })
@@ -228,6 +241,21 @@ export default {
         return 'danger'
       }
       return 'success'
+    },
+    getBusyColor (busy) {
+      if (busy === true) {
+        return 'info'
+      }
+      return 'gray'
+    },
+
+    getNextCtpName () {
+      if (this.ltp.vctps.length > 0) {
+        const maxCtpNo = this.ltp.vctps[this.ltp.vctps.length - 1].name.split(':')[3].substring(1)
+        this.nextCtpName = this.ltp.name + ':c' + (parseInt(maxCtpNo, 10) + 1)
+      } else {
+        this.nextCtpName = this.ltp.name + ':c0'
+      }
     },
   },
   computed: {},

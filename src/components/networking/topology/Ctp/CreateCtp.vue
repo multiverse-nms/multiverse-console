@@ -16,14 +16,8 @@
 
       <div class="row">
         <div class="flex xs12">
-          <label class="label">LtpId</label>
-          <va-input disabled v-model="nCtp.vltpId"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input v-model="nCtp.name"/>
+          <va-input disabled v-model="nCtp.name"/>
         </div>
       </div>
       <div class="row">
@@ -60,7 +54,7 @@
 <script>
 export default {
   name: 'CreateCtp',
-  props: ['show', 'ltpId', 'ltpName'],
+  props: ['show', 'ltpId', 'name'],
 
   data: function () {
     return {
@@ -85,6 +79,8 @@ export default {
       handler: function () {
         if (this.show === true) {
           this.initModal()
+        } else {
+          this.showModal = false
         }
       },
       deep: true,
@@ -99,7 +95,7 @@ export default {
       console.log('init create ctp modal')
       this.nCtp = {
         vltpId: this.ltpId,
-        name: this.ltpName + ':',
+        name: this.name,
         label: '',
         description: '',
         info: {},
@@ -117,7 +113,7 @@ export default {
         return
       }
       this.$emit('onOk', this.nCtp)
-      this.showModal = false
+      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

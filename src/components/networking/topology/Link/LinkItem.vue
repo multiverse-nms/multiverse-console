@@ -35,6 +35,15 @@
 
           <va-item>
             <va-item-section side>
+              <b>Type:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ link.type }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
               <b>Source LTP:</b>
             </va-item-section>
             <va-item-section>
@@ -56,7 +65,7 @@
               <b>Status:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ link.status }}</va-item-label>
+              <va-item-label> <va-badge small :color="getStatusColor(link.status)" > {{ link.status }} </va-badge> </va-item-label>
             </va-item-section>
           </va-item>
 
@@ -89,7 +98,7 @@
         </div>
 
         <div class="text-center mt-3">
-          <va-button small color="danger" @click="onDelete(link.id)"> Delete </va-button>
+          <va-button small color="danger" @click="onDelete(link)"> Delete </va-button>
           <va-button small color="info" @click="onEdit(link)"> Edit </va-button>
         </div>
       </div>
@@ -99,12 +108,15 @@
           <p class="display-5">Link Connections</p>
           <div class="mt-3">
             <link-conn-table :lcs="link.vlinkConns" :onSelected="getLc" />
+            <va-button small color="warning" @click="initAddLc()">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+              Add LinkConn </va-button>
           </div>
         </div>
       </div>
 
     </div>
-
+    <create-link-conn @onOk="postLc" @onCancel="showAddLc = false" :show="showAddLc" :linkId="link.id"/>
     <va-modal
       v-model="showItem"
       size="large"
@@ -120,6 +132,7 @@
 import axios from 'axios'
 import LinkConnTable from '../LinkConn/LinkConnTable.vue'
 import LinkConnItem from '../LinkConn/LinkConnItem.vue'
+import CreateLinkConn from '../LinkConn/CreateLinkConn.vue'
 
 export default {
   name: 'LinkItem',
@@ -127,11 +140,13 @@ export default {
   components: {
     LinkConnTable,
     LinkConnItem,
+    CreateLinkConn,
   },
   data: function () {
     return {
       showItem: false,
       selectedLc: {},
+      showAddLc: false,
     }
   },
   created () {
@@ -153,30 +168,74 @@ export default {
           console.log(e)
         })
     },
+
+    initAddLc () {
+      this.showAddLc = true
+    },
+    postLc (lc) {
+      axios.post('https://localhost:8787/api/topology/linkConn', lc, {
+        headers: {},
+      })
+        .then(response => {
+          console.log(response.data)
+          this.showToast('LinkConn ' + lc.name + ' created', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 5000,
+          })
+          this.setCtpBusy(lc.srcVctpId, true)
+          this.setCtpBusy(lc.destVctpId, true)
+          this.getLcsByLink()
+        })
+        .catch(e => {
+          console.log(e)
+          this.showToast('LinkConn creation failed', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+        })
+      this.showAddLc = false
+    },
+
     initEditLc (lc) {
       console.log('init edit lc:', lc.id)
     },
     patchLc (lc) {},
-    deleteLc (id) {
-      console.log('delete lcId:', id)
-      axios.delete('https://localhost:8787/api/topology/linkConn/' + id.toString())
+    deleteLc (lc) {
+      console.log('delete linkConnId:', lc.id)
+      axios.delete('https://localhost:8787/api/topology/linkConn/' + lc.id.toString())
         .then(response => {
-          console.log(response.data)
+          this.setCtpBusy(lc.srcVctpId, false)
+          this.setCtpBusy(lc.destVctpId, false)
           // notify subnet:
-          this.$emit('refresh', 'lc.deleted')
           this.showItem = false
+          this.$emit('refresh', 'lc.deleted')
           this.getLcsByLink()
         })
         .catch(e => {
           console.log(e)
         })
     },
-
     getLcsByLink () {
       const lcsApi = 'https://localhost:8787/api/topology/link/' + this.link.id.toString() + '/linkConns'
       axios.get(lcsApi)
         .then(response => {
           this.link.vlinkConns = response.data
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
+    setCtpBusy (ctpId, status) {
+      const ctp = {
+        busy: status,
+      }
+      axios.patch('https://localhost:8787/api/topology/ctp/' + ctpId.toString(), ctp, {
+        headers: {},
+      })
+        .then(response => {
+          console.log(response.data)
         })
         .catch(e => {
           console.log(e)
@@ -196,8 +255,4 @@ export default {
 </script>
 
 <style lang="scss">
-.link-details {
-  width: 800px;
-  max-width: 800px;
-}
 </style>

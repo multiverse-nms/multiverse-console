@@ -56,7 +56,7 @@
               <b>Status:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ trail.status }}</va-item-label>
+              <va-item-label> <va-badge small :color="getStatusColor(trail.status)" > {{ trail.status }} </va-badge> </va-item-label>
             </va-item-section>
           </va-item>
 

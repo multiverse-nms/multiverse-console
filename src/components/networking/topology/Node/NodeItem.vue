@@ -74,7 +74,7 @@
               <b>Status:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ node.status }}</va-item-label>
+              <va-item-label> <va-badge small :color="getStatusColor(node.status)" > {{ node.status }} </va-badge> </va-item-label>
             </va-item-section>
           </va-item>
 
@@ -112,7 +112,7 @@
         </div>
       </div>
 
-      <div class="flex lg8">
+      <div class="lg8">
         <div class="text-center">
           <va-tabs grow v-model="tabValue">
             <va-tab>
@@ -148,8 +148,8 @@
       <xc-item v-if="type === 2" :xc="selectedXc" :onDelete="deleteXc" :onEdit="initEditXc" />
     </va-modal>
 
-    <create-ltp @onOk="postLtp" @onCancel="showCreateLtp = false" :show="showCreateLtp" :nodeId="node.id" :nodeName="node.name" />
-    <create-xc @onOk="postXc" @onCancel="showCreateXc = false" :show="showCreateXc" :nodeId="node.id" :nodeName="node.name" />
+    <create-ltp @onOk="postLtp" @onCancel="showCreateLtp = false" :show="showCreateLtp" :nodeId="node.id" :name="nextLtpName" />
+    <create-xc @onOk="postXc" @onCancel="showCreateXc = false" :show="showCreateXc" :nodeId="node.id" :name="nextXcName" />
   </div>
 </template>
 
@@ -182,6 +182,9 @@ export default {
       selectedXc: {},
       showCreateLtp: false,
       showCreateXc: false,
+
+      nextLtpName: '',
+      nextXcName: '',
     }
   },
 
@@ -192,11 +195,23 @@ export default {
   methods: {
     // CRUD LTP
     initAddLtp () {
-      console.log('init add LTP for nodeId:', this.node.id)
+      // console.log('init add LTP for nodeId:', this.node.id)
+      this.getNextLtpName()
       this.showCreateLtp = true
     },
     postLtp (ltp) {
       // check if name already exists...
+      for (var i = 0, len = this.node.vltps.length; i < len; i++) {
+        if (this.node.vltps[i].name === ltp.name) {
+          this.showToast('Name ' + ltp.name + ' already exists', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+          return
+        }
+      }
+
       axios.post('https://localhost:8787/api/topology/ltp', ltp, {
         headers: {},
       })
@@ -256,19 +271,20 @@ export default {
     initAddXc () {
       axios.get('https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/ctps')
         .then(response => {
-          if (response.data.length < 3) {
+          if (response.data.length < 2) {
             this.showToast('Not enough CTPs ', {
               icon: 'fa-close',
               position: 'top-right',
               duration: 5000,
             })
           } else {
-            console.log('init add XC for nodeId:', this.node.id)
+            // console.log('init add XC for nodeId:', this.node.id)
+            this.getNextXcName()
             this.showCreateXc = true
           }
         })
         .catch(e => {
-          this.showToast('Error', {
+          this.showToast('Cannot get CTPs', {
             icon: 'fa-close',
             position: 'top-right',
             duration: 5000,
@@ -277,6 +293,17 @@ export default {
     },
     postXc (xc) {
       // check if name already exists...
+      for (var i = 0, len = this.node.vxcs.length; i < len; i++) {
+        if (this.node.vxcs[i].name === xc.name) {
+          this.showToast('Name ' + xc.name + ' already exists', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+          return
+        }
+      }
+
       axios.post('https://localhost:8787/api/topology/xc', xc, {
         headers: {},
       })
@@ -368,6 +395,23 @@ export default {
       return 'success'
     },
 
+    getNextLtpName () {
+      if (this.node.vltps.length > 0) {
+        const maxLtpNo = this.node.vltps[this.node.vltps.length - 1].name.split(':')[2].substring(1)
+        this.nextLtpName = this.node.name + ':l' + (parseInt(maxLtpNo, 10) + 1)
+      } else {
+        this.nextLtpName = this.node.name + ':l0'
+      }
+    },
+    getNextXcName () {
+      if (this.node.vxcs.length > 0) {
+        const maxXcNo = this.node.vxcs[this.node.vxcs.length - 1].name.split(':')[2].substring(1)
+        this.nextXcName = this.node.name + ':x' + (parseInt(maxXcNo, 10) + 1)
+      } else {
+        this.nextXcName = this.node.name + ':x0'
+      }
+    },
+
   },
 
   computed: {},
@@ -375,8 +419,4 @@ export default {
 </script>
 
 <style lang="scss">
-.node-details {
-  width: 800px;
-  max-width: 800px;
-}
 </style>

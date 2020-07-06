@@ -18,7 +18,7 @@
       <div class="row">
         <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input placeholder="e.g., ..." v-model="nSubnet.name"/>
+          <va-input disabled placeholder="e.g., ..." v-model="nSubnet.name"/>
         </div>
       </div>
       <div class="row">
@@ -55,7 +55,7 @@
 <script>
 export default {
   name: 'CreateSubnet',
-  props: ['show'],
+  props: ['show', 'name'],
 
   data: function () {
     return {
@@ -78,6 +78,8 @@ export default {
       handler: function () {
         if (this.show === true) {
           this.initCreateModal()
+        } else {
+          this.showModal = false
         }
       },
       deep: true,
@@ -91,7 +93,7 @@ export default {
     initCreateModal () {
       console.log('init create subnet modal')
       this.nSubnet = {
-        name: '',
+        name: this.name,
         label: '',
         description: '',
         info: {},
@@ -108,7 +110,7 @@ export default {
         return
       }
       this.$emit('onOk', this.nSubnet)
-      this.showModal = false
+      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

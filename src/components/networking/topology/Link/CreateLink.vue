@@ -17,7 +17,7 @@
       <div class="row">
         <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input v-model="nLink.name"/>
+          <va-input disabled v-model="nLink.name"/>
         </div>
       </div>
       <div class="row">
@@ -30,6 +30,16 @@
         <div class="flex xs12">
           <label class="label">Description</label>
           <va-input v-model="nLink.description"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="flex xs12">
+          <label class="label">Type</label>
+          <va-select
+            v-model="nLink.type"
+            textBy="source"
+            :options="['IN','EXT']"
+          />
         </div>
       </div>
       <div class="row">
@@ -105,6 +115,8 @@ export default {
       handler: function () {
         if (this.show === true) {
           this.initCreateLink()
+        } else {
+          this.showModal = false
         }
       },
       deep: true,
@@ -150,8 +162,8 @@ export default {
         })
     },
     submit () {
-      const srcNode = this.srcVltpName.split(':')[0]
-      const destNode = this.destVltpName.split(':')[0]
+      const srcNode = this.srcVltpName.split(':')[1]
+      const destNode = this.destVltpName.split(':')[1]
       if (srcNode === destNode) {
         this.error = 'Source and destination nodes must be different'
         return
@@ -167,7 +179,7 @@ export default {
 
       console.log('nLink: ', JSON.stringify(this.nLink))
       this.$emit('onOk', this.nLink)
-      this.showModal = false
+      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

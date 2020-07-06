@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row row-equal">
-      <div class="flex lg8">
+      <div class="flex lg9">
         <va-card :title="tTopology">
           <div class="row mt-1">
             <va-button-toggle
@@ -12,17 +12,15 @@
               color="dark"
             />
           </div>
-          <div class="row">
-            <div class="topology flex xs12">
-              <d3-network
-                ref='net'
-                :net-nodes="graphNodes"
-                :net-links="graphLinks"
-                :options="options"
-                @node-click="nodeClick"
-                @link-click="linkClick"
-              />
-            </div>
+          <div class="topology">
+            <d3-network
+              ref='net'
+              :net-nodes="graphNodes"
+              :net-links="graphLinks"
+              :options="options"
+              @node-click="nodeClick"
+              @link-click="linkClick"
+            />
           </div>
 
           <div v-if="subnet.id != 0" class="row">
@@ -45,7 +43,7 @@
         </va-card>
       </div>
 
-      <div class="flex lg4">
+      <div class="flex lg3">
         <va-card :title="tTrails">
           <trail-table :trails="trails" :onSelected="getTrail" />
           <div v-if="subnet.id != 0" class="text-center mt-5">
@@ -69,9 +67,9 @@
       <trail-item v-if="type === 4" :trail="selectedTrail" :onEdit="initEditTrail" :onDelete="deleteTrail" @refresh="refresh" />
     </va-modal>
 
-    <create-node @onOk="postNode" @onCancel="showCreateNode = false" :show="showCreateNode" :subnetId="subnet.id" />
+    <create-node @onOk="postNode" @onCancel="showCreateNode = false" :show="showCreateNode" :subnetId="subnet.id" :name="nextNodeName" />
     <create-link @onOk="postLink" @onCancel="showCreateLink = false" :show="showCreateLink"/>
-    <create-link-conn @onOk="postLc" @onCancel="showCreateLc = false" :show="showCreateLc"/>
+    <create-link-conn @onOk="postLc" @onCancel="showCreateLc = false" :show="showCreateLc" :linkId="0"/>
     <create-trail @onOk="postTrail" @onCancel="showCreateTrail = false" :show="showCreateTrail" />
 
   </div>
@@ -136,6 +134,8 @@ export default {
       showCreateLink: false,
       showCreateLc: false,
       showCreateTrail: false,
+
+      nextNodeName: '',
     }
   },
   created () {
@@ -144,7 +144,7 @@ export default {
   computed: {
     options () {
       return {
-        force: 4000,
+        force: 3000,
         size: { w: 800, h: 400 },
         nodeSize: 40,
         nodeLabels: true,
@@ -187,6 +187,7 @@ export default {
               // console.log('links: ' + response.data)
               this.links = response.data
               this.processGraph()
+              this.setPrefixes()
             })
             .catch(e => {
               console.log(e)
@@ -211,13 +212,15 @@ export default {
         this.graphNodes.push(newNode)
       })
       this.links.forEach(link => {
-        const newLink = {
-          id: link.id,
-          sid: link.srcVnodeId,
-          tid: link.destVnodeId,
+        if (this.kind === 'linkConn' || this.subnet.id === 0 || link.type === 'IN') {
+          const newLink = {
+            id: link.id,
+            sid: link.srcVnodeId,
+            tid: link.destVnodeId,
+          }
+          newLink._color = this.getStatusColor(link.status)
+          this.graphLinks.push(newLink)
         }
-        newLink._color = this.getStatusColor(link.status)
-        this.graphLinks.push(newLink)
       })
     },
 
@@ -249,10 +252,22 @@ export default {
         })
     },
     initCreateNode () {
+      this.getNextNodeName()
       this.showCreateNode = true
     },
     postNode (node) {
       // check if name already exists...
+      for (var i = 0, len = this.nodes.length; i < len; i++) {
+        if (this.nodes[i].name === node.name) {
+          this.showToast('Name ' + node.name + ' already exists', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+          return
+        }
+      }
+
       axios.post('https://localhost:8787/api/topology/node', node, {
         headers: {},
       })
@@ -308,7 +323,17 @@ export default {
         })
     },
     postLink (link) {
-      // check if name already exists...
+      for (var i = 0, len = this.links.length; i < len; i++) {
+        if (this.links[i].name === link.name) {
+          this.showToast('Name ' + link.name + ' already exists', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+          return
+        }
+      }
+
       axios.post('https://localhost:8787/api/topology/link', link, {
         headers: {},
       })
@@ -319,8 +344,8 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
-          this.setLtpToBusy(link.srcVltpId)
-          this.setLtpToBusy(link.destVltpId)
+          this.setLtpBusy(link.srcVltpId, true)
+          this.setLtpBusy(link.destVltpId, true)
           this.getSubnetContent()
         })
         .catch(e => {
@@ -337,11 +362,13 @@ export default {
       console.log('init edit link:', link.id)
     },
     patchLink (link) {},
-    deleteLink (id) {
-      console.log('delete linkId:', id)
-      axios.delete('https://localhost:8787/api/topology/link/' + id.toString())
+    deleteLink (link) {
+      console.log('delete linkId:', link.id)
+      axios.delete('https://localhost:8787/api/topology/link/' + link.id.toString())
         .then(response => {
           console.log(response.data)
+          this.setLtpTo(link.srcVltpId, false)
+          this.setLtpTo(link.destVltpId, false)
           this.getSubnetContent()
           this.showItem = false
         })
@@ -367,6 +394,16 @@ export default {
     },
     postLc (lc) {
       // check if name already exists...
+      for (var i = 0, len = this.links.length; i < len; i++) {
+        if (this.links[i].name === lc.name) {
+          this.showToast('Name ' + lc.name + ' already exists', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+          return
+        }
+      }
       axios.post('https://localhost:8787/api/topology/linkConn', lc, {
         headers: {},
       })
@@ -377,8 +414,8 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
-          this.setCtpToBusy(lc.srcVctpId)
-          this.setCtpToBusy(lc.destVctpId)
+          this.setCtpBusy(lc.srcVctpId, true)
+          this.setCtpBusy(lc.destVctpId, true)
           this.getSubnetContent()
         })
         .catch(e => {
@@ -394,11 +431,13 @@ export default {
     initEditLc (lc) {
       console.log('init edit linkConn:', lc.id)
     },
-    deleteLc (id) {
-      console.log('delete linkConnId:', id)
-      axios.delete('https://localhost:8787/api/topology/linkConn/' + id.toString())
+    deleteLc (lc) {
+      console.log('delete linkConnId:', lc.id)
+      axios.delete('https://localhost:8787/api/topology/linkConn/' + lc.id.toString())
         .then(response => {
           console.log(response.data)
+          this.setCtpBusy(lc.srcVctpId, false)
+          this.setCtpBusy(lc.destVctpId, false)
           this.getSubnetContent()
           this.showItem = false
         })
@@ -406,6 +445,7 @@ export default {
           console.log(e)
         })
     },
+
     // for both link and lc
     initCreateLink () {
       if (this.kind === 'link') {
@@ -464,6 +504,17 @@ export default {
     },
     postTrail (trail) {
       // check if name already exists...
+      for (var i = 0, len = this.trails.length; i < len; i++) {
+        if (this.trails[i].name === trail.name) {
+          this.showToast('Name ' + trail.name + ' already exists', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+          return
+        }
+      }
+
       axios.post('https://localhost:8787/api/topology/trail', trail, {
         headers: {},
       })
@@ -496,15 +547,16 @@ export default {
         .then(response => {
           console.log(response.data)
           this.getTrails()
+          this.showItem = false
         })
         .catch(e => {
           console.log(e)
         })
     },
 
-    setLtpToBusy (ltpId) {
+    setLtpBusy (ltpId, status) {
       const ltp = {
-        busy: true,
+        busy: status,
       }
       axios.patch('https://localhost:8787/api/topology/ltp/' + ltpId.toString(), ltp, {
         headers: {},
@@ -517,9 +569,9 @@ export default {
         })
     },
 
-    setCtpToBusy (ctpId) {
+    setCtpBusy (ctpId, status) {
       const ctp = {
-        busy: true,
+        busy: status,
       }
       axios.patch('https://localhost:8787/api/topology/ctp/' + ctpId.toString(), ctp, {
         headers: {},
@@ -538,6 +590,17 @@ export default {
       this.getTrails()
     },
 
+    getNextNodeName () {
+      // this.nodes.sort(function(a, b){return a.name - b.name})
+      // TODO: check after DEMO !!!!!!!!!!!!!!!!!!!
+      if (this.nodes.length > 0) {
+        const maxNodeNo = this.nodes[this.nodes.length - 1].name.split(':')[1].substring(1)
+        this.nextNodeName = this.subnet.name + ':n' + (parseInt(maxNodeNo, 10) + 1)
+      } else {
+        this.nextNodeName = this.subnet.name + ':n0'
+      }
+    },
+
     getStatusColor (status) {
       if (status === 'UP') {
         return 'green'
@@ -547,13 +610,49 @@ export default {
         return 'yellow'
       }
     },
+
+    // Prefixes
+    setPrefixes () {
+      const prefixesApi = 'https://localhost:8787/api/topology/prefixAnns'
+      axios.get(prefixesApi)
+        .then(response => {
+          // console.log('trails: ' + response.data)
+          this.processPrefixes(response.data)
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
+    processPrefixes (prefixes) {
+      if (this.graphNodes.length === 0) {
+        return
+      }
+      let ids = this.nodes[this.nodes.length - 1].id + 1
+      // const prefixesMap = new Map()
+      prefixes.forEach(p => {
+        // prefixesMap.set(ids, p)
+        if (this.nodes.some(n => n.id === p.nodeId)) {
+          const newNode = { id: ids, name: p.name }
+          newNode._color = 'gray'
+          this.graphNodes.push(newNode)
+          const newLink = {
+            sid: p.nodeId,
+            tid: ids,
+          }
+          newLink._color = 'gray'
+          this.graphLinks.push(newLink)
+          ids += 1
+        }
+      })
+    },
   },
 }
 
 </script>
 <style lang="stylus">
 .topology {
-  max-height: 500px;
+  height: 500px;
+  max-height: 800px;
 }
 
 </style>

@@ -19,7 +19,7 @@
           <td>{{ ctp.name }}</td>
           <td>{{ ctp.label }}</td>
           <td>
-            <va-badge small color="gray" >{{ ctp.busy }}</va-badge>
+            <va-badge small :color="getBusyColor(ctp.busy)" >{{ ctp.busy }}</va-badge>
           </td>
           <td>
             <va-badge small :color="getStatusColor(ctp.status)" >{{ ctp.status }}</va-badge>
@@ -54,6 +54,12 @@ export default {
         return 'danger'
       }
       return 'success'
+    },
+    getBusyColor (busy) {
+      if (busy === true) {
+        return 'info'
+      }
+      return 'gray'
     },
   },
   computed: {},

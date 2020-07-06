@@ -44,10 +44,19 @@
 
           <va-item>
             <va-item-section side>
+              <b>Link:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ ctp.vlinkId }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
               <b>Busy:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ ctp.busy }}</va-item-label>
+              <va-item-label>  <va-badge small :color="getBusyColor(ctp.busy)" > {{ ctp.busy }} </va-badge> </va-item-label>
             </va-item-section>
           </va-item>
 
@@ -56,7 +65,7 @@
               <b>Status:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ ctp.status }}</va-item-label>
+              <va-item-label> <va-badge small :color="getStatusColor(ctp.status)" > {{ ctp.status }} </va-badge> </va-item-label>
             </va-item-section>
           </va-item>
 
@@ -117,6 +126,12 @@ export default {
         return 'danger'
       }
       return 'success'
+    },
+    getBusyColor (busy) {
+      if (busy === true) {
+        return 'info'
+      }
+      return 'gray'
     },
   },
   computed: {},

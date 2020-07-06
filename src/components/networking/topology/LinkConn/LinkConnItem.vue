@@ -56,7 +56,7 @@
               <b>Status:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ linkConn.status }}</va-item-label>
+              <va-item-label> <va-badge small :color="getStatusColor(linkConn.status)" > {{ linkConn.status }} </va-badge> </va-item-label>
             </va-item-section>
           </va-item>
 
@@ -90,7 +90,7 @@
 
         <div class="text-center mt-3">
           <div class="flex xs12">
-            <va-button small color="danger" @click="onDelete(linkConn.id)"> Delete </va-button>
+            <va-button small color="danger" @click="onDelete(linkConn)"> Delete </va-button>
             <va-button small color="info" @click="onEdit(linkConn)"> Edit </va-button>
           </div>
         </div>

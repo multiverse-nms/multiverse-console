@@ -14,10 +14,21 @@
         </va-notification>
       </div>
 
+      <div v-if="selectLink" class="row">
+        <div class="flex xs12">
+          <label class="label">Link</label>
+          <va-select
+            v-model="linkName"
+            textBy="source"
+            :options="Array.from(linksNameToId.keys())"
+          />
+        </div>
+      </div>
+
       <div class="row">
         <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input v-model="nLc.name"/>
+          <va-input disabled v-model="nLc.name"/>
         </div>
       </div>
       <div class="row">
@@ -77,7 +88,7 @@ import axios from 'axios'
 
 export default {
   name: 'CreateLinkConn',
-  props: ['show'],
+  props: ['show', 'linkId'],
 
   data: function () {
     return {
@@ -91,10 +102,14 @@ export default {
         info: {},
         srcVctpId: 0,
         destVctpId: 0,
+        vlinkId: 0,
       },
       srcVctpName: '',
       destVctpName: '',
+      linkName: '',
+      selectLink: false,
       ctpsNameToId: new Map(),
+      linksNameToId: new Map(),
     }
   },
 
@@ -105,6 +120,8 @@ export default {
       handler: function () {
         if (this.show === true) {
           this.initCreateLc()
+        } else {
+          this.showModal = false
         }
       },
       deep: true,
@@ -115,10 +132,20 @@ export default {
     destVctpName: function (newVal, oldVal) {
       this.nLc.name = this.srcVctpName + '=' + newVal
     },
+    linkName: function (newVal, oldVal) {
+      console.log('get ctps for link: ', newVal)
+      this.getCtpsByLink(this.linksNameToId.get(newVal))
+    },
   },
   methods: {
     initCreateLc () {
-      this.getCtps()
+      if (this.linkId > 0) {
+        this.selectLink = false
+        this.getCtpsByLink(this.linkId)
+      } else {
+        this.getLinks()
+        this.selectLink = true
+      }
       console.log('init create linkConn modal')
       this.nLc = {
         name: '',
@@ -127,14 +154,15 @@ export default {
         info: {},
         srcVctpId: 0,
         destVctpId: 0,
+        vlinkId: this.linkId,
       }
       this.srcVctpName = ''
       this.destVctpName = ''
       this.error = ''
       this.showModal = true
     },
-    getCtps () {
-      const ctpsApi = 'https://localhost:8787/api/topology/ctps'
+    getCtpsByLink (id) {
+      const ctpsApi = 'https://localhost:8787/api/topology/link/' + id + '/ctps'
       axios.get(ctpsApi)
         .then(response => {
           // this.ltps = response.data
@@ -149,9 +177,22 @@ export default {
           console.log(e)
         })
     },
+    getLinks () {
+      const linksApi = 'https://localhost:8787/api/topology/links'
+      axios.get(linksApi)
+        .then(response => {
+          this.linksNameToId = new Map()
+          response.data.forEach(link => {
+            this.linksNameToId.set(link.name, link.id)
+          })
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
     submit () {
-      const srcNode = this.srcVctpName.split(':')[0]
-      const destNode = this.destVctpName.split(':')[0]
+      const srcNode = this.srcVctpName.split(':')[1]
+      const destNode = this.destVctpName.split(':')[1]
       if (srcNode === destNode) {
         this.error = 'Source and destination nodes must be different'
         return
@@ -164,10 +205,12 @@ export default {
       this.nLc.info = JSON.parse(info.textContent)
       this.nLc.srcVctpId = this.ctpsNameToId.get(this.srcVctpName)
       this.nLc.destVctpId = this.ctpsNameToId.get(this.destVctpName)
+      if (this.linkId === 0) {
+        this.nLc.vlinkId = this.linksNameToId.get(this.linkName)
+      }
 
       console.log('nLc: ', JSON.stringify(this.nLc))
       this.$emit('onOk', this.nLc)
-      this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

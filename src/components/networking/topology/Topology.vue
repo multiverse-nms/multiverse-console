@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <create-subnet @onOk="postSubnet" @onCancel="showCreateSubnet = false" :show="showCreateSubnet" />
+    <create-subnet @onOk="postSubnet" @onCancel="showCreateSubnet = false" :show="showCreateSubnet" :name="nextSnName" />
   </div>
 </template>
 
@@ -56,6 +56,7 @@ export default {
       subnets: [],
       selectedSn: {},
       showCreateSubnet: false,
+      nextSnName: 'sn-0',
     }
   },
   created () {
@@ -85,10 +86,22 @@ export default {
         })
     },
     initCreateSubnet () {
+      this.getNextSnName()
       this.showCreateSubnet = true
     },
     postSubnet (subnet) {
       // check if name already exists...
+      for (var i = 0, len = this.subnets.length; i < len; i++) {
+        if (this.subnets[i].name === subnet.name) {
+          this.showToast('Name ' + subnet.name + ' already exists', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+          return
+        }
+      }
+
       axios.post('https://localhost:8787/api/topology/subnet', subnet, {
         headers: {},
       })
@@ -137,6 +150,14 @@ export default {
         return 'info'
       } else {
         return 'gray'
+      }
+    },
+
+    getNextSnName () {
+      // this.nodes.sort(function(a, b){return a.name - b.name})
+      if (this.subnets.length > 0) {
+        const maxSnNo = this.subnets[this.subnets.length - 1].name.split('-')[1]
+        this.nextSnName = 'sn-' + (parseInt(maxSnNo, 10) + 1)
       }
     },
 

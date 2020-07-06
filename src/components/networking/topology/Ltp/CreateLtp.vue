@@ -16,15 +16,8 @@
 
       <div class="row">
         <div class="flex xs12">
-          <label class="label">NodeId</label>
-          <va-input disabled v-model="nLtp.vnodeId"/>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="flex xs12">
           <label class="label">Name</label>
-          <va-input v-model="nLtp.name"/>
+          <va-input disabled v-model="nLtp.name"/>
         </div>
       </div>
       <div class="row">
@@ -61,7 +54,7 @@
 <script>
 export default {
   name: 'CreateLtp',
-  props: ['show', 'nodeId', 'nodeName'],
+  props: ['show', 'nodeId', 'name'],
 
   data: function () {
     return {
@@ -70,7 +63,7 @@ export default {
       infoStr: '{}',
       nLtp: {
         vnodeId: this.nodeId,
-        name: this.nodeName + ':',
+        name: '',
         label: '',
         description: '',
         info: {},
@@ -86,6 +79,8 @@ export default {
       handler: function () {
         if (this.show === true) {
           this.initCreateLtp()
+        } else {
+          this.showModal = false
         }
       },
       deep: true,
@@ -100,7 +95,7 @@ export default {
       console.log('init create ltp modal')
       this.nLtp = {
         vnodeId: this.nodeId,
-        name: this.nodeName + ':',
+        name: this.name,
         label: '',
         description: '',
         info: {},
@@ -118,7 +113,7 @@ export default {
         return
       }
       this.$emit('onOk', this.nLtp)
-      this.showModal = false
+      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')
