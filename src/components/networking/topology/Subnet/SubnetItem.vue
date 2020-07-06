@@ -367,8 +367,8 @@ export default {
       axios.delete('https://localhost:8787/api/topology/link/' + link.id.toString())
         .then(response => {
           console.log(response.data)
-          this.setLtpTo(link.srcVltpId, false)
-          this.setLtpTo(link.destVltpId, false)
+          this.setLtpBusy(link.srcVltpId, false)
+          this.setLtpBusy(link.destVltpId, false)
           this.getSubnetContent()
           this.showItem = false
         })

@@ -54,12 +54,21 @@
           <va-input v-model="nNode.location"/>
         </div>
       </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Info (JSON)</label>
-          <va-medium-editor>
-            <pre class="info">{{ infoStr.trim() }}</pre>
-          </va-medium-editor>
+
+      <div>
+        <label class="label">Info</label>
+        <div v-for="(info, index) in infoArray" :key="index" class="row">
+          <div class="flex xs5 offset--xs1">
+            <va-input v-model="info[0]"/>
+          </div>
+          <div class="flex xs5 ml-1">
+            <va-input v-model="info[1]"/>
+          </div>
+        </div>
+        <div class="text-center">
+          <va-button color="gray" @click="addInfoItem">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+          </va-button>
         </div>
       </div>
 
@@ -82,7 +91,7 @@ export default {
     return {
       showModal: false,
       error: '',
-      infoStr: '{}',
+      infoArray: [['', '']],
       nNode: {
         vsubnetId: this.subnetId,
         name: '',
@@ -128,16 +137,31 @@ export default {
         posy: 0,
         location: '',
       }
+      this.infoArray = [['', '']]
       this.error = ''
       this.showModal = true
     },
+    addInfoItem () {
+      const lastItem = this.infoArray[this.infoArray.length - 1]
+      if ((lastItem[0] !== '') && (lastItem[1] !== '')) {
+        this.infoArray.push(['', ''])
+      }
+    },
     submit () {
-      const info = document.getElementsByClassName('info')[0]
-      this.nNode.info = JSON.parse(info.textContent)
-      console.log('nNode: ', JSON.stringify(this.nNode))
       if (this.nNode.name === '') {
         this.error = 'Name is required'
         return
+      }
+      for (var i = 0, len = this.infoArray.length; i < len; i++) {
+        const item = this.infoArray[i]
+        if (item[0] !== '' && item[1] !== '') {
+          // TODO: support boolean
+          if (isNaN(item[1])) {
+            this.nNode.info[item[0]] = item[1]
+          } else {
+            this.nNode.info[item[0]] = Number(item[1])
+          }
+        }
       }
       this.$emit('onOk', this.nNode)
       // this.showModal = false

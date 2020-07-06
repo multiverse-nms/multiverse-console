@@ -32,12 +32,21 @@
           <va-input v-model="nCtp.description"/>
         </div>
       </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Info (JSON)</label>
-          <va-medium-editor>
-            <pre class="info">{{ infoStr.trim() }}</pre>
-          </va-medium-editor>
+
+      <div>
+        <label class="label">Info</label>
+        <div v-for="(info, index) in infoArray" :key="index" class="row">
+          <div class="flex xs5 offset--xs1">
+            <va-input v-model="info[0]"/>
+          </div>
+          <div class="flex xs5 ml-1">
+            <va-input v-model="info[1]"/>
+          </div>
+        </div>
+        <div class="text-center">
+          <va-button color="gray" @click="addInfoItem">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+          </va-button>
         </div>
       </div>
 
@@ -60,7 +69,7 @@ export default {
     return {
       showModal: false,
       error: '',
-      infoStr: '{}',
+      infoArray: [['', '']],
       nCtp: {
         vltpId: this.ltpId,
         name: this.ltpName + ':',
@@ -101,16 +110,31 @@ export default {
         info: {},
         busy: false,
       }
+      this.infoArray = [['', '']]
       this.error = ''
       this.showModal = true
     },
+    addInfoItem () {
+      const lastItem = this.infoArray[this.infoArray.length - 1]
+      if ((lastItem[0] !== '') && (lastItem[1] !== '')) {
+        this.infoArray.push(['', ''])
+      }
+    },
     submit () {
-      const info = document.getElementsByClassName('info')[0]
-      this.nCtp.info = JSON.parse(info.textContent)
-      console.log('nCtp: ', JSON.stringify(this.nCtp))
       if (this.nCtp.name === '') {
         this.error = 'Name is required'
         return
+      }
+      for (var i = 0, len = this.infoArray.length; i < len; i++) {
+        const item = this.infoArray[i]
+        if (item[0] !== '' && item[1] !== '') {
+          // TODO: support boolean
+          if (isNaN(item[1])) {
+            this.nCtp.info[item[0]] = item[1]
+          } else {
+            this.nCtp.info[item[0]] = Number(item[1])
+          }
+        }
       }
       this.$emit('onOk', this.nCtp)
       // this.showModal = false

@@ -33,12 +33,21 @@
           <va-input placeholder="e.g., ..." v-model="nSubnet.description"/>
         </div>
       </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Info (JSON)</label>
-          <va-medium-editor>
-            <pre class="info">{{ infoStr.trim() }}</pre>
-          </va-medium-editor>
+
+      <div>
+        <label class="label">Info</label>
+        <div v-for="(info, index) in infoArray" :key="index" class="row">
+          <div class="flex xs5 offset--xs1">
+            <va-input v-model="info[0]"/>
+          </div>
+          <div class="flex xs5 ml-1">
+            <va-input v-model="info[1]"/>
+          </div>
+        </div>
+        <div class="text-center">
+          <va-button color="gray" @click="addInfoItem">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+          </va-button>
         </div>
       </div>
 
@@ -61,7 +70,8 @@ export default {
     return {
       showModal: false,
       error: '',
-      infoStr: '{}',
+      // infoStr: '{}',
+      infoArray: [['', '']],
       nSubnet: {
         name: '',
         label: '',
@@ -98,19 +108,34 @@ export default {
         description: '',
         info: {},
       }
+      this.infoArray = [['', '']]
       this.error = ''
       this.showModal = true
     },
+    addInfoItem () {
+      const lastItem = this.infoArray[this.infoArray.length - 1]
+      if ((lastItem[0] !== '') && (lastItem[1] !== '')) {
+        this.infoArray.push(['', ''])
+      }
+    },
     submit () {
-      const info = document.getElementsByClassName('info')[0]
-      this.nSubnet.info = JSON.parse(info.textContent)
-      console.log('nSubnet: ', JSON.stringify(this.nSubnet))
       if (this.nSubnet.name === '') {
         this.error = 'Name is required'
         return
       }
+      for (var i = 0, len = this.infoArray.length; i < len; i++) {
+        const item = this.infoArray[i]
+        if (item[0] !== '' && item[1] !== '') {
+          // TODO: support boolean
+          if (isNaN(item[1])) {
+            this.nSubnet.info[item[0]] = item[1]
+          } else {
+            this.nSubnet.info[item[0]] = Number(item[1])
+          }
+        }
+      }
+      // console.log(JSON.stringify(this.nSubnet))
       this.$emit('onOk', this.nSubnet)
-      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

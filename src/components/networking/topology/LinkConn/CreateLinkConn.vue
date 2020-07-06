@@ -64,12 +64,21 @@
           />
         </div>
       </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Info (JSON)</label>
-          <va-medium-editor>
-            <pre class="info">{{ infoStr.trim() }}</pre>
-          </va-medium-editor>
+
+      <div>
+        <label class="label">Info</label>
+        <div v-for="(info, index) in infoArray" :key="index" class="row">
+          <div class="flex xs5 offset--xs1">
+            <va-input v-model="info[0]"/>
+          </div>
+          <div class="flex xs5 ml-1">
+            <va-input v-model="info[1]"/>
+          </div>
+        </div>
+        <div class="text-center">
+          <va-button color="gray" @click="addInfoItem">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+          </va-button>
         </div>
       </div>
 
@@ -94,7 +103,7 @@ export default {
     return {
       showModal: false,
       error: '',
-      infoStr: '{}',
+      infoArray: [['', '']],
       nLc: {
         name: '',
         label: '',
@@ -146,7 +155,6 @@ export default {
         this.getLinks()
         this.selectLink = true
       }
-      console.log('init create linkConn modal')
       this.nLc = {
         name: '',
         label: '',
@@ -156,10 +164,17 @@ export default {
         destVctpId: 0,
         vlinkId: this.linkId,
       }
+      this.infoArray = [['', '']]
       this.srcVctpName = ''
       this.destVctpName = ''
       this.error = ''
       this.showModal = true
+    },
+    addInfoItem () {
+      const lastItem = this.infoArray[this.infoArray.length - 1]
+      if ((lastItem[0] !== '') && (lastItem[1] !== '')) {
+        this.infoArray.push(['', ''])
+      }
     },
     getCtpsByLink (id) {
       const ctpsApi = 'https://localhost:8787/api/topology/link/' + id + '/ctps'
@@ -201,14 +216,22 @@ export default {
         this.error = 'Name is required'
         return
       }
-      const info = document.getElementsByClassName('info')[0]
-      this.nLc.info = JSON.parse(info.textContent)
       this.nLc.srcVctpId = this.ctpsNameToId.get(this.srcVctpName)
       this.nLc.destVctpId = this.ctpsNameToId.get(this.destVctpName)
       if (this.linkId === 0) {
         this.nLc.vlinkId = this.linksNameToId.get(this.linkName)
       }
-
+      for (var i = 0, len = this.infoArray.length; i < len; i++) {
+        const item = this.infoArray[i]
+        if (item[0] !== '' && item[1] !== '') {
+          // TODO: support boolean
+          if (isNaN(item[1])) {
+            this.nLc.info[item[0]] = item[1]
+          } else {
+            this.nLc.info[item[0]] = Number(item[1])
+          }
+        }
+      }
       console.log('nLc: ', JSON.stringify(this.nLc))
       this.$emit('onOk', this.nLc)
     },

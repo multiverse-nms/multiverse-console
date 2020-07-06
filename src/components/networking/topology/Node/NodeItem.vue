@@ -352,7 +352,7 @@ export default {
           console.log(response.data)
           // this.$emit('refresh', 'xc.delete')
           this.showItem = false
-          this.getLtpsByNode()
+          this.getXcsByNode()
         })
         .catch(e => {
           console.log(e)

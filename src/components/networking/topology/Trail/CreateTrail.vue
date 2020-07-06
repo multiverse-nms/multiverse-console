@@ -52,12 +52,21 @@
           />
         </div>
       </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Info (JSON)</label>
-          <va-medium-editor>
-            <pre class="info">{{ infoStr.trim() }}</pre>
-          </va-medium-editor>
+
+      <div>
+        <label class="label">Info</label>
+        <div v-for="(info, index) in infoArray" :key="index" class="row">
+          <div class="flex xs5 offset--xs1">
+            <va-input v-model="info[0]"/>
+          </div>
+          <div class="flex xs5 ml-1">
+            <va-input v-model="info[1]"/>
+          </div>
+        </div>
+        <div class="text-center">
+          <va-button color="gray" @click="addInfoItem">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+          </va-button>
         </div>
       </div>
 
@@ -82,7 +91,7 @@ export default {
     return {
       showModal: false,
       error: '',
-      infoStr: '{}',
+      infoArray: [['', '']],
       nTrail: {
         name: '',
         label: '',
@@ -129,6 +138,7 @@ export default {
         srcVctpId: 0,
         destVctpId: 0,
       }
+      this.infoArray = [['', '']]
       this.srcVctpName = ''
       this.destVctpName = ''
       this.error = ''
@@ -148,6 +158,12 @@ export default {
           console.log(e)
         })
     },
+    addInfoItem () {
+      const lastItem = this.infoArray[this.infoArray.length - 1]
+      if ((lastItem[0] !== '') && (lastItem[1] !== '')) {
+        this.infoArray.push(['', ''])
+      }
+    },
     submit () {
       const srcNode = this.srcVctpName.split(':')[1]
       const destNode = this.destVctpName.split(':')[1]
@@ -159,10 +175,20 @@ export default {
         this.error = 'Name is required'
         return
       }
-      const info = document.getElementsByClassName('info')[0]
-      this.nTrail.info = JSON.parse(info.textContent)
       this.nTrail.srcVctpId = this.ctpsNameToId.get(this.srcVctpName)
       this.nTrail.destVctpId = this.ctpsNameToId.get(this.destVctpName)
+
+      for (var i = 0, len = this.infoArray.length; i < len; i++) {
+        const item = this.infoArray[i]
+        if (item[0] !== '' && item[1] !== '') {
+          // TODO: support boolean
+          if (isNaN(item[1])) {
+            this.nTrail.info[item[0]] = item[1]
+          } else {
+            this.nTrail.info[item[0]] = Number(item[1])
+          }
+        }
+      }
 
       console.log('nTrail: ', JSON.stringify(this.nTrail))
       this.$emit('onOk', this.nTrail)
