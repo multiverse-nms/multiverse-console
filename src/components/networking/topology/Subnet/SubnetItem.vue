@@ -344,8 +344,6 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
-          this.setLtpBusy(link.srcVltpId, true)
-          this.setLtpBusy(link.destVltpId, true)
           this.getSubnetContent()
         })
         .catch(e => {
@@ -367,8 +365,6 @@ export default {
       axios.delete('https://localhost:8787/api/topology/link/' + link.id.toString())
         .then(response => {
           console.log(response.data)
-          this.setLtpBusy(link.srcVltpId, false)
-          this.setLtpBusy(link.destVltpId, false)
           this.getSubnetContent()
           this.showItem = false
         })
@@ -414,8 +410,6 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
-          this.setCtpBusy(lc.srcVctpId, true)
-          this.setCtpBusy(lc.destVctpId, true)
           this.getSubnetContent()
         })
         .catch(e => {
@@ -436,8 +430,6 @@ export default {
       axios.delete('https://localhost:8787/api/topology/linkConn/' + lc.id.toString())
         .then(response => {
           console.log(response.data)
-          this.setCtpBusy(lc.srcVctpId, false)
-          this.setCtpBusy(lc.destVctpId, false)
           this.getSubnetContent()
           this.showItem = false
         })
@@ -554,36 +546,6 @@ export default {
         })
     },
 
-    setLtpBusy (ltpId, status) {
-      const ltp = {
-        busy: status,
-      }
-      axios.patch('https://localhost:8787/api/topology/ltp/' + ltpId.toString(), ltp, {
-        headers: {},
-      })
-        .then(response => {
-          console.log(response.data)
-        })
-        .catch(e => {
-          console.log(e)
-        })
-    },
-
-    setCtpBusy (ctpId, status) {
-      const ctp = {
-        busy: status,
-      }
-      axios.patch('https://localhost:8787/api/topology/ctp/' + ctpId.toString(), ctp, {
-        headers: {},
-      })
-        .then(response => {
-          console.log(response.data)
-        })
-        .catch(e => {
-          console.log(e)
-        })
-    },
-
     refresh (type) {
       console.log('refresh ', type)
       this.getSubnetContent()
@@ -592,7 +554,6 @@ export default {
 
     getNextNodeName () {
       // this.nodes.sort(function(a, b){return a.name - b.name})
-      // TODO: check after DEMO !!!!!!!!!!!!!!!!!!!
       if (this.nodes.length > 0) {
         const maxNodeNo = this.nodes[this.nodes.length - 1].name.split(':')[1].substring(1)
         this.nextNodeName = this.subnet.name + ':n' + (parseInt(maxNodeNo, 10) + 1)

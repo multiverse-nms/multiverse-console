@@ -160,28 +160,6 @@ export default {
         this.nextSnName = 'sn-' + (parseInt(maxSnNo, 10) + 1)
       }
     },
-
-    /*
-     processPrefixes () {
-      if (this.graphNodes.length === 0) {
-        return
-      }
-      const nodesWithPrfx = new Map()
-      this.prefixes.forEach(p => {
-        if (nodesWithPrfx.has(p.node)) {
-          nodesWithPrfx.set(p.node, nodesWithPrfx.get(p.node) + 1)
-        } else {
-          nodesWithPrfx.set(p.node, 1)
-        }
-      })
-
-      this.graphNodes.forEach(node => {
-        if (nodesWithPrfx.has(node.id)) {
-          const n = node.name.split(' ')
-          node.name = n[0] + ' ' + '[' + nodesWithPrfx.get(node.id) + ' prefix(es)]'
-        }
-      })
-    }, */
   },
 }
 

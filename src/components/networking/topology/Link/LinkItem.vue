@@ -183,8 +183,6 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
-          this.setCtpBusy(lc.srcVctpId, true)
-          this.setCtpBusy(lc.destVctpId, true)
           this.getLcsByLink()
         })
         .catch(e => {
@@ -206,36 +204,10 @@ export default {
       console.log('delete linkConnId:', lc.id)
       axios.delete('https://localhost:8787/api/topology/linkConn/' + lc.id.toString())
         .then(response => {
-          this.setCtpBusy(lc.srcVctpId, false)
-          this.setCtpBusy(lc.destVctpId, false)
           // notify subnet:
           this.showItem = false
           this.$emit('refresh', 'lc.deleted')
           this.getLcsByLink()
-        })
-        .catch(e => {
-          console.log(e)
-        })
-    },
-    getLcsByLink () {
-      const lcsApi = 'https://localhost:8787/api/topology/link/' + this.link.id.toString() + '/linkConns'
-      axios.get(lcsApi)
-        .then(response => {
-          this.link.vlinkConns = response.data
-        })
-        .catch(e => {
-          console.log(e)
-        })
-    },
-    setCtpBusy (ctpId, status) {
-      const ctp = {
-        busy: status,
-      }
-      axios.patch('https://localhost:8787/api/topology/ctp/' + ctpId.toString(), ctp, {
-        headers: {},
-      })
-        .then(response => {
-          console.log(response.data)
         })
         .catch(e => {
           console.log(e)
