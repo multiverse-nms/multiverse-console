@@ -169,7 +169,6 @@ export default {
       this.showCreateCtp = true
     },
     postCtp (ctp) {
-      // check if name already exists...
       for (var i = 0, len = this.ltp.vctps.length; i < len; i++) {
         if (this.ltp.vctps[i].name === ctp.name) {
           this.showToast('Name ' + ctp.name + ' already exists', {
@@ -180,7 +179,6 @@ export default {
           return
         }
       }
-
       axios.post('https://localhost:8787/api/topology/ctp', ctp, {
         headers: {},
       })
@@ -191,7 +189,6 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
-          // this.$emit('refresh', 'ltp.ctp.add')
           this.getCtpsByLtp()
         })
         .catch(e => {
@@ -211,11 +208,10 @@ export default {
     patchCtp (ctp) {},
 
     deleteCtp (id) {
-      console.log('delete CTP:', id)
       axios.delete('https://localhost:8787/api/topology/ctp/' + id.toString())
         .then(response => {
           console.log(response.data)
-          this.$emit('refresh', 'ltp.ctp.delete')
+          this.$emit('refresh', 'topology.ctp')
           this.showItem = false
           this.getCtpsByLtp()
         })

@@ -63,7 +63,7 @@
     >
       <node-item v-if="type === 1" :node="selectedNode" :onEdit="initEditNode" :onDelete="deleteNode" @refresh="refresh" />
       <link-item v-if="type === 2" :link="selectedLink" :onEdit="initEditLink" :onDelete="deleteLink" @refresh="refresh"/>
-      <link-conn-item v-if="type === 3" :linkConn="selectedLc" :onEdit="initEditLc" :onDelete="deleteLc" @refresh="refresh" />
+      <link-conn-item v-if="type === 3" :linkConn="selectedLc" :onEdit="initEditLc" :onDelete="deleteLc" :onGenFaces="genFaces" @refresh="refresh" />
       <trail-item v-if="type === 4" :trail="selectedTrail" :onEdit="initEditTrail" :onDelete="deleteTrail" @refresh="refresh" />
     </va-modal>
 
@@ -180,11 +180,9 @@ export default {
       }
       axios.get(nodesApi)
         .then(response => {
-          // console.log('nodes: ' + response.data)
           this.nodes = response.data
           axios.get(linksApi)
             .then(response => {
-              // console.log('links: ' + response.data)
               this.links = response.data
               this.processGraph()
               this.setPrefixes()
@@ -215,6 +213,7 @@ export default {
         if (this.kind === 'linkConn' || this.subnet.id === 0 || link.type === 'IN') {
           const newLink = {
             id: link.id,
+            name: link.id,
             sid: link.srcVnodeId,
             tid: link.destVnodeId,
           }
@@ -256,7 +255,6 @@ export default {
       this.showCreateNode = true
     },
     postNode (node) {
-      // check if name already exists...
       for (var i = 0, len = this.nodes.length; i < len; i++) {
         if (this.nodes[i].name === node.name) {
           this.showToast('Name ' + node.name + ' already exists', {
@@ -267,7 +265,6 @@ export default {
           return
         }
       }
-
       axios.post('https://localhost:8787/api/topology/node', node, {
         headers: {},
       })
@@ -290,16 +287,13 @@ export default {
         })
       this.showCreateNode = false
     },
-    initEditNode (node) {
-      console.log('init edit node:', node.id)
-    },
+    initEditNode (node) {},
     patchNode (node) {},
     deleteNode (id) {
-      console.log('delete nodeId:', id)
       axios.delete('https://localhost:8787/api/topology/node/' + id.toString())
         .then(response => {
-          console.log(response.data)
           this.getSubnetContent()
+          this.$emit('refresh', 'topology.node')
           this.showItem = false
         })
         .catch(e => {
@@ -333,7 +327,6 @@ export default {
           return
         }
       }
-
       axios.post('https://localhost:8787/api/topology/link', link, {
         headers: {},
       })
@@ -356,16 +349,13 @@ export default {
         })
       this.showCreateLink = false
     },
-    initEditLink (link) {
-      console.log('init edit link:', link.id)
-    },
+    initEditLink (link) {},
     patchLink (link) {},
     deleteLink (link) {
-      console.log('delete linkId:', link.id)
       axios.delete('https://localhost:8787/api/topology/link/' + link.id.toString())
         .then(response => {
-          console.log(response.data)
           this.getSubnetContent()
+          this.$emit('refresh', 'topology.link')
           this.showItem = false
         })
         .catch(e => {
@@ -389,7 +379,6 @@ export default {
         })
     },
     postLc (lc) {
-      // check if name already exists...
       for (var i = 0, len = this.links.length; i < len; i++) {
         if (this.links[i].name === lc.name) {
           this.showToast('Name ' + lc.name + ' already exists', {
@@ -422,15 +411,12 @@ export default {
         })
       this.showCreateLc = false
     },
-    initEditLc (lc) {
-      console.log('init edit linkConn:', lc.id)
-    },
+    initEditLc (lc) {},
     deleteLc (lc) {
-      console.log('delete linkConnId:', lc.id)
       axios.delete('https://localhost:8787/api/topology/linkConn/' + lc.id.toString())
         .then(response => {
-          console.log(response.data)
           this.getSubnetContent()
+          this.$emit('refresh', 'topology.lc')
           this.showItem = false
         })
         .catch(e => {
@@ -495,7 +481,6 @@ export default {
       this.showCreateTrail = true
     },
     postTrail (trail) {
-      // check if name already exists...
       for (var i = 0, len = this.trails.length; i < len; i++) {
         if (this.trails[i].name === trail.name) {
           this.showToast('Name ' + trail.name + ' already exists', {
@@ -506,12 +491,10 @@ export default {
           return
         }
       }
-
       axios.post('https://localhost:8787/api/topology/trail', trail, {
         headers: {},
       })
         .then(response => {
-          console.log(response.data)
           this.showToast('Trail ' + trail.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
@@ -529,15 +512,12 @@ export default {
         })
       this.showCreateTrail = false
     },
-    initEditTrail (trail) {
-      console.log('init edit trail: ', trail.id)
-    },
+    initEditTrail (trail) {},
     patchTrail (trail) {},
     deleteTrail (id) {
-      console.log('delete trailId: ', id)
       axios.delete('https://localhost:8787/api/topology/trail/' + id.toString())
         .then(response => {
-          console.log(response.data)
+          this.$emit('refresh', 'topology.trail')
           this.getTrails()
           this.showItem = false
         })
@@ -547,7 +527,7 @@ export default {
     },
 
     refresh (type) {
-      console.log('refresh ', type)
+      this.$emit('refresh', type)
       this.getSubnetContent()
       this.getTrails()
     },
@@ -574,10 +554,13 @@ export default {
 
     // Prefixes
     setPrefixes () {
-      const prefixesApi = 'https://localhost:8787/api/topology/prefixAnns'
+      let prefixesApi = 'https://localhost:8787/api/topology'
+      if (this.subnet.id !== 0) {
+        prefixesApi += '/subnet/' + this.subnet.id.toString()
+      }
+      prefixesApi += '/prefixAnns'
       axios.get(prefixesApi)
         .then(response => {
-          // console.log('trails: ' + response.data)
           this.processPrefixes(response.data)
         })
         .catch(e => {
@@ -592,12 +575,12 @@ export default {
       // const prefixesMap = new Map()
       prefixes.forEach(p => {
         // prefixesMap.set(ids, p)
-        if (this.nodes.some(n => n.id === p.nodeId)) {
+        if (this.nodes.some(n => n.id === p.originId)) {
           const newNode = { id: ids, name: p.name }
           newNode._color = 'gray'
           this.graphNodes.push(newNode)
           const newLink = {
-            sid: p.nodeId,
+            sid: p.originId,
             tid: ids,
           }
           newLink._color = 'gray'
@@ -605,6 +588,40 @@ export default {
           ids += 1
         }
       })
+    },
+
+    // Face auto generation
+    genFaces (lcId) {
+      const body = { vlinkConnId: lcId }
+      axios.post('https://localhost:8787/api/topology/genfaces', body, {
+        headers: {},
+      })
+        .then(response => {
+          if (response.data.message === 'faces_created') {
+            this.$emit('refresh', 'topology.face')
+            this.showToast('Faces created', {
+              icon: 'fa-check',
+              position: 'top-right',
+              duration: 5000,
+            })
+          } else {
+            console.log(response.data.message)
+            this.showToast('Face creation failed', {
+              icon: 'fa-close',
+              position: 'top-right',
+              duration: 5000,
+            })
+          }
+        })
+        .catch(e => {
+          console.log(e)
+          this.showToast('Face creation failed', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+        })
+      this.showItem = false
     },
   },
 }

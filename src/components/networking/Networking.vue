@@ -2,122 +2,157 @@
   <div class="networking">
     <div class="row">
       <div class="flex xs12">
-        <Topology
-          @refresh="topologyEvent"
-        />
+        <va-card :title="title">
+
+          <va-button v-if="subnets.length > 0" small outline :color="colorSelected(subnetAll.id)" @click="selectAllSubnets()"> {{ subnetAll.name }} </va-button>
+          <va-chip v-if="subnets.length == 0" color="gray">No Subnets to show</va-chip>
+
+          <va-popover v-for="(subnet, index) in subnets" :key="index"
+            :message="subnet.description"
+            placement="right"
+          >
+            <va-button small outline :color="colorSelected(subnet.id)"  @click="getSubnetIndex(index)">
+              {{ subnet.name }}
+            </va-button>
+          </va-popover>
+
+          <va-button class="x" small color="warning" @click="initCreateSubnet">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            Create subnet
+          </va-button>
+        </va-card>
       </div>
     </div>
-    <!-- div class="row">
-      <div class="flex xs12 lg6">
-        <Prefix
-          @action="prefixEvent"
-          :nodes="nodes"
-          :prefixes="prefixes"
-        />
+
+    <div class="row">
+      <div class="flex xs12">
+        <Topology ref="topology" :subnet="selectedSn" @refresh="refresh" />
       </div>
-      <div class="flex xs12 lg6">
-        <Route
-          @action="routeEvent"
-          :nodes="nodes"
-          :links="links"
-          :prefixes="prefixes"
-          :routes="routes"
-        />
+    </div>
+
+    <div class="row">
+      <div class="flex xs12">
+        <Routing ref="routing" :subnet="selectedSn" @refresh="refresh" />
       </div>
-    </div -->
+    </div>
+
+    <create-subnet @onOk="postSubnet" @onCancel="showCreateSubnet = false" :show="showCreateSubnet" :name="nextSnName" />
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 import Topology from './topology/Topology.vue'
-// import Prefix from './routing/Prefix.vue'
-// import Route from './routing/Route.vue'
+import Routing from './routing/Routing.vue'
+import CreateSubnet from './topology/Subnet/CreateSubnet.vue'
 
 export default {
   name: 'networking',
   components: {
     Topology,
-    // Prefix,
-    // Route,
+    Routing,
+    CreateSubnet,
   },
   data: function () {
     return {
-      nodes: [],
-      links: [],
-      linkConns: [],
-      prefixes: [],
-      routes: [],
+      title: 'Subnets',
+      subnetAll: {
+        id: 0,
+        name: 'all subnets',
+      },
+      subnets: [],
+      selectedSn: {},
+      showCreateSubnet: false,
+      nextSnName: 'sn-0',
     }
   },
   created () {
+    this.getAllSubnets()
+    this.selectAllSubnets()
   },
 
   methods: {
-    /* getTopology () {
-      const msgGetTopology = {
-        action: 'get_topology',
-        params: { },
-      }
-      const context = this
-      context.$eventBus.send('nms.topology', msgGetTopology, {}, function (err, reply) {
-        if (err) {
-          console.log('Error in sending message', err)
-        } else {
-          const repBody = reply.body
-          if (repBody.content) {
-            context.nodes = repBody.content.nodes
-            context.links = repBody.content.links
-            context.linkConns = repBody.content.linkConns
-          }
-        }
-      })
+    selectAllSubnets () {
+      this.selectedSn = this.subnetAll
     },
-    getPrefixes () {
-      const msgGetPref = {
-        action: 'get_all_reg_pref',
-        params: {},
-      }
-      const context = this
-      context.$eventBus.send('nms.routing', msgGetPref, {}, function (err, reply) {
-        if (err) {
-          console.log('Error in sending message', err)
-        } else {
-          const repBody = reply.body
-          if (repBody.content) {
-            context.prefixes = repBody.content.docs
-            // context.$refs.topology.processPrefixes()
-          }
-        }
-      })
+    getSubnetIndex (index) {
+      this.selectedSn = this.subnets[index]
     },
-    getRoutes () {
-      const msgGetRoutes = {
-        action: 'get_all_routes',
-        params: {},
-      }
-      const context = this
-      context.$eventBus.send('nms.routing', msgGetRoutes, {}, function (err, reply) {
-        if (err) {
-          console.log('Error in sending message', err)
-        } else {
-          const repBody = reply.body
-          if (repBody.content) {
-            context.routes = repBody.content.docs
-          }
-        }
-      })
-    }, */
 
-    topologyEvent (action, args) {
-      console.log(action, args)
+    // CRUD Subnet
+    getAllSubnets () {
+      axios.get('https://localhost:8787/api/topology/subnets')
+        .then(response => {
+          this.subnets = response.data
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
-    prefixEvent (action, args) {
-      console.log(action, args)
+    initCreateSubnet () {
+      this.getNextSnName()
+      this.showCreateSubnet = true
     },
-    routeEvent (action, args) {
-      console.log(action, args)
+    postSubnet (subnet) {
+      for (var i = 0, len = this.subnets.length; i < len; i++) {
+        if (this.subnets[i].name === subnet.name) {
+          this.showToast('Name ' + subnet.name + ' already exists', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+          return
+        }
+      }
+      axios.post('https://localhost:8787/api/topology/subnet', subnet, {
+        headers: {},
+      })
+        .then(response => {
+          // console.log(response.data)
+          this.showToast('Subnet ' + subnet.name + ' created', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 5000,
+          })
+          this.getAllSubnets()
+        })
+        .catch(e => {
+          console.log(e.response)
+          this.showToast('Subnet creation failed', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+        })
+      this.showCreateSubnet = false
+    },
+
+    colorSelected (id) {
+      if (id === this.selectedSn.id) {
+        return 'info'
+      } else {
+        return 'gray'
+      }
+    },
+
+    getNextSnName () {
+      // this.nodes.sort(function(a, b){return a.name - b.name})
+      if (this.subnets.length > 0) {
+        const maxSnNo = this.subnets[this.subnets.length - 1].name.split('-')[1]
+        this.nextSnName = 'sn-' + (parseInt(maxSnNo, 10) + 1)
+      }
+    },
+
+    refresh (type) {
+      const source = type.split('.')[0]
+      if (source === 'routing') {
+        this.$refs.topology.refreshAll()
+      } else {
+        this.$refs.routing.refreshAll()
+      }
     },
   },
+
   /* eventbus: {
     lifecycleHooks: {
       created (context, eventbus) {

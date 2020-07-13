@@ -204,9 +204,8 @@ export default {
       console.log('delete linkConnId:', lc.id)
       axios.delete('https://localhost:8787/api/topology/linkConn/' + lc.id.toString())
         .then(response => {
-          // notify subnet:
           this.showItem = false
-          this.$emit('refresh', 'lc.deleted')
+          this.$emit('refresh', 'topology.lc')
           this.getLcsByLink()
         })
         .catch(e => {

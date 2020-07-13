@@ -90,7 +90,8 @@
 
         <div class="text-center mt-3">
           <div class="flex xs12">
-            <va-button small color="danger" @click="onDelete(linkConn)"> Delete </va-button>
+            <va-button small color="warning" @click="onGenFaces(linkConn.id)"> Gen. Faces </va-button>
+            <va-button class="ml-2" small color="danger" @click="onDelete(linkConn)"> Delete </va-button>
             <va-button small color="info" @click="onEdit(linkConn)"> Edit </va-button>
           </div>
         </div>
@@ -103,7 +104,7 @@
 <script>
 export default {
   name: 'LinkConnItem',
-  props: ['linkConn', 'onEdit', 'onDelete'],
+  props: ['linkConn', 'onEdit', 'onDelete', 'onGenFaces'],
 
   data: function () {
     return {

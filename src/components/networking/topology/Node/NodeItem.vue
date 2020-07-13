@@ -144,7 +144,7 @@
       size="large"
       hideDefaultActions
     >
-      <ltp-item v-if="type === 1" :ltp="selectedLtp" :onDelete="deleteLtp" :onEdit="initEditLtp" />
+      <ltp-item v-if="type === 1" :ltp="selectedLtp" :onDelete="deleteLtp" :onEdit="initEditLtp" @refresh="refresh" />
       <xc-item v-if="type === 2" :xc="selectedXc" :onDelete="deleteXc" :onEdit="initEditXc" />
     </va-modal>
 
@@ -195,12 +195,10 @@ export default {
   methods: {
     // CRUD LTP
     initAddLtp () {
-      // console.log('init add LTP for nodeId:', this.node.id)
       this.getNextLtpName()
       this.showCreateLtp = true
     },
     postLtp (ltp) {
-      // check if name already exists...
       for (var i = 0, len = this.node.vltps.length; i < len; i++) {
         if (this.node.vltps[i].name === ltp.name) {
           this.showToast('Name ' + ltp.name + ' already exists', {
@@ -211,7 +209,6 @@ export default {
           return
         }
       }
-
       axios.post('https://localhost:8787/api/topology/ltp', ltp, {
         headers: {},
       })
@@ -222,7 +219,6 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
-          // this.$emit('refresh', 'node.ltp.add')
           this.getLtpsByNode()
         })
         .catch(e => {
@@ -249,16 +245,14 @@ export default {
           console.log(e)
         })
     },
-    initEditLtp (ltp) {
-      console.log('init edit LTP:', ltp.name)
-    },
+    initEditLtp (ltp) {},
     patchLtp (ltp) {},
     deleteLtp (id) {
       console.log('delete LTP:', id)
       axios.delete('https://localhost:8787/api/topology/ltp/' + id.toString())
         .then(response => {
           console.log(response.data)
-          this.$emit('refresh', 'ltp.delete')
+          this.$emit('refresh', 'topology.ltp')
           this.showItem = false
           this.getLtpsByNode()
         })
@@ -278,7 +272,6 @@ export default {
               duration: 5000,
             })
           } else {
-            // console.log('init add XC for nodeId:', this.node.id)
             this.getNextXcName()
             this.showCreateXc = true
           }
@@ -292,7 +285,6 @@ export default {
         })
     },
     postXc (xc) {
-      // check if name already exists...
       for (var i = 0, len = this.node.vxcs.length; i < len; i++) {
         if (this.node.vxcs[i].name === xc.name) {
           this.showToast('Name ' + xc.name + ' already exists', {
@@ -303,7 +295,6 @@ export default {
           return
         }
       }
-
       axios.post('https://localhost:8787/api/topology/xc', xc, {
         headers: {},
       })
@@ -314,7 +305,6 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
-          // this.$emit('refresh', 'node.xc.add')
           this.getXcsByNode()
         })
         .catch(e => {
@@ -341,16 +331,13 @@ export default {
           console.log(e)
         })
     },
-    initEditXc (xc) {
-      console.log('init edit XC:', xc.name)
-    },
+    initEditXc (xc) {},
     patchXc (xc) {},
     deleteXc (id) {
-      console.log('delete XC:', id)
       axios.delete('https://localhost:8787/api/topology/xc/' + id.toString())
         .then(response => {
           console.log(response.data)
-          // this.$emit('refresh', 'xc.delete')
+          this.$emit('refresh', 'topology.xc')
           this.showItem = false
           this.getXcsByNode()
         })
@@ -382,11 +369,7 @@ export default {
     },
 
     refresh (type) {
-      console.log('node refresh ', type)
-      if (type === 'ltp.ctp.delete') {
-        // notify subnet:
-        this.$emit('refresh', type)
-      }
+      this.$emit('refresh', type)
     },
     getStatusColor (status) {
       if (status === 'DOWN') {
