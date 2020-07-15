@@ -1,9 +1,11 @@
 <template>
   <div>
     <div class="row">
-      <div class="flex md4">
+      <div class="flex md4 column">
         <va-card :title="tFace">
-          <face-table :faces="faces" :onDelete="deleteFace" ></face-table>
+          <div class="table-card">
+            <face-table :faces="faces" :onDelete="deleteFace" ></face-table>
+          </div>
           <div class="text-center mt-5">
             <va-button disabled small color="warning">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
@@ -13,9 +15,11 @@
         </va-card>
       </div>
 
-      <div class="flex md4">
+      <div class="flex md4 column">
         <va-card :title="tPa">
-          <p-a-table :pas="pas" :onDelete="deletePrefixAnn" :onGenRoutes="genRoutes"></p-a-table>
+          <div class="table-card">
+            <p-a-table :pas="pas" :onDelete="deletePrefixAnn" :onGenRoutes="genRoutes"></p-a-table>
+          </div>
           <div class="text-center mt-5">
             <va-button small color="warning" @click="initPrefixAnn">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
@@ -25,9 +29,11 @@
         </va-card>
       </div>
 
-      <div class="flex md4">
+      <div class="flex md4 column">
         <va-card :title="tRoute">
-          <route-table :routes="routes" :onDelete="deleteRoute"></route-table>
+          <div class="table-card">
+            <route-table :routes="routes" :onDelete="deleteRoute"></route-table>
+          </div>
           <div class="text-center mt-5">
             <va-button disabled small color="warning">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
@@ -244,4 +250,15 @@ export default {
 
 </script>
 <style lang="stylus">
+.table-card {
+  margin-bottom: 0 !important;
+  max-height: 400px;
+  overflow: scroll;
+}
+
+.column &.va-card__body {
+  padding-right: 1px;
+  padding-left: 1px;
+}
+
 </style>

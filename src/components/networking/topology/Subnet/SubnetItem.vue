@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row row-equal">
-      <div class="flex lg9">
+      <div class="flex lg8">
         <va-card :title="tTopology">
           <div class="row mt-1">
             <va-button-toggle
@@ -43,7 +43,7 @@
         </va-card>
       </div>
 
-      <div class="flex lg3">
+      <div class="flex lg4">
         <va-card :title="tTrails">
           <trail-table :trails="trails" :onSelected="getTrail" />
           <div v-if="subnet.id != 0" class="text-center mt-5">
@@ -136,6 +136,9 @@ export default {
       showCreateTrail: false,
 
       nextNodeName: '',
+
+      maxNodeId: 0,
+      maxLinkId: 0,
     }
   },
   created () {
@@ -200,7 +203,7 @@ export default {
       this.graphNodes = []
       this.graphLinks = []
       this.nodes.forEach(node => {
-        const newNode = { id: node.id, name: node.name }
+        const newNode = { id: node.id, name: '[' + node.id + '] ' + node.name }
         /* if (node.type === 'fwd') {
           newNode = Object.assign(newNode, { svgSym: icons.routerIcon, svgIcon: null, svgObj: null })
         } else if (node.type === 'switch') {
@@ -435,13 +438,18 @@ export default {
 
     // call get...
     nodeClick (event, node) {
-      this.getNode(node.id)
+      if (node.id <= this.maxNodeId) {
+        this.getNode(node.id)
+      }
+      // else: it's a prefix
     },
     linkClick (event, link) {
-      if (this.kind === 'link') {
-        this.getLink(link.id)
-      } else {
-        this.getLc(link.id)
+      if (link.id <= this.maxLinkId) {
+        if (this.kind === 'link') {
+          this.getLink(link.id)
+        } else {
+          this.getLc(link.id)
+        }
       }
     },
 
@@ -571,21 +579,26 @@ export default {
       if (this.graphNodes.length === 0) {
         return
       }
-      let ids = this.nodes[this.nodes.length - 1].id + 1
-      // const prefixesMap = new Map()
+
+      this.maxNodeId = Math.max.apply(Math, this.nodes.map(function (o) { return o.id }))
+      this.maxLinkId = Math.max.apply(Math, this.links.map(function (o) { return o.id }))
+
+      let nodeIds = this.maxNodeId + 1
+      let edgeIds = this.maxLinkId + 1
       prefixes.forEach(p => {
-        // prefixesMap.set(ids, p)
         if (this.nodes.some(n => n.id === p.originId)) {
-          const newNode = { id: ids, name: p.name }
+          const newNode = { id: nodeIds, name: p.name }
           newNode._color = 'gray'
           this.graphNodes.push(newNode)
           const newLink = {
+            id: edgeIds,
             sid: p.originId,
-            tid: ids,
+            tid: nodeIds,
           }
           newLink._color = 'gray'
           this.graphLinks.push(newLink)
-          ids += 1
+          nodeIds += 1
+          edgeIds += 1
         }
       })
     },
@@ -631,6 +644,11 @@ export default {
 .topology {
   height: 500px;
   max-height: 800px;
+}
+
+.net-svg {
+  width: 100%;
+  height: 100%;
 }
 
 </style>

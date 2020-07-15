@@ -14,7 +14,8 @@
           <th>Face</th>
           <th>Cost</th>
           <th>Origin</th>
-          <th>Actions</th>
+          <th>Created</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -25,9 +26,9 @@
           <td>{{ route.faceId }}</td>
           <td>{{ route.cost }}</td>
           <td>{{ route.origin }}</td>
+          <td>{{ new Date(route.created).toLocaleString() }}</td>
           <td>
-            <va-button small color="danger" @click="onDelete(route.id)"> Delete </va-button>
-          <!-- va-button small color="info" @click="onEdit(route)"> Edit </va-button -->
+            <va-button flat color="danger" icon="fa fa-trash-o" @click="onDelete(route.id)" />
           </td>
         </tr>
       </tbody>

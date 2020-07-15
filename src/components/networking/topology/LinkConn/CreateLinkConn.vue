@@ -167,6 +167,7 @@ export default {
       this.infoArray = [['', '']]
       this.srcVctpName = ''
       this.destVctpName = ''
+      this.linkName = ''
       this.error = ''
       this.showModal = true
     },
@@ -232,7 +233,6 @@ export default {
           }
         }
       }
-      console.log('nLc: ', JSON.stringify(this.nLc))
       this.$emit('onOk', this.nLc)
     },
     cancel () {

@@ -12,7 +12,7 @@
           <th>Origin</th>
           <th>Advertized</th>
           <th>Expiration</th>
-          <th>Actions</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -22,9 +22,9 @@
           <td>{{ new Date(pa.created).toLocaleString() }}</td>
           <td>{{ new Date(pa.expiration).toLocaleString() }}</td>
           <td>
-            <va-button small color="danger" @click="onDelete(pa.id)"> Withdraw </va-button>
-            <va-button small color="warning" @click="onGenRoutes(pa.name)"> Gen. Routes </va-button>
-          <!-- va-button small color="info" @click="onEdit(pa)"> Edit </va-button -->
+
+            <va-button flat color="danger" icon="fa fa-trash-o" @click="onDelete(pa.id)" />
+            <va-button flat color="info" icon="fa fa-arrows" @click="onGenRoutes(pa.name)" />
           </td>
         </tr>
       </tbody>
