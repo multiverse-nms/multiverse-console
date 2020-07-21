@@ -70,7 +70,6 @@ export default {
     return {
       showModal: false,
       error: '',
-      // infoStr: '{}',
       infoArray: [['', '']],
       nSubnet: {
         name: '',
@@ -101,7 +100,6 @@ export default {
   },
   methods: {
     initCreateModal () {
-      console.log('init create subnet modal')
       this.nSubnet = {
         name: this.name,
         label: '',
@@ -134,7 +132,6 @@ export default {
           }
         }
       }
-      // console.log(JSON.stringify(this.nSubnet))
       this.$emit('onOk', this.nSubnet)
     },
     cancel () {
@@ -142,7 +139,6 @@ export default {
       this.showModal = false
     },
   },
-
 }
 </script>
 

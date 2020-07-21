@@ -18,7 +18,7 @@
         <div class="flex xs12">
           <label class="label">Link</label>
           <va-select
-            v-model="linkName"
+            v-model="selectedLinkName"
             textBy="source"
             :options="Array.from(linksNameToId.keys())"
           />
@@ -41,27 +41,6 @@
         <div class="flex xs12">
           <label class="label">Description</label>
           <va-input v-model="nLc.description"/>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Source CTP</label>
-          <va-select
-            v-model="srcVctpName"
-            textBy="source"
-            :options="Array.from(ctpsNameToId.keys())"
-          />
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Destination CTP</label>
-          <va-select
-            v-model="destVctpName"
-            textBy="source"
-            :options="Array.from(ctpsNameToId.keys())"
-          />
         </div>
       </div>
 
@@ -97,7 +76,7 @@ import axios from 'axios'
 
 export default {
   name: 'CreateLinkConn',
-  props: ['show', 'linkId'],
+  props: ['show', 'linkId', 'linkName'],
 
   data: function () {
     return {
@@ -113,11 +92,8 @@ export default {
         destVctpId: 0,
         vlinkId: 0,
       },
-      srcVctpName: '',
-      destVctpName: '',
-      linkName: '',
+      selectedLinkName: '',
       selectLink: false,
-      ctpsNameToId: new Map(),
       linksNameToId: new Map(),
     }
   },
@@ -135,24 +111,19 @@ export default {
       },
       deep: true,
     },
-    srcVctpName: function (newVal, oldVal) {
-      this.nLc.name = newVal + '=' + this.destVctpName
-    },
-    destVctpName: function (newVal, oldVal) {
-      this.nLc.name = this.srcVctpName + '=' + newVal
-    },
-    linkName: function (newVal, oldVal) {
-      console.log('get ctps for link: ', newVal)
-      this.getCtpsByLink(this.linksNameToId.get(newVal))
+    selectedLinkName: function (newVal, oldVal) {
+      this.nLc.name = this.setNextLcName(this.linksNameToId.get(newVal))
     },
   },
   methods: {
     initCreateLc () {
       if (this.linkId > 0) {
+        this.selectedLinkName = this.linkName
+        this.setNextLcName(this.linkId)
         this.selectLink = false
-        this.getCtpsByLink(this.linkId)
       } else {
         this.getLinks()
+        this.selectedLinkName = ''
         this.selectLink = true
       }
       this.nLc = {
@@ -165,9 +136,6 @@ export default {
         vlinkId: this.linkId,
       }
       this.infoArray = [['', '']]
-      this.srcVctpName = ''
-      this.destVctpName = ''
-      this.linkName = ''
       this.error = ''
       this.showModal = true
     },
@@ -177,19 +145,20 @@ export default {
         this.infoArray.push(['', ''])
       }
     },
-    getCtpsByLink (id) {
-      const ctpsApi = 'https://localhost:8787/api/topology/link/' + id + '/ctps'
-      axios.get(ctpsApi)
+    setNextLcName (id) {
+      const lcsApi = 'https://localhost:8787/api/topology/link/' + id + '/linkConns'
+      axios.get(lcsApi)
         .then(response => {
-          // this.ltps = response.data
-          this.ctpsNameToId = new Map()
-          response.data.forEach(ctp => {
-            if (!ctp.busy) {
-              this.ctpsNameToId.set(ctp.name, ctp.id)
-            }
-          })
+          const lcs = response.data
+          if (lcs.length > 0) {
+            const maxLcNo = lcs[lcs.length - 1].name.split('|')[1].substring(1)
+            this.nLc.name = this.selectedLinkName + '|c' + (parseInt(maxLcNo, 10) + 1)
+          } else {
+            this.nLc.name = this.selectedLinkName + '|c0'
+          }
         })
         .catch(e => {
+          this.nLc.name = 'undefined'
           console.log(e)
         })
     },
@@ -207,20 +176,12 @@ export default {
         })
     },
     submit () {
-      const srcNode = this.srcVctpName.split(':')[1]
-      const destNode = this.destVctpName.split(':')[1]
-      if (srcNode === destNode) {
-        this.error = 'Source and destination nodes must be different'
-        return
-      }
-      if (this.nLc.name === '') {
+      if (this.nLc.name === 'undefined') {
         this.error = 'Name is required'
         return
       }
-      this.nLc.srcVctpId = this.ctpsNameToId.get(this.srcVctpName)
-      this.nLc.destVctpId = this.ctpsNameToId.get(this.destVctpName)
       if (this.linkId === 0) {
-        this.nLc.vlinkId = this.linksNameToId.get(this.linkName)
+        this.nLc.vlinkId = this.linksNameToId.get(this.selectedLinkName)
       }
       for (var i = 0, len = this.infoArray.length; i < len; i++) {
         const item = this.infoArray[i]

@@ -199,17 +199,7 @@ export default {
       this.showCreateLtp = true
     },
     postLtp (ltp) {
-      for (var i = 0, len = this.node.vltps.length; i < len; i++) {
-        if (this.node.vltps[i].name === ltp.name) {
-          this.showToast('Name ' + ltp.name + ' already exists', {
-            icon: 'fa-close',
-            position: 'top-right',
-            duration: 5000,
-          })
-          return
-        }
-      }
-      axios.post('https://localhost:8787/api/topology/ltp', ltp, {
+      axios.post('https://localhost:8787/api/topology/ltps', ltp, {
         headers: {},
       })
         .then(response => {
@@ -285,17 +275,7 @@ export default {
         })
     },
     postXc (xc) {
-      for (var i = 0, len = this.node.vxcs.length; i < len; i++) {
-        if (this.node.vxcs[i].name === xc.name) {
-          this.showToast('Name ' + xc.name + ' already exists', {
-            icon: 'fa-close',
-            position: 'top-right',
-            duration: 5000,
-          })
-          return
-        }
-      }
-      axios.post('https://localhost:8787/api/topology/xc', xc, {
+      axios.post('https://localhost:8787/api/topology/xcs', xc, {
         headers: {},
       })
         .then(response => {

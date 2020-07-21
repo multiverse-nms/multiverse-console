@@ -99,10 +99,10 @@
           <p class="display-5">CTPs</p>
           <div class="mt-3">
             <ctp-table :ctps="ltp.vctps" :onSelected="getCtp" />
-            <va-button small class="mt-3" color="warning" @click="initAddCtp()">
+            <!-- va-button small class="mt-3" color="warning" @click="initAddCtp()">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
               Add CTP
-            </va-button>
+            </va-button -->
           </div>
         </div>
       </div>
@@ -169,17 +169,7 @@ export default {
       this.showCreateCtp = true
     },
     postCtp (ctp) {
-      for (var i = 0, len = this.ltp.vctps.length; i < len; i++) {
-        if (this.ltp.vctps[i].name === ctp.name) {
-          this.showToast('Name ' + ctp.name + ' already exists', {
-            icon: 'fa-close',
-            position: 'top-right',
-            duration: 5000,
-          })
-          return
-        }
-      }
-      axios.post('https://localhost:8787/api/topology/ctp', ctp, {
+      axios.post('https://localhost:8787/api/topology/ctps', ctp, {
         headers: {},
       })
         .then(response => {

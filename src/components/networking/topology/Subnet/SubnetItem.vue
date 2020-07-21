@@ -18,6 +18,7 @@
               :net-nodes="graphNodes"
               :net-links="graphLinks"
               :options="options"
+              :nodeCb="nodeCb"
               @node-click="nodeClick"
               @link-click="linkClick"
             />
@@ -118,6 +119,7 @@ export default {
 
       nodes: [],
       links: [],
+      pas: [],
       trails: [],
 
       graphNodes: [],
@@ -136,9 +138,6 @@ export default {
       showCreateTrail: false,
 
       nextNodeName: '',
-
-      maxNodeId: 0,
-      maxLinkId: 0,
     }
   },
   created () {
@@ -147,14 +146,14 @@ export default {
   computed: {
     options () {
       return {
-        force: 3000,
-        size: { w: 800, h: 400 },
-        nodeSize: 40,
+        force: 2000,
+        // size: { w: 800, h: 500 },
+        nodeSize: 50,
         nodeLabels: true,
-        linkLabels: true,
+        linkLabels: false,
         canvas: false,
         linkWidth: 3,
-        fontSize: 16,
+        fontSize: 18,
       }
     },
   },
@@ -172,14 +171,18 @@ export default {
   },
   methods: {
     getSubnetContent () {
-      let nodesApi = 'https://localhost:8787/api/topology/'
-      let linksApi = 'https://localhost:8787/api/topology/'
+      const api = 'https://localhost:8787/api/topology/'
+      let nodesApi = ''
+      let linksApi = ''
+      let pasApi = ''
       if (this.subnet.id === 0) {
-        nodesApi = nodesApi + 'nodes'
-        linksApi = linksApi + this.kind + 's'
+        pasApi = api + 'prefixAnns'
+        nodesApi = api + 'nodes'
+        linksApi = api + this.kind + 's'
       } else {
-        nodesApi = nodesApi + 'subnet/' + this.subnet.id.toString() + '/nodes'
-        linksApi = linksApi + 'subnet/' + this.subnet.id.toString() + '/' + this.kind + 's'
+        nodesApi = api + 'subnet/' + this.subnet.id.toString() + '/nodes'
+        linksApi = api + 'subnet/' + this.subnet.id.toString() + '/' + this.kind + 's'
+        pasApi = api + '/subnet/' + this.subnet.id.toString() + '/prefixAnns'
       }
       axios.get(nodesApi)
         .then(response => {
@@ -187,8 +190,14 @@ export default {
           axios.get(linksApi)
             .then(response => {
               this.links = response.data
-              this.processGraph()
-              this.setPrefixes()
+              axios.get(pasApi)
+                .then(response => {
+                  this.pas = response.data
+                  this.processGraph()
+                })
+                .catch(e => {
+                  console.log(e)
+                })
             })
             .catch(e => {
               console.log(e)
@@ -203,20 +212,44 @@ export default {
       this.graphNodes = []
       this.graphLinks = []
       this.nodes.forEach(node => {
-        const newNode = { id: node.id, name: '[' + node.id + '] ' + node.name }
+        /* const coord = {
+          x: Math.floor(Math.random() * Math.floor(800)),
+          y: Math.floor(Math.random() * Math.floor(500)),
+        } */
+        const numPas = this.pas.reduce((n, pa) => n + (pa.originId === node.id), 0)
+        let pasLabel = ''
+        if (numPas > 0) {
+          let p = 'prefix'
+          if (numPas > 1) {
+            p += 'es'
+          }
+          pasLabel = '\n[' + numPas + ' ' + p + ']'
+        }
+        /* let nodeLabel = ''
+        if (node.label !== '') {
+          nodeLabel = '\n' + node.label
+        } */
+        const newNode = {
+          id: node.id,
+          name: node.name.split(':')[1] + pasLabel,
+          pinned: true,
+          fixed: true,
+          fx: node.posx,
+          fy: node.posy,
+        }
         /* if (node.type === 'fwd') {
           newNode = Object.assign(newNode, { svgSym: icons.routerIcon, svgIcon: null, svgObj: null })
         } else if (node.type === 'switch') {
           newNode = Object.assign(newNode, { svgSym: icons.routerIcon, svgIcon: null, svgObj: null })
         } */
         newNode._color = this.getStatusColor(node.status)
+        newNode._labelClass = 'node-label'
         this.graphNodes.push(newNode)
       })
       this.links.forEach(link => {
         if (this.kind === 'linkConn' || this.subnet.id === 0 || link.type === 'IN') {
           const newLink = {
             id: link.id,
-            name: link.id,
             sid: link.srcVnodeId,
             tid: link.destVnodeId,
           }
@@ -229,18 +262,13 @@ export default {
     // CRUD Node
     getNode (id) {
       this.showItem = false
-      console.log('get nodeId:', id)
-
       const nodeApi = 'https://localhost:8787/api/topology/node/' + id.toString()
       const xcsApi = 'https://localhost:8787/api/topology/node/' + id.toString() + '/xcs'
-
       axios.get(nodeApi)
         .then(response => {
-          // console.log('nodes: ' + response.data)
           this.selectedNode = response.data
           axios.get(xcsApi)
             .then(response => {
-              // console.log('links: ' + response.data)
               this.selectedNode.vxcs = response.data
               this.showItem = true
               this.type = 1
@@ -258,21 +286,10 @@ export default {
       this.showCreateNode = true
     },
     postNode (node) {
-      for (var i = 0, len = this.nodes.length; i < len; i++) {
-        if (this.nodes[i].name === node.name) {
-          this.showToast('Name ' + node.name + ' already exists', {
-            icon: 'fa-close',
-            position: 'top-right',
-            duration: 5000,
-          })
-          return
-        }
-      }
-      axios.post('https://localhost:8787/api/topology/node', node, {
+      axios.post('https://localhost:8787/api/topology/nodes', node, {
         headers: {},
       })
         .then(response => {
-          console.log(response.data)
           this.showToast('Node ' + node.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
@@ -291,7 +308,27 @@ export default {
       this.showCreateNode = false
     },
     initEditNode (node) {},
-    patchNode (node) {},
+    updateNode (node) {
+      axios.put('https://localhost:8787/api/topology/node/' + node.id, node, {
+        headers: {},
+      })
+        .then(response => {
+          this.showToast('Node ' + node.name + ' updated', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 5000,
+          })
+          this.getSubnetContent()
+        })
+        .catch(e => {
+          console.log(e)
+          this.showToast('Failed to update node', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+        })
+    },
     deleteNode (id) {
       axios.delete('https://localhost:8787/api/topology/node/' + id.toString())
         .then(response => {
@@ -307,7 +344,6 @@ export default {
     // CRUD Link
     getLink (id) {
       this.showItem = false
-      console.log('get linkId:', id)
       const linkApi = 'https://localhost:8787/api/topology/link/' + id.toString()
       axios.get(linkApi)
         .then(response => {
@@ -320,21 +356,10 @@ export default {
         })
     },
     postLink (link) {
-      for (var i = 0, len = this.links.length; i < len; i++) {
-        if (this.links[i].name === link.name) {
-          this.showToast('Name ' + link.name + ' already exists', {
-            icon: 'fa-close',
-            position: 'top-right',
-            duration: 5000,
-          })
-          return
-        }
-      }
-      axios.post('https://localhost:8787/api/topology/link', link, {
+      axios.post('https://localhost:8787/api/topology/links', link, {
         headers: {},
       })
         .then(response => {
-          console.log(response.data)
           this.showToast('Link ' + link.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
@@ -369,7 +394,6 @@ export default {
     // CRUD LinkConn
     getLc (id) {
       this.showItem = false
-      console.log('get linkConnId:', id)
       const lcApi = 'https://localhost:8787/api/topology/linkConn/' + id.toString()
       axios.get(lcApi)
         .then(response => {
@@ -382,21 +406,10 @@ export default {
         })
     },
     postLc (lc) {
-      for (var i = 0, len = this.links.length; i < len; i++) {
-        if (this.links[i].name === lc.name) {
-          this.showToast('Name ' + lc.name + ' already exists', {
-            icon: 'fa-close',
-            position: 'top-right',
-            duration: 5000,
-          })
-          return
-        }
-      }
-      axios.post('https://localhost:8787/api/topology/linkConn', lc, {
+      axios.post('https://localhost:8787/api/topology/linkConns', lc, {
         headers: {},
       })
         .then(response => {
-          console.log(response.data)
           this.showToast('LinkConn ' + lc.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
@@ -436,20 +449,26 @@ export default {
       }
     },
 
-    // call get...
     nodeClick (event, node) {
-      if (node.id <= this.maxNodeId) {
+      const sNode = this.nodes.find(x => x.id === node.id)
+      const dist = Math.sqrt(Math.pow(sNode.posx - node.fx, 2) + Math.pow(sNode.posy - node.fy, 2))
+      if (dist < 10) {
         this.getNode(node.id)
+      } else {
+        if (confirm('Move node?')) {
+          sNode.posx = node.fx
+          sNode.posy = node.fy
+          this.updateNode(sNode)
+        } else {
+          this.processGraph()
+        }
       }
-      // else: it's a prefix
     },
     linkClick (event, link) {
-      if (link.id <= this.maxLinkId) {
-        if (this.kind === 'link') {
-          this.getLink(link.id)
-        } else {
-          this.getLc(link.id)
-        }
+      if (this.kind === 'link') {
+        this.getLink(link.id)
+      } else {
+        this.getLc(link.id)
       }
     },
 
@@ -463,7 +482,6 @@ export default {
       }
       axios.get(trailsApi)
         .then(response => {
-          // console.log('trails: ' + response.data)
           this.trails = response.data
         })
         .catch(e => {
@@ -473,7 +491,6 @@ export default {
 
     getTrail (id) {
       this.showItem = false
-      console.log('get trailId:', id)
       const trailApi = 'https://localhost:8787/api/topology/trail/' + id.toString()
       axios.get(trailApi)
         .then(response => {
@@ -499,7 +516,7 @@ export default {
           return
         }
       }
-      axios.post('https://localhost:8787/api/topology/trail', trail, {
+      axios.post('https://localhost:8787/api/topology/trails', trail, {
         headers: {},
       })
         .then(response => {
@@ -559,48 +576,8 @@ export default {
         return 'yellow'
       }
     },
-
-    // Prefixes
-    setPrefixes () {
-      let prefixesApi = 'https://localhost:8787/api/topology'
-      if (this.subnet.id !== 0) {
-        prefixesApi += '/subnet/' + this.subnet.id.toString()
-      }
-      prefixesApi += '/prefixAnns'
-      axios.get(prefixesApi)
-        .then(response => {
-          this.processPrefixes(response.data)
-        })
-        .catch(e => {
-          console.log(e)
-        })
-    },
-    processPrefixes (prefixes) {
-      if (this.graphNodes.length === 0) {
-        return
-      }
-
-      this.maxNodeId = Math.max.apply(Math, this.nodes.map(function (o) { return o.id }))
-      this.maxLinkId = Math.max.apply(Math, this.links.map(function (o) { return o.id }))
-
-      let nodeIds = this.maxNodeId + 1
-      let edgeIds = this.maxLinkId + 1
-      prefixes.forEach(p => {
-        if (this.nodes.some(n => n.id === p.originId)) {
-          const newNode = { id: nodeIds, name: p.name }
-          newNode._color = 'gray'
-          this.graphNodes.push(newNode)
-          const newLink = {
-            id: edgeIds,
-            sid: p.originId,
-            tid: nodeIds,
-          }
-          newLink._color = 'gray'
-          this.graphLinks.push(newLink)
-          nodeIds += 1
-          edgeIds += 1
-        }
-      })
+    nodeCb (node) {
+      return node
     },
 
     // Face auto generation
@@ -643,12 +620,17 @@ export default {
 <style lang="stylus">
 .topology {
   height: 500px;
-  max-height: 800px;
+  max-height: 500px;
 }
 
 .net-svg {
   width: 100%;
   height: 100%;
+}
+
+.node-label {
+  white-space: pre-line;
+  text-align: center;
 }
 
 </style>

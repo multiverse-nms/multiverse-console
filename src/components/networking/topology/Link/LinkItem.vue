@@ -116,7 +116,7 @@
       </div>
 
     </div>
-    <create-link-conn @onOk="postLc" @onCancel="showAddLc = false" :show="showAddLc" :linkId="link.id"/>
+    <create-link-conn @onOk="postLc" @onCancel="showAddLc = false" :show="showAddLc" :linkId="link.id" :linkName="link.name"/>
     <va-modal
       v-model="showItem"
       size="large"
@@ -173,7 +173,7 @@ export default {
       this.showAddLc = true
     },
     postLc (lc) {
-      axios.post('https://localhost:8787/api/topology/linkConn', lc, {
+      axios.post('https://localhost:8787/api/topology/linkConns', lc, {
         headers: {},
       })
         .then(response => {
@@ -187,11 +187,6 @@ export default {
         })
         .catch(e => {
           console.log(e)
-          this.showToast('LinkConn creation failed', {
-            icon: 'fa-close',
-            position: 'top-right',
-            duration: 5000,
-          })
         })
       this.showAddLc = false
     },
@@ -207,6 +202,17 @@ export default {
           this.showItem = false
           this.$emit('refresh', 'topology.lc')
           this.getLcsByLink()
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
+
+    getLcsByLink () {
+      const lcsApi = 'https://localhost:8787/api/topology/link/' + this.link.id.toString() + '/linkConns'
+      axios.get(lcsApi)
+        .then(response => {
+          this.link.vlinkConns = response.data
         })
         .catch(e => {
           console.log(e)

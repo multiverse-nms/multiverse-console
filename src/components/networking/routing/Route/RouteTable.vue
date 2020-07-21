@@ -14,19 +14,19 @@
           <th>Face</th>
           <th>Cost</th>
           <th>Origin</th>
-          <th>Created</th>
+          <th>Updated</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(route, index) in routes" :key="index" >
-          <td>{{ route.nodeId }}</td>
+          <td>{{ findNodeName(route.nodeId) }}</td>
           <td>{{ route.prefix }}</td>
-          <td>{{ route.nextHopId }}</td>
+          <td>{{ findNodeName(route.nextHopId) }}</td>
           <td>{{ route.faceId }}</td>
           <td>{{ route.cost }}</td>
           <td>{{ route.origin }}</td>
-          <td>{{ new Date(route.created).toLocaleString() }}</td>
+          <td>{{ new Date(route.updated).toLocaleString() }}</td>
           <td>
             <va-button flat color="danger" icon="fa fa-trash-o" @click="onDelete(route.id)" />
           </td>
@@ -39,7 +39,7 @@
 <script>
 export default {
   name: 'RouteTable',
-  props: ['routes', 'onDelete'],
+  props: ['routes', 'nodes', 'onDelete'],
   components: {
   },
   data: function () {
@@ -51,6 +51,9 @@ export default {
   watch: {
   },
   methods: {
+    findNodeName (id) {
+      return this.nodes.find(x => x.id === id).name.split(':')[1]
+    },
   },
   computed: {},
 }

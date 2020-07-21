@@ -94,21 +94,10 @@ export default {
       this.showCreateSubnet = true
     },
     postSubnet (subnet) {
-      for (var i = 0, len = this.subnets.length; i < len; i++) {
-        if (this.subnets[i].name === subnet.name) {
-          this.showToast('Name ' + subnet.name + ' already exists', {
-            icon: 'fa-close',
-            position: 'top-right',
-            duration: 5000,
-          })
-          return
-        }
-      }
       axios.post('https://localhost:8787/api/topology/subnet', subnet, {
         headers: {},
       })
         .then(response => {
-          // console.log(response.data)
           this.showToast('Subnet ' + subnet.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
@@ -117,7 +106,7 @@ export default {
           this.getAllSubnets()
         })
         .catch(e => {
-          console.log(e.response)
+          console.log(e)
           this.showToast('Subnet creation failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -144,11 +133,15 @@ export default {
     },
 
     refresh (type) {
-      const source = type.split('.')[0]
-      if (source === 'routing') {
+      const refType = type.split('.')
+      if (refType[0] === 'routing') {
         this.$refs.topology.refreshAll()
       } else {
         this.$refs.routing.refreshAll()
+      }
+      if (refType[1] === 'subnet') {
+        this.getAllSubnets()
+        this.selectAllSubnets()
       }
     },
   },

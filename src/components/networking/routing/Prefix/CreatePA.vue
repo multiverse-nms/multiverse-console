@@ -32,13 +32,6 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Expiration time</label>
-          <va-input v-model="nPA.expiration"/>
-        </div>
-      </div>
-
       <div class="row mt-5">
         <div class="flex xs6 offset--xs6">
           <va-button  small color="danger" @click="cancel"> Cancel </va-button>
@@ -62,7 +55,6 @@ export default {
       nPA: {
         name: '/',
         originId: 0,
-        expiration: '2020-12-31 11:59:00',
       },
       nodesNameToId: new Map(),
       originName: '',
@@ -96,7 +88,6 @@ export default {
       this.nPA = {
         name: '/',
         originId: 0,
-        expiration: '2020-12-31 11:59:00',
       }
       this.error = ''
       this.originName = ''
@@ -126,12 +117,11 @@ export default {
         nodesApi += '/subnet/' + this.subnetId.toString()
       }
       nodesApi += '/nodes'
-      // const nodesApi = 'https://localhost:8787/api/topology/subnet/' + this.subnetId + '/nodes'
       axios.get(nodesApi)
         .then(response => {
           this.nodesNameToId = new Map()
           response.data.forEach(node => {
-            this.nodesNameToId.set(node.name, node.id)
+            this.nodesNameToId.set(node.name.split(':')[1], node.id)
           })
         })
         .catch(e => {

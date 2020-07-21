@@ -11,16 +11,14 @@
           <th>Name</th>
           <th>Origin</th>
           <th>Advertized</th>
-          <th>Expiration</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(pa, index) in pas" :key="index" >
           <td>{{ pa.name }}</td>
-          <td>{{ pa.originId }}</td>
+          <td>{{ findNodeName(pa.originId) }}</td>
           <td>{{ new Date(pa.created).toLocaleString() }}</td>
-          <td>{{ new Date(pa.expiration).toLocaleString() }}</td>
           <td>
 
             <va-button flat color="danger" icon="fa fa-trash-o" @click="onDelete(pa.id)" />
@@ -35,7 +33,7 @@
 <script>
 export default {
   name: 'PATable',
-  props: ['pas', 'onDelete', 'onGenRoutes'],
+  props: ['pas', 'nodes', 'onDelete', 'onGenRoutes'],
   components: {
   },
   data: function () {
@@ -47,6 +45,9 @@ export default {
   watch: {
   },
   methods: {
+    findNodeName (id) {
+      return this.nodes.find(x => x.id === id).name.split(':')[1]
+    },
   },
   computed: {},
 }

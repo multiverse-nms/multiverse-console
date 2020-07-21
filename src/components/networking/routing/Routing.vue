@@ -18,7 +18,7 @@
       <div class="flex md4 column">
         <va-card :title="tPa">
           <div class="table-card">
-            <p-a-table :pas="pas" :onDelete="deletePrefixAnn" :onGenRoutes="genRoutes"></p-a-table>
+            <p-a-table :pas="pas" :nodes="nodes" :onDelete="deletePrefixAnn" :onGenRoutes="genRoutes"></p-a-table>
           </div>
           <div class="text-center mt-5">
             <va-button small color="warning" @click="initPrefixAnn">
@@ -32,7 +32,7 @@
       <div class="flex md4 column">
         <va-card :title="tRoute">
           <div class="table-card">
-            <route-table :routes="routes" :onDelete="deleteRoute"></route-table>
+            <route-table :routes="routes" :nodes="nodes" :onDelete="deleteRoute"></route-table>
           </div>
           <div class="text-center mt-5">
             <va-button disabled small color="warning">
@@ -75,9 +75,11 @@ export default {
       faces: [],
       pas: [],
       routes: [],
+      nodes: [],
     }
   },
   created () {
+    this.getNodes()
     this.getFaces()
     this.getPrefixAnns()
     this.getRoutes()
@@ -87,6 +89,7 @@ export default {
   watch: {
     subnet: {
       handler: function () {
+        this.getNodes()
         this.getFaces()
         this.getPrefixAnns()
         this.getRoutes()
@@ -95,6 +98,7 @@ export default {
   },
   methods: {
     refreshAll () {
+      this.getNodes()
       this.getFaces()
       this.getPrefixAnns()
       this.getRoutes()
@@ -144,7 +148,6 @@ export default {
     deleteRoute (id) {
       axios.delete('https://localhost:8787/api/topology/route/' + id.toString())
         .then(response => {
-          console.log(response.data)
           this.getRoutes()
         })
         .catch(e => {
@@ -203,7 +206,7 @@ export default {
       this.showCreatePA = true
     },
     postPrefixAnn (pa) {
-      axios.post('https://localhost:8787/api/topology/prefixAnn', pa, {
+      axios.post('https://localhost:8787/api/topology/prefixAnns', pa, {
         headers: {},
       })
         .then(response => {
@@ -216,7 +219,7 @@ export default {
           this.$emit('refresh', 'routing.pa')
         })
         .catch(e => {
-          console.log(e.response)
+          console.log(e)
           this.showToast('Prefix announcement failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -236,6 +239,21 @@ export default {
           this.getPrefixAnns()
           this.getRoutes()
           this.$emit('refresh', 'routing.pa')
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
+
+    getNodes () {
+      let nodesApi = 'https://localhost:8787/api/topology'
+      if (this.subnet.id !== 0) {
+        nodesApi += '/subnet/' + this.subnet.id.toString()
+      }
+      nodesApi += '/nodes'
+      axios.get(nodesApi)
+        .then(response => {
+          this.nodes = response.data.map((o) => ({ id: o.id, name: o.name }))
         })
         .catch(e => {
           console.log(e)

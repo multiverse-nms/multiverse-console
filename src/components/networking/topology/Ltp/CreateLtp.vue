@@ -94,14 +94,9 @@ export default {
       },
       deep: true,
     },
-    /* 'nPrefix.node': function (newVal, oldVal) {
-      this.nPrefix.interface = ''
-      this.getInterfaces(newVal)
-    }, */
   },
   methods: {
     initCreateLtp () {
-      console.log('init create ltp modal')
       this.nLtp = {
         vnodeId: this.nodeId,
         name: this.name,
@@ -137,7 +132,6 @@ export default {
         }
       }
       this.$emit('onOk', this.nLtp)
-      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

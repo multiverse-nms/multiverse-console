@@ -39,16 +39,6 @@
         </div>
       </div>
       <div class="row">
-        <div class="flex xs5">
-          <label class="label">Pos X</label>
-          <va-input v-model="nNode.posx"/>
-        </div>
-        <div class="flex xs5 offset--xs2">
-          <label class="label">Pos Y</label>
-          <va-input v-model="nNode.posy"/>
-        </div>
-      </div>
-      <div class="row">
         <div class="flex xs12">
           <label class="label">Location</label>
           <va-input v-model="nNode.location"/>
@@ -133,8 +123,8 @@ export default {
         description: '',
         info: {},
         type: '',
-        posx: 0,
-        posy: 0,
+        posx: 100,
+        posy: 100,
         location: '',
       }
       this.infoArray = [['', '']]

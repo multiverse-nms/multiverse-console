@@ -12,8 +12,6 @@
           <th>Local</th>
           <th>Remote</th>
           <th>Scheme</th>
-          <th>CTP</th>
-          <th>LC</th>
           <th>Updated</th>
           <th></th>
         </tr>
@@ -24,8 +22,6 @@
           <td>{{ face.local }}</td>
           <td>{{ face.remote }}</td>
           <td>{{ face.scheme }}</td>
-          <td>{{ face.vctpId }}</td>
-          <td>{{ face.vlinkConnId }}</td>
           <td>{{ new Date(face.updated).toLocaleString() }}</td>
           <td>
             <va-button flat color="danger" icon="fa fa-trash-o" @click="onDelete(face.id)" />
