@@ -63,7 +63,7 @@ export default {
       subnets: [],
       selectedSn: {},
       showCreateSubnet: false,
-      nextSnName: 'sn-0',
+      nextSnName: 's0',
     }
   },
   created () {
@@ -94,7 +94,7 @@ export default {
       this.showCreateSubnet = true
     },
     postSubnet (subnet) {
-      axios.post('https://localhost:8787/api/topology/subnet', subnet, {
+      axios.post('https://localhost:8787/api/topology/subnets', subnet, {
         headers: {},
       })
         .then(response => {
@@ -127,8 +127,8 @@ export default {
     getNextSnName () {
       // this.nodes.sort(function(a, b){return a.name - b.name})
       if (this.subnets.length > 0) {
-        const maxSnNo = this.subnets[this.subnets.length - 1].name.split('-')[1]
-        this.nextSnName = 'sn-' + (parseInt(maxSnNo, 10) + 1)
+        const maxSnNo = this.subnets[this.subnets.length - 1].name.substring(1)
+        this.nextSnName = 's' + (parseInt(maxSnNo, 10) + 1)
       }
     },
 
@@ -206,4 +206,13 @@ export default {
       margin-bottom: 0 !important;
     }
   }
+
+  .row-up {
+    background-color: green;
+  }
+
+  .row-down {
+    background-color: red;
+  }
+
 </style>

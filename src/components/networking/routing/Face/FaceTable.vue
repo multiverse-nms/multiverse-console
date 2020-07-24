@@ -5,7 +5,7 @@
       <va-chip color="gray">No Faces to show</va-chip>
     </div>
 
-    <table v-if="faces.length > 0" class="va-table va-table--striped va-table--hoverable">
+    <table v-if="faces.length > 0" class="va-table va-table--hoverable">
       <thead>
         <tr>
           <th>Id</th>
@@ -17,7 +17,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(face, index) in faces" :key="index" >
+        <tr v-for="(face, index) in faces" :key="index" :class="getStatusClass(face.status)">
           <td>{{ face.id }}</td>
           <td>{{ face.local }}</td>
           <td>{{ face.remote }}</td>
@@ -47,11 +47,11 @@ export default {
   watch: {
   },
   methods: {
-    getStatusColor (status) {
-      if (status === 'DOWN') {
-        return 'danger'
+    getStatusClass (status) {
+      if (status === 'UP') {
+        return 'row-up'
       }
-      return 'success'
+      return 'row-down'
     },
   },
   computed: {},

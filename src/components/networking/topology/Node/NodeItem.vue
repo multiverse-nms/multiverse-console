@@ -121,6 +121,9 @@
             <va-tab>
               <p class="display-5">XCs</p>
             </va-tab>
+            <va-tab>
+              <p class="display-5">PAs</p>
+            </va-tab>
           </va-tabs>
 
           <div class="mt-3" v-if="tabValue == 0">
@@ -134,6 +137,13 @@
             <va-button small color="warning" @click="initAddXc()">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
               Add XC </va-button>
+          </div>
+
+          <div class="mt-3" v-if="tabValue == 2">
+            <p-a-table :pas="node.pas" :nodes="nodes" :onDelete="deletePrefixAnn" />
+            <va-button small color="warning" @click="initPrefixAnn()">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+              Announce Prefix </va-button>
           </div>
         </div>
       </div>
@@ -150,6 +160,7 @@
 
     <create-ltp @onOk="postLtp" @onCancel="showCreateLtp = false" :show="showCreateLtp" :nodeId="node.id" :name="nextLtpName" />
     <create-xc @onOk="postXc" @onCancel="showCreateXc = false" :show="showCreateXc" :nodeId="node.id" :name="nextXcName" />
+    <create-p-a @onOk="postPrefixAnn" @onCancel="showCreatePA = false" :show="showCreatePA" :originId="node.id" />
   </div>
 </template>
 
@@ -161,6 +172,8 @@ import CreateLtp from '../Ltp/CreateLtp.vue'
 import XcTable from '../Xc/XcTable.vue'
 import XcItem from '../Xc/XcItem.vue'
 import CreateXc from '../Xc/CreateXc.vue'
+import PATable from '../../routing/Prefix/PATable.vue'
+import CreatePA from '../../routing/Prefix/CreatePA.vue'
 
 export default {
   name: 'NodeItem',
@@ -172,6 +185,8 @@ export default {
     XcTable,
     XcItem,
     CreateXc,
+    PATable,
+    CreatePA,
   },
   data: function () {
     return {
@@ -182,13 +197,17 @@ export default {
       selectedXc: {},
       showCreateLtp: false,
       showCreateXc: false,
+      showCreatePA: false,
 
       nextLtpName: '',
       nextXcName: '',
+
+      nodes: [],
     }
   },
 
   created () {
+    this.nodes.push({ id: this.node.id, name: this.node.name })
   },
   watch: {
   },
@@ -326,6 +345,49 @@ export default {
         })
     },
 
+    // Prefix Announcements
+    initPrefixAnn () {
+      this.showCreatePA = true
+    },
+    postPrefixAnn (pa) {
+      axios.post('https://localhost:8787/api/topology/prefixAnns', pa, {
+        headers: {},
+      })
+        .then(response => {
+          this.showToast('Prefix advertized', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 5000,
+          })
+          this.getPAsByNode()
+          this.$emit('refresh', 'topology.pa')
+        })
+        .catch(e => {
+          console.log(e)
+          this.showToast('Prefix announcement failed', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 5000,
+          })
+        })
+      this.showCreatePA = false
+    },
+    deletePrefixAnn (id) {
+      axios.delete('https://localhost:8787/api/topology/prefixAnn/' + id.toString())
+        .then(response => {
+          this.showToast('Prefix withdrawn', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 5000,
+          })
+          this.getPAsByNode()
+          this.$emit('refresh', 'topology.pa')
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
+
     // other
     getLtpsByNode () {
       const ltpsApi = 'https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/ltps'
@@ -342,6 +404,16 @@ export default {
       axios.get(xcsApi)
         .then(response => {
           this.node.vxcs = response.data
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
+    getPAsByNode () {
+      const pasApi = 'https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/prefixAnns'
+      axios.get(pasApi)
+        .then(response => {
+          this.node.pas = response.data
         })
         .catch(e => {
           console.log(e)

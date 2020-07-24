@@ -5,24 +5,20 @@
       <va-chip color="gray">No LTPs to show</va-chip>
     </div>
 
-    <table v-if="ltps.length > 0" class="va-table va-table--striped va-table--hoverable">
+    <table v-if="ltps.length > 0" class="va-table va-table--hoverable">
       <thead>
         <tr>
           <th>Name</th>
           <th>Label</th>
           <th>Busy</th>
-          <th>Status</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(ltp, index) in ltps" :key="index" @click="onSelected(ltp.id)">
+        <tr v-for="(ltp, index) in ltps" :key="index" @click="onSelected(ltp.id)" :class="getStatusClass(ltp.status)">
           <td>{{ ltp.name }}</td>
           <td>{{ ltp.label }}</td>
           <td>
             <va-badge small :color="getBusyColor(ltp.busy)" >{{ ltp.busy }}</va-badge>
-          </td>
-          <td>
-            <va-badge small :color="getStatusColor(ltp.status)" >{{ ltp.status }}</va-badge>
           </td>
         </tr>
       </tbody>
@@ -47,11 +43,11 @@ export default {
   watch: {
   },
   methods: {
-    getStatusColor (status) {
-      if (status === 'DOWN') {
-        return 'danger'
+    getStatusClass (status) {
+      if (status === 'UP') {
+        return 'row-up'
       }
-      return 'success'
+      return 'row-down'
     },
 
     getBusyColor (busy) {

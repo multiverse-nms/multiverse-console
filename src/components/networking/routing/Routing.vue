@@ -15,10 +15,10 @@
         </va-card>
       </div>
 
-      <div class="flex md4 column">
+      <div class="flex md3 column">
         <va-card :title="tPa">
           <div class="table-card">
-            <p-a-table :pas="pas" :nodes="nodes" :onDelete="deletePrefixAnn" :onGenRoutes="genRoutes"></p-a-table>
+            <p-a-table :pas="pas" :nodes="nodes" :onDelete="deletePrefixAnn"></p-a-table>
           </div>
           <div class="text-center mt-5">
             <va-button small color="warning" @click="initPrefixAnn">
@@ -29,7 +29,7 @@
         </va-card>
       </div>
 
-      <div class="flex md4 column">
+      <div class="flex md5 column">
         <va-card :title="tRoute">
           <div class="table-card">
             <route-table :routes="routes" :nodes="nodes" :onDelete="deleteRoute"></route-table>
@@ -79,20 +79,14 @@ export default {
     }
   },
   created () {
-    this.getNodes()
-    this.getFaces()
-    this.getPrefixAnns()
-    this.getRoutes()
+    this.refreshAll()
   },
   computed: {
   },
   watch: {
     subnet: {
       handler: function () {
-        this.getNodes()
-        this.getFaces()
-        this.getPrefixAnns()
-        this.getRoutes()
+        this.refreshAll()
       },
     },
   },
@@ -154,38 +148,6 @@ export default {
           console.log(e)
         })
     },
-    // Route auto generation
-    genRoutes (pref) {
-      const body = { prefix: pref }
-      axios.post('https://localhost:8787/api/topology/genroutes', body, {
-        headers: {},
-      })
-        .then(response => {
-          if (response.data.message === 'routes_created') {
-            this.showToast('Routes created', {
-              icon: 'fa-check',
-              position: 'top-right',
-              duration: 5000,
-            })
-            this.getRoutes()
-          } else {
-            console.log(response.data.message)
-            this.showToast('Route creation failed', {
-              icon: 'fa-close',
-              position: 'top-right',
-              duration: 5000,
-            })
-          }
-        })
-        .catch(e => {
-          console.log(e)
-          this.showToast('Route creation failed', {
-            icon: 'fa-close',
-            position: 'top-right',
-            duration: 5000,
-          })
-        })
-    },
 
     // CRUD PA
     getPrefixAnns () {
@@ -216,6 +178,7 @@ export default {
             duration: 5000,
           })
           this.getPrefixAnns()
+          this.getRoutes()
           this.$emit('refresh', 'routing.pa')
         })
         .catch(e => {

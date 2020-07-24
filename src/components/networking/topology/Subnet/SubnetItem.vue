@@ -18,7 +18,6 @@
               :net-nodes="graphNodes"
               :net-links="graphLinks"
               :options="options"
-              :nodeCb="nodeCb"
               @node-click="nodeClick"
               @link-click="linkClick"
             />
@@ -64,7 +63,7 @@
     >
       <node-item v-if="type === 1" :node="selectedNode" :onEdit="initEditNode" :onDelete="deleteNode" @refresh="refresh" />
       <link-item v-if="type === 2" :link="selectedLink" :onEdit="initEditLink" :onDelete="deleteLink" @refresh="refresh"/>
-      <link-conn-item v-if="type === 3" :linkConn="selectedLc" :onEdit="initEditLc" :onDelete="deleteLc" :onGenFaces="genFaces" @refresh="refresh" />
+      <link-conn-item v-if="type === 3" :linkConn="selectedLc" :onEdit="initEditLc" :onDelete="deleteLc" @refresh="refresh" />
       <trail-item v-if="type === 4" :trail="selectedTrail" :onEdit="initEditTrail" :onDelete="deleteTrail" @refresh="refresh" />
     </va-modal>
 
@@ -148,7 +147,7 @@ export default {
       return {
         force: 2000,
         // size: { w: 800, h: 500 },
-        nodeSize: 50,
+        nodeSize: 60,
         nodeLabels: true,
         linkLabels: false,
         canvas: false,
@@ -225,10 +224,6 @@ export default {
           }
           pasLabel = '\n[' + numPas + ' ' + p + ']'
         }
-        /* let nodeLabel = ''
-        if (node.label !== '') {
-          nodeLabel = '\n' + node.label
-        } */
         const newNode = {
           id: node.id,
           name: node.name.split(':')[1] + pasLabel,
@@ -264,14 +259,22 @@ export default {
       this.showItem = false
       const nodeApi = 'https://localhost:8787/api/topology/node/' + id.toString()
       const xcsApi = 'https://localhost:8787/api/topology/node/' + id.toString() + '/xcs'
+      const pasApi = 'https://localhost:8787/api/topology/node/' + id.toString() + '/prefixAnns'
       axios.get(nodeApi)
         .then(response => {
           this.selectedNode = response.data
           axios.get(xcsApi)
             .then(response => {
               this.selectedNode.vxcs = response.data
-              this.showItem = true
-              this.type = 1
+              axios.get(pasApi)
+                .then(response => {
+                  this.selectedNode.pas = response.data
+                  this.showItem = true
+                  this.type = 1
+                })
+                .catch(e => {
+                  console.log(e)
+                })
             })
             .catch(e => {
               console.log(e)
@@ -415,6 +418,7 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
+          this.$emit('refresh', 'topology.face')
           this.getSubnetContent()
         })
         .catch(e => {
@@ -576,43 +580,6 @@ export default {
         return 'yellow'
       }
     },
-    nodeCb (node) {
-      return node
-    },
-
-    // Face auto generation
-    genFaces (lcId) {
-      const body = { vlinkConnId: lcId }
-      axios.post('https://localhost:8787/api/topology/genfaces', body, {
-        headers: {},
-      })
-        .then(response => {
-          if (response.data.message === 'faces_created') {
-            this.$emit('refresh', 'topology.face')
-            this.showToast('Faces created', {
-              icon: 'fa-check',
-              position: 'top-right',
-              duration: 5000,
-            })
-          } else {
-            console.log(response.data.message)
-            this.showToast('Face creation failed', {
-              icon: 'fa-close',
-              position: 'top-right',
-              duration: 5000,
-            })
-          }
-        })
-        .catch(e => {
-          console.log(e)
-          this.showToast('Face creation failed', {
-            icon: 'fa-close',
-            position: 'top-right',
-            duration: 5000,
-          })
-        })
-      this.showItem = false
-    },
   },
 }
 
@@ -630,7 +597,7 @@ export default {
 
 .node-label {
   white-space: pre-line;
-  text-align: center;
+  margin: 0 0 0 -20px;
 }
 
 </style>

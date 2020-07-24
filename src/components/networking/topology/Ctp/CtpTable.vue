@@ -10,20 +10,14 @@
         <tr>
           <th>Name</th>
           <th>Label</th>
-          <th>Busy</th>
-          <th>Status</th>
+          <th>Created</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(ctp, index) in ctps" :key="index" @click="onSelected(ctp.id)" >
           <td>{{ ctp.name }}</td>
           <td>{{ ctp.label }}</td>
-          <td>
-            <va-badge small :color="getBusyColor(ctp.busy)" >{{ ctp.busy }}</va-badge>
-          </td>
-          <td>
-            <va-badge small :color="getStatusColor(ctp.status)" >{{ ctp.status }}</va-badge>
-          </td>
+          <td>{{ ctp.created }}</td>
         <!-- td>
           <va-button small color="danger" @click="onDelete(ctp.id)"> Delete </va-button>
           <va-button small color="info" @click="onEdit(ctp)"> Edit </va-button>
@@ -49,18 +43,6 @@ export default {
   watch: {
   },
   methods: {
-    getStatusColor (status) {
-      if (status === 'DOWN') {
-        return 'danger'
-      }
-      return 'success'
-    },
-    getBusyColor (busy) {
-      if (busy === true) {
-        return 'info'
-      }
-      return 'gray'
-    },
   },
   computed: {},
 }

@@ -55,6 +55,7 @@ export default {
       nPA: {
         name: '/',
         originId: 0,
+        available: false,
       },
       nodesNameToId: new Map(),
       originName: '',
@@ -78,31 +79,28 @@ export default {
   },
   methods: {
     initModal () {
-      console.log('init create PA modal')
       if (this.originId > 0) {
+        this.nPA.originId = this.originId
         this.selectOrigin = false
       } else {
         this.getNodes()
+        this.nPA.originId = 0
         this.selectOrigin = true
-      }
-      this.nPA = {
-        name: '/',
-        originId: 0,
       }
       this.error = ''
       this.originName = ''
       this.showModal = true
     },
     submit () {
-      if (this.nPA.name === '') {
+      if (this.nPA.name === '' || this.nPA.name === '/') {
         this.error = 'Name is required'
         return
       }
-      if (this.originName === '') {
-        this.error = 'Origin is required'
-        return
-      }
       if (this.nPA.originId === 0) {
+        if (this.originName === '') {
+          this.error = 'Origin is required'
+          return
+        }
         this.nPA.originId = this.nodesNameToId.get(this.originName)
       }
       this.$emit('onOk', this.nPA)

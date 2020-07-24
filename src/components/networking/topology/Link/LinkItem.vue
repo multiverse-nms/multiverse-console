@@ -183,6 +183,7 @@ export default {
             position: 'top-right',
             duration: 5000,
           })
+          this.$emit('refresh', 'topology.face')
           this.getLcsByLink()
         })
         .catch(e => {

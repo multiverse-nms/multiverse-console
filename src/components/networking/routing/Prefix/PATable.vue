@@ -5,7 +5,7 @@
       <va-chip color="gray">No Prefix Annoucements to show</va-chip>
     </div>
 
-    <table v-if="pas.length > 0" class="va-table va-table--striped va-table--hoverable">
+    <table v-if="pas.length > 0" class="va-table va-table--hoverable">
       <thead>
         <tr>
           <th>Name</th>
@@ -15,14 +15,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(pa, index) in pas" :key="index" >
+        <tr v-for="(pa, index) in pas" :key="index" :class="getStatusClass(pa.available)">
           <td>{{ pa.name }}</td>
           <td>{{ findNodeName(pa.originId) }}</td>
           <td>{{ new Date(pa.created).toLocaleString() }}</td>
           <td>
 
             <va-button flat color="danger" icon="fa fa-trash-o" @click="onDelete(pa.id)" />
-            <va-button flat color="info" icon="fa fa-arrows" @click="onGenRoutes(pa.name)" />
           </td>
         </tr>
       </tbody>
@@ -33,7 +32,7 @@
 <script>
 export default {
   name: 'PATable',
-  props: ['pas', 'nodes', 'onDelete', 'onGenRoutes'],
+  props: ['pas', 'nodes', 'onDelete'],
   components: {
   },
   data: function () {
@@ -47,6 +46,13 @@ export default {
   methods: {
     findNodeName (id) {
       return this.nodes.find(x => x.id === id).name.split(':')[1]
+    },
+
+    getStatusClass (av) {
+      if (av) {
+        return 'row-up'
+      }
+      return 'row-down'
     },
   },
   computed: {},
