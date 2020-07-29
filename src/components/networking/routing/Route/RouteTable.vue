@@ -28,7 +28,7 @@
           <td>{{ route.origin }}</td>
           <td>{{ new Date(route.updated).toLocaleString() }}</td>
           <td>
-            <va-button flat color="danger" icon="fa fa-trash-o" @click="onDelete(route.id)" />
+            <va-button flat color="dark" icon="fa fa-trash-o" @click="onDelete(route.id)" />
           </td>
         </tr>
       </tbody>

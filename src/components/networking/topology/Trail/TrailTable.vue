@@ -10,16 +10,14 @@
         <tr>
           <th>Name</th>
           <th>Label</th>
-          <th>Status</th>
+          <th>Created</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(trail, index) in trails" :key="index" @click="onSelected(trail.id)">
+        <tr v-for="(trail, index) in trails" :key="index" @click="onSelected(trail.id)" :class="getStatusClass(trail.status)">
           <td>{{ trail.name }}</td>
           <td>{{ trail.label }}</td>
-          <td>
-            <va-badge small :color="getStatusColor(trail.status)" >{{ trail.status }}</va-badge>
-          </td>
+          <td>{{ trail.created }}</td>
         <!-- td>
           <va-button small color="danger" @click="onDelete(trail.id)"> Delete </va-button>
           <va-button small color="info" @click="onEdit(trail)"> Edit </va-button>
@@ -30,7 +28,7 @@
   </div>
 </template>
 <script>
-
+import { getStatusClass } from '../../../../assets/icons/colors.js'
 export default {
   name: 'TrailTable',
   props: ['trails', 'onSelected'],
@@ -38,6 +36,7 @@ export default {
   },
   data: function () {
     return {
+      getStatusClass,
     }
   },
   created () {
@@ -45,12 +44,6 @@ export default {
   watch: {
   },
   methods: {
-    getStatusColor (status) {
-      if (status === 'DOWN') {
-        return 'danger'
-      }
-      return 'success'
-    },
   },
   computed: {},
 }

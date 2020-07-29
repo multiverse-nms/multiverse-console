@@ -99,10 +99,6 @@
           <p class="display-5">CTPs</p>
           <div class="mt-3">
             <ctp-table :ctps="ltp.vctps" :onSelected="getCtp" />
-            <!-- va-button small class="mt-3" color="warning" @click="initAddCtp()">
-              <i class="fa fa-plus-circle" aria-hidden="true"></i>
-              Add CTP
-            </va-button -->
           </div>
         </div>
       </div>
@@ -122,6 +118,7 @@
 </template>
 
 <script>
+import { getStatusColor, getBusyColor } from '../../../../assets/icons/colors.js'
 import axios from 'axios'
 import CtpTable from '../Ctp/CtpTable.vue'
 import CtpItem from '../Ctp/CtpItem.vue'
@@ -137,6 +134,8 @@ export default {
   },
   data: function () {
     return {
+      getStatusColor,
+      getBusyColor,
       showItem: false,
       showCreateCtp: false,
       selectedCtp: {},
@@ -164,7 +163,6 @@ export default {
     },
 
     initAddCtp () {
-      // console.log('init add CTP on ltpId:', this.ltp.id)
       this.getNextCtpName()
       this.showCreateCtp = true
     },
@@ -173,7 +171,6 @@ export default {
         headers: {},
       })
         .then(response => {
-          console.log(response.data)
           this.showToast('CTP ' + ctp.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
@@ -192,15 +189,12 @@ export default {
       this.showCreateCtp = false
     },
 
-    initEditCtp (ctp) {
-      console.log('init edit CTP:', ctp.name)
-    },
+    initEditCtp (ctp) {},
     patchCtp (ctp) {},
 
     deleteCtp (id) {
       axios.delete('https://localhost:8787/api/topology/ctp/' + id.toString())
         .then(response => {
-          console.log(response.data)
           this.$emit('refresh', 'topology.ctp')
           this.showItem = false
           this.getCtpsByLtp()
@@ -219,20 +213,6 @@ export default {
         .catch(e => {
           console.log(e)
         })
-    },
-
-    // other
-    getStatusColor (status) {
-      if (status === 'DOWN') {
-        return 'danger'
-      }
-      return 'success'
-    },
-    getBusyColor (busy) {
-      if (busy === true) {
-        return 'info'
-      }
-      return 'gray'
     },
 
     getNextCtpName () {

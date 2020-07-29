@@ -15,13 +15,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(pa, index) in pas" :key="index" :class="getStatusClass(pa.available)">
+        <tr v-for="(pa, index) in pas" :key="index" :class="getAvailableClass(pa.available)">
           <td>{{ pa.name }}</td>
           <td>{{ findNodeName(pa.originId) }}</td>
           <td>{{ new Date(pa.created).toLocaleString() }}</td>
           <td>
 
-            <va-button flat color="danger" icon="fa fa-trash-o" @click="onDelete(pa.id)" />
+            <va-button flat color="dark" icon="fa fa-trash-o" @click="onDelete(pa.id)" />
           </td>
         </tr>
       </tbody>
@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { getAvailableClass } from '../../../../assets/icons/colors.js'
 export default {
   name: 'PATable',
   props: ['pas', 'nodes', 'onDelete'],
@@ -37,6 +38,7 @@ export default {
   },
   data: function () {
     return {
+      getAvailableClass,
     }
   },
   created () {
@@ -46,13 +48,6 @@ export default {
   methods: {
     findNodeName (id) {
       return this.nodes.find(x => x.id === id).name.split(':')[1]
-    },
-
-    getStatusClass (av) {
-      if (av) {
-        return 'row-up'
-      }
-      return 'row-down'
     },
   },
   computed: {},

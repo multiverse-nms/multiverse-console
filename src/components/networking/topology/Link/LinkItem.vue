@@ -129,6 +129,7 @@
 </template>
 
 <script>
+import { getStatusColor } from '../../../../assets/icons/colors.js'
 import axios from 'axios'
 import LinkConnTable from '../LinkConn/LinkConnTable.vue'
 import LinkConnItem from '../LinkConn/LinkConnItem.vue'
@@ -144,6 +145,7 @@ export default {
   },
   data: function () {
     return {
+      getStatusColor,
       showItem: false,
       selectedLc: {},
       showAddLc: false,
@@ -157,7 +159,6 @@ export default {
     // CRUD LinkConn (get/edit/delete only)
     getLc (id) {
       this.showItem = false
-      console.log('get lcId:', id)
       const lcApi = 'https://localhost:8787/api/topology/linkConn/' + id.toString()
       axios.get(lcApi)
         .then(response => {
@@ -177,7 +178,6 @@ export default {
         headers: {},
       })
         .then(response => {
-          console.log(response.data)
           this.showToast('LinkConn ' + lc.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
@@ -192,12 +192,9 @@ export default {
       this.showAddLc = false
     },
 
-    initEditLc (lc) {
-      console.log('init edit lc:', lc.id)
-    },
+    initEditLc (lc) {},
     patchLc (lc) {},
     deleteLc (lc) {
-      console.log('delete linkConnId:', lc.id)
       axios.delete('https://localhost:8787/api/topology/linkConn/' + lc.id.toString())
         .then(response => {
           this.showItem = false
@@ -218,13 +215,6 @@ export default {
         .catch(e => {
           console.log(e)
         })
-    },
-
-    getStatusColor (status) {
-      if (status === 'DOWN') {
-        return 'danger'
-      }
-      return 'success'
     },
   },
 

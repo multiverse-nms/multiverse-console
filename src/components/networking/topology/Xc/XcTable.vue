@@ -10,16 +10,14 @@
         <tr>
           <th>Name</th>
           <th>Label</th>
-          <th>Status</th>
+          <th>Created</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(xc, index) in xcs" :key="index" @click="onSelected(xc.id)">
+        <tr v-for="(xc, index) in xcs" :key="index" @click="onSelected(xc.id)" :class="getStatusClass(xc.status)">
           <td>{{ xc.name }}</td>
           <td>{{ xc.label }}</td>
-          <td>
-            <va-badge small :color="getStatusColor(xc.status)" >{{ xc.status }}</va-badge>
-          </td>
+          <td>{{ xc.created }}</td>
         <!-- td>
           <va-button small color="danger" @click="onDelete(xc.id)"> Delete </va-button>
           <va-button small color="info" @click="onEdit(xc)"> Edit </va-button>
@@ -31,6 +29,7 @@
 </template>
 
 <script>
+import { getStatusClass } from '../../../../assets/icons/colors.js'
 export default {
   name: 'XcTable',
   props: ['xcs', 'onSelected'],
@@ -38,6 +37,7 @@ export default {
   },
   data: function () {
     return {
+      getStatusClass,
     }
   },
   created () {
@@ -45,12 +45,6 @@ export default {
   watch: {
   },
   methods: {
-    getStatusColor (status) {
-      if (status === 'DOWN') {
-        return 'danger'
-      }
-      return 'success'
-    },
   },
   computed: {},
 }

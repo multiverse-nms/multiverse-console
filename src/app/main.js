@@ -33,7 +33,7 @@ if (process.env.VUE_APP_BUILD_VERSION) {
 Vue.use(VertxEventBus, {
   host: 'localhost',
   path: '/eventbus',
-  port: 9090,
+  port: 8888,
   options: {
     transports: [
       'xhr-polling',

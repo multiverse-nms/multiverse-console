@@ -123,8 +123,8 @@ export default {
         description: '',
         info: {},
         type: '',
-        posx: 100,
-        posy: 100,
+        posx: Math.floor(Math.random() * Math.floor(800)),
+        posy: Math.floor(Math.random() * Math.floor(500)),
         location: '',
       }
       this.infoArray = [['', '']]

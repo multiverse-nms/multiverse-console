@@ -118,6 +118,7 @@
 </template>
 
 <script>
+import { getStatusColor } from '../../../../assets/icons/colors.js'
 import axios from 'axios'
 import XcTable from '../Xc/XcTable.vue'
 import XcItem from '../Xc/XcItem.vue'
@@ -133,6 +134,7 @@ export default {
   },
   data: function () {
     return {
+      getStatusColor,
       showItem: false,
       showCreateXc: false,
       selectedXc: {},
@@ -146,7 +148,6 @@ export default {
     // CRUD XC
     getXc (id) {
       this.showItem = false
-      console.log('get xcId:', id)
       const xcApi = 'https://localhost:8787/api/topology/xc/' + id.toString()
       axios.get(xcApi)
         .then(response => {
@@ -158,22 +159,17 @@ export default {
         })
     },
     initAddXc () {
-      console.log('init add XC on ltpId:', this.trail.id)
       this.showCreateXc = true
     },
     postXc (xc) {
-      console.log('XC created: ', xc.name)
       this.showCreateXc = false
       // this.$emit('refresh', 'trail.xc.add')
     },
 
-    initEditXc (xc) {
-      console.log('init edit XC:', xc.name)
-    },
+    initEditXc (xc) {},
     patchXc (xc) {},
 
     deleteXc (id) {
-      console.log('delete XC:', id)
       axios.delete('https://localhost:8787/api/topology/xc/' + id.toString())
         .then(response => {
           console.log(response.data)
@@ -195,14 +191,6 @@ export default {
         .catch(e => {
           console.log(e)
         })
-    },
-
-    // other
-    getStatusColor (status) {
-      if (status === 'DOWN') {
-        return 'danger'
-      }
-      return 'success'
     },
   },
   computed: {},

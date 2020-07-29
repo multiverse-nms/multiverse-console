@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { getStatusClass } from '../../../../assets/icons/colors.js'
 export default {
   name: 'LinkConnTable',
   props: ['lcs', 'onSelected'],
@@ -34,6 +35,7 @@ export default {
   },
   data: function () {
     return {
+      getStatusClass,
     }
   },
   created () {
@@ -41,14 +43,9 @@ export default {
   watch: {
   },
   methods: {
-    getStatusClass (status) {
-      if (status === 'UP') {
-        return 'row-up'
-      }
-      return 'row-down'
-    },
   },
-  computed: {},
+  computed: {
+  },
 }
 </script>
 

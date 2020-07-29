@@ -101,12 +101,14 @@
 </template>
 
 <script>
+import { getStatusColor } from '../../../../assets/icons/colors.js'
 export default {
   name: 'LinkConnItem',
   props: ['linkConn', 'onEdit', 'onDelete'],
 
   data: function () {
     return {
+      getStatusColor,
     }
   },
   created () {
@@ -114,12 +116,6 @@ export default {
   watch: {
   },
   methods: {
-    getStatusColor (status) {
-      if (status === 'DOWN') {
-        return 'danger'
-      }
-      return 'success'
-    },
   },
 
   computed: {},

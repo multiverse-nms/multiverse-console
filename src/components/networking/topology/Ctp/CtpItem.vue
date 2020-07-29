@@ -53,24 +53,6 @@
 
           <va-item>
             <va-item-section side>
-              <b>Busy:</b>
-            </va-item-section>
-            <va-item-section>
-              <va-item-label>  <va-badge small :color="getBusyColor(ctp.busy)" > {{ ctp.busy }} </va-badge> </va-item-label>
-            </va-item-section>
-          </va-item>
-
-          <va-item>
-            <va-item-section side>
-              <b>Status:</b>
-            </va-item-section>
-            <va-item-section>
-              <va-item-label> <va-badge small :color="getStatusColor(ctp.status)" > {{ ctp.status }} </va-badge> </va-item-label>
-            </va-item-section>
-          </va-item>
-
-          <va-item>
-            <va-item-section side>
               <b>Info:</b>
             </va-item-section>
             <va-item-section>
@@ -107,6 +89,7 @@
 </template>
 
 <script>
+// import { getStatusColor, getStatusClass, getBusyColor } from '../../../../assets/icons/colors.js'
 export default {
   name: 'CtpItem',
   props: ['ctp', 'onEdit', 'onDelete'],
@@ -121,18 +104,6 @@ export default {
   watch: {
   },
   methods: {
-    getStatusColor (status) {
-      if (status === 'DOWN') {
-        return 'danger'
-      }
-      return 'success'
-    },
-    getBusyColor (busy) {
-      if (busy === true) {
-        return 'info'
-      }
-      return 'gray'
-    },
   },
   computed: {},
 }

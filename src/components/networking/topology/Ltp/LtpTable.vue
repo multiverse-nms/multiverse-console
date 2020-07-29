@@ -27,7 +27,7 @@
 </template>
 
 <script>
-
+import { getStatusClass, getBusyColor } from '../../../../assets/icons/colors.js'
 export default {
   name: 'LtpTable',
   props: ['ltps', 'onSelected'],
@@ -35,6 +35,8 @@ export default {
   },
   data: function () {
     return {
+      getStatusClass,
+      getBusyColor,
     }
   },
 
@@ -43,19 +45,6 @@ export default {
   watch: {
   },
   methods: {
-    getStatusClass (status) {
-      if (status === 'UP') {
-        return 'row-up'
-      }
-      return 'row-down'
-    },
-
-    getBusyColor (busy) {
-      if (busy === true) {
-        return 'info'
-      }
-      return 'gray'
-    },
   },
 
   computed: {},

@@ -79,6 +79,7 @@
 import axios from 'axios'
 // import icons from '../../../../assets/icons/graph-icons.json'
 
+import { getStatusColor } from '../../../../assets/icons/colors.js'
 import D3Network from 'vue-d3-network/src/vue-d3-network.vue'
 import LinkItem from '../Link/LinkItem'
 import CreateLink from '../Link/CreateLink.vue'
@@ -146,8 +147,7 @@ export default {
     options () {
       return {
         force: 2000,
-        // size: { w: 800, h: 500 },
-        nodeSize: 60,
+        nodeSize: 80,
         nodeLabels: true,
         linkLabels: false,
         canvas: false,
@@ -211,10 +211,6 @@ export default {
       this.graphNodes = []
       this.graphLinks = []
       this.nodes.forEach(node => {
-        /* const coord = {
-          x: Math.floor(Math.random() * Math.floor(800)),
-          y: Math.floor(Math.random() * Math.floor(500)),
-        } */
         const numPas = this.pas.reduce((n, pa) => n + (pa.originId === node.id), 0)
         let pasLabel = ''
         if (numPas > 0) {
@@ -237,7 +233,7 @@ export default {
         } else if (node.type === 'switch') {
           newNode = Object.assign(newNode, { svgSym: icons.routerIcon, svgIcon: null, svgObj: null })
         } */
-        newNode._color = this.getStatusColor(node.status)
+        newNode._color = getStatusColor(node.status)
         newNode._labelClass = 'node-label'
         this.graphNodes.push(newNode)
       })
@@ -248,7 +244,7 @@ export default {
             sid: link.srcVnodeId,
             tid: link.destVnodeId,
           }
-          newLink._color = this.getStatusColor(link.status)
+          newLink._color = getStatusColor(link.status)
           this.graphLinks.push(newLink)
         }
       })
@@ -568,16 +564,6 @@ export default {
         this.nextNodeName = this.subnet.name + ':n' + (parseInt(maxNodeNo, 10) + 1)
       } else {
         this.nextNodeName = this.subnet.name + ':n0'
-      }
-    },
-
-    getStatusColor (status) {
-      if (status === 'UP') {
-        return 'green'
-      } else if (status === 'DOWN') {
-        return '#ff5349'
-      } else {
-        return 'yellow'
       }
     },
   },

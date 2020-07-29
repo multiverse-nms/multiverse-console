@@ -8,6 +8,15 @@
         <div class="mt-3">
           <va-item>
             <va-item-section side>
+              <b>ID:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ node.id }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
               <b>Name:</b>
             </va-item-section>
             <va-item-section>
@@ -165,6 +174,7 @@
 </template>
 
 <script>
+import { getStatusColor } from '../../../../assets/icons/colors.js'
 import axios from 'axios'
 import LtpTable from '../Ltp/LtpTable.vue'
 import LtpItem from '../Ltp/LtpItem.vue'
@@ -190,6 +200,7 @@ export default {
   },
   data: function () {
     return {
+      getStatusColor,
       tabValue: 0,
       showItem: false,
       type: 0,
@@ -222,7 +233,6 @@ export default {
         headers: {},
       })
         .then(response => {
-          console.log(response.data)
           this.showToast('LTP ' + ltp.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
@@ -242,7 +252,6 @@ export default {
     },
     getLtp (id) {
       this.showItem = false
-      console.log('get ltpId:', id)
       const ltpApi = 'https://localhost:8787/api/topology/ltp/' + id.toString()
       axios.get(ltpApi)
         .then(response => {
@@ -257,10 +266,8 @@ export default {
     initEditLtp (ltp) {},
     patchLtp (ltp) {},
     deleteLtp (id) {
-      console.log('delete LTP:', id)
       axios.delete('https://localhost:8787/api/topology/ltp/' + id.toString())
         .then(response => {
-          console.log(response.data)
           this.$emit('refresh', 'topology.ltp')
           this.showItem = false
           this.getLtpsByNode()
@@ -298,7 +305,6 @@ export default {
         headers: {},
       })
         .then(response => {
-          console.log(response.data)
           this.showToast('XC ' + xc.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
@@ -318,7 +324,6 @@ export default {
     },
     getXc (id) {
       this.showItem = false
-      console.log('get xcId:', id)
       const xcApi = 'https://localhost:8787/api/topology/xc/' + id.toString()
       axios.get(xcApi)
         .then(response => {
@@ -335,7 +340,6 @@ export default {
     deleteXc (id) {
       axios.delete('https://localhost:8787/api/topology/xc/' + id.toString())
         .then(response => {
-          console.log(response.data)
           this.$emit('refresh', 'topology.xc')
           this.showItem = false
           this.getXcsByNode()
@@ -423,12 +427,6 @@ export default {
     refresh (type) {
       this.$emit('refresh', type)
     },
-    getStatusColor (status) {
-      if (status === 'DOWN') {
-        return 'danger'
-      }
-      return 'success'
-    },
 
     getNextLtpName () {
       if (this.node.vltps.length > 0) {
@@ -446,7 +444,6 @@ export default {
         this.nextXcName = this.node.name + ':x0'
       }
     },
-
   },
 
   computed: {},

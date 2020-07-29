@@ -145,52 +145,22 @@ export default {
       }
     },
   },
-
-  /* eventbus: {
+  eventbus: {
     lifecycleHooks: {
       created (context, eventbus) {
-        context.getTopology()
-        context.getPrefixes()
-        context.getRoutes()
-
         // subscribe to topology service info
-        eventbus.registerHandler('nms.info.topology', function (err, msg) {
+        eventbus.registerHandler('notification.update', function (err, msg) {
           if (err) {
             console.log('VertxEventBus error: ', err)
             return
           }
-          const content = msg.body.content
-          if (JSON.stringify(content) !== JSON.stringify(context.topology)) {
-            context.nodes = content.nodes
-            context.links = content.links
-          }
-        })
-        // subscribe to routing service info
-        eventbus.registerHandler('nms.info.routing.prefixes', function (err, msg) {
-          if (err) {
-            console.log('VertxEventBus error: ', err)
-            return
-          }
-          const content = msg.body.content
-          if (JSON.stringify(content) !== JSON.stringify(context.prefixes)) {
-            context.prefixes = content.docs
-            // context.$refs.topology.processPrefixes()
-          }
-        })
-
-        eventbus.registerHandler('nms.info.routing.routes', function (err, msg) {
-          if (err) {
-            console.log('VertxEventBus error: ', err)
-            return
-          }
-          const content = msg.body.content
-          if (JSON.stringify(content) !== JSON.stringify(context.routes)) {
-            context.routes = content.docs
-          }
+          context.getAllSubnets()
+          context.$refs.topology.refreshAll()
+          context.$refs.routing.refreshAll()
         })
       },
     },
-  }, */
+  },
 }
 </script>
 
@@ -208,11 +178,11 @@ export default {
   }
 
   .row-up {
-    background-color: green;
+    background-color: #40e583;
   }
 
   .row-down {
-    background-color: red;
+    background-color: #e34b4a;
   }
 
 </style>

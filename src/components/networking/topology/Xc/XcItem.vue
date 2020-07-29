@@ -116,6 +116,7 @@
 </template>
 
 <script>
+import { getStatusColor } from '../../../../assets/icons/colors.js'
 export default {
   name: 'XcItem',
   props: ['xc', 'onDelete', 'onEdit'],
@@ -123,6 +124,7 @@ export default {
   },
   data: function () {
     return {
+      getStatusColor,
     }
   },
   created () {
@@ -130,13 +132,6 @@ export default {
   watch: {
   },
   methods: {
-    getStatusColor (status) {
-      if (status === 'DOWN') {
-        return 'danger'
-      }
-      return 'success'
-    },
-
   },
   computed: {},
 }

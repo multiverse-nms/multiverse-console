@@ -24,7 +24,7 @@
           <td>{{ face.scheme }}</td>
           <td>{{ new Date(face.updated).toLocaleString() }}</td>
           <td>
-            <va-button flat color="danger" icon="fa fa-trash-o" @click="onDelete(face.id)" />
+            <va-button flat color="dark" icon="fa fa-trash-o" @click="onDelete(face.id)" />
           </td>
         </tr>
       </tbody>
@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import { getStatusClass } from '../../../../assets/icons/colors.js'
 export default {
   name: 'FaceTable',
   props: ['faces', 'onDelete'],
@@ -40,6 +41,7 @@ export default {
   },
   data: function () {
     return {
+      getStatusClass,
     }
   },
   created () {
@@ -47,12 +49,6 @@ export default {
   watch: {
   },
   methods: {
-    getStatusClass (status) {
-      if (status === 'UP') {
-        return 'row-up'
-      }
-      return 'row-down'
-    },
   },
   computed: {},
 }

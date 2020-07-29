@@ -201,7 +201,6 @@ export default {
           }
         }
       }
-      console.log('nLink: ', JSON.stringify(this.nLink))
       this.$emit('onOk', this.nLink)
       // this.showModal = false
     },
