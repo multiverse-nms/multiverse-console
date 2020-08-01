@@ -236,7 +236,7 @@ export default {
           this.showToast('LTP ' + ltp.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.getLtpsByNode()
         })
@@ -245,7 +245,7 @@ export default {
           this.showToast('LTP creation failed', {
             icon: 'fa-close',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
         })
       this.showCreateLtp = false
@@ -285,7 +285,7 @@ export default {
             this.showToast('Not enough CTPs ', {
               icon: 'fa-close',
               position: 'top-right',
-              duration: 5000,
+              duration: 3000,
             })
           } else {
             this.getNextXcName()
@@ -296,7 +296,7 @@ export default {
           this.showToast('Cannot get CTPs', {
             icon: 'fa-close',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
         })
     },
@@ -308,7 +308,7 @@ export default {
           this.showToast('XC ' + xc.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.getXcsByNode()
         })
@@ -317,7 +317,7 @@ export default {
           this.showToast('XC creation failed', {
             icon: 'fa-close',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
         })
       this.showCreateXc = false
@@ -361,7 +361,7 @@ export default {
           this.showToast('Prefix advertized', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.getPAsByNode()
           this.$emit('refresh', 'topology.pa')
@@ -371,7 +371,7 @@ export default {
           this.showToast('Prefix announcement failed', {
             icon: 'fa-close',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
         })
       this.showCreatePA = false
@@ -382,7 +382,7 @@ export default {
           this.showToast('Prefix withdrawn', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.getPAsByNode()
           this.$emit('refresh', 'topology.pa')

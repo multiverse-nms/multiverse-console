@@ -149,7 +149,7 @@ export default {
     lifecycleHooks: {
       created (context, eventbus) {
         // subscribe to topology service info
-        eventbus.registerHandler('notification.update', function (err, msg) {
+        eventbus.registerHandler('nms.update', function (err, msg) {
           if (err) {
             console.log('VertxEventBus error: ', err)
             return
@@ -183,6 +183,10 @@ export default {
 
   .row-down {
     background-color: #e34b4a;
+  }
+
+  .row-disconn {
+    background-color: #ffc200;
   }
 
 </style>

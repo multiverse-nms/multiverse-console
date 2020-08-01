@@ -181,7 +181,7 @@ export default {
           this.showToast('LinkConn ' + lc.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.$emit('refresh', 'topology.face')
           this.getLcsByLink()

@@ -105,7 +105,7 @@ export default {
         info: {},
         busy: false,
       }
-      this.infoArray = [['', '']]
+      this.infoArray = [['port', '']]
       this.error = ''
       this.showModal = true
     },
@@ -116,8 +116,8 @@ export default {
       }
     },
     submit () {
-      if (this.nLtp.name === '') {
-        this.error = 'Name is required'
+      if (this.infoArray.find(x => x[0] === 'port')[1] === '') {
+        this.error = 'port is required'
         return
       }
       for (var i = 0, len = this.infoArray.length; i < len; i++) {

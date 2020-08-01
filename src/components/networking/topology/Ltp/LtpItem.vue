@@ -174,7 +174,7 @@ export default {
           this.showToast('CTP ' + ctp.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.getCtpsByLtp()
         })
@@ -183,7 +183,7 @@ export default {
           this.showToast('CTP creation failed', {
             icon: 'fa-close',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
         })
       this.showCreateCtp = false

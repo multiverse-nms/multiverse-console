@@ -4,15 +4,17 @@ export function getStatusColor (status) {
   } else if (status === 'DOWN') {
     return '#ff5349'
   } else {
-    return 'yellow'
+    return '#ffc200'
   }
 }
 
 export function getStatusClass (status) {
   if (status === 'UP') {
     return 'row-up'
+  } else if (status === 'DOWN') {
+    return 'row-down'
   }
-  return 'row-down'
+  return 'row-disconn'
 }
 
 export function getAvailableClass (status) {

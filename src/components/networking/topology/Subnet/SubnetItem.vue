@@ -292,7 +292,7 @@ export default {
           this.showToast('Node ' + node.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.getSubnetContent()
         })
@@ -301,7 +301,7 @@ export default {
           this.showToast('Node creation failed', {
             icon: 'fa-close',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
         })
       this.showCreateNode = false
@@ -315,7 +315,7 @@ export default {
           this.showToast('Node ' + node.name + ' updated', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.getSubnetContent()
         })
@@ -324,7 +324,7 @@ export default {
           this.showToast('Failed to update node', {
             icon: 'fa-close',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
         })
     },
@@ -362,7 +362,7 @@ export default {
           this.showToast('Link ' + link.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.getSubnetContent()
         })
@@ -371,7 +371,7 @@ export default {
           this.showToast('Link creation failed', {
             icon: 'fa-close',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
         })
       this.showCreateLink = false
@@ -412,7 +412,7 @@ export default {
           this.showToast('LinkConn ' + lc.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.$emit('refresh', 'topology.face')
           this.getSubnetContent()
@@ -422,7 +422,7 @@ export default {
           this.showToast('LinkConn creation failed', {
             icon: 'fa-close',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
         })
       this.showCreateLc = false
@@ -511,7 +511,7 @@ export default {
           this.showToast('Name ' + trail.name + ' already exists', {
             icon: 'fa-close',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           return
         }
@@ -523,7 +523,7 @@ export default {
           this.showToast('Trail ' + trail.name + ' created', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.getTrails()
         })
@@ -532,7 +532,7 @@ export default {
           this.showToast('Trail creation failed', {
             icon: 'fa-close',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
         })
       this.showCreateTrail = false

@@ -175,7 +175,7 @@ export default {
           this.showToast('Prefix advertized', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.getPrefixAnns()
           this.getRoutes()
@@ -186,7 +186,7 @@ export default {
           this.showToast('Prefix announcement failed', {
             icon: 'fa-close',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
         })
       this.showCreatePA = false
@@ -197,7 +197,7 @@ export default {
           this.showToast('Prefix withdrawn', {
             icon: 'fa-check',
             position: 'top-right',
-            duration: 5000,
+            duration: 3000,
           })
           this.getPrefixAnns()
           this.getRoutes()
