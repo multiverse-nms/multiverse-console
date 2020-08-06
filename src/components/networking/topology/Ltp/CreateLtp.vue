@@ -116,7 +116,9 @@ export default {
       }
     },
     submit () {
-      if (this.infoArray.find(x => x[0] === 'port')[1] === '') {
+      const macRegex = new RegExp('^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
+      const portValue = this.infoArray.find(x => x[0] === 'port')[1]
+      if (!macRegex.test(portValue)) {
         this.error = 'port is required'
         return
       }

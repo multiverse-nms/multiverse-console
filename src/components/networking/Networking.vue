@@ -149,7 +149,7 @@ export default {
     lifecycleHooks: {
       created (context, eventbus) {
         // subscribe to topology service info
-        eventbus.registerHandler('nms.update', function (err, msg) {
+        eventbus.registerHandler('nms.to.ui', function (err, msg) {
           if (err) {
             console.log('VertxEventBus error: ', err)
             return
