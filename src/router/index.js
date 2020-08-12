@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import AppLayout from '../components/admin/AppLayout'
+import Login from '../components/auth/Login'
+import Logout from '../components/auth/Logout'
 
 Vue.use(Router)
 
@@ -8,19 +10,44 @@ const EmptyParentComponent = {
   template: '<router-view></router-view>',
 }
 
-const demoRoutes = []
+const ifNotAuthenticated = (to, from, next) => {
+  if (!localStorage.getItem('user-token')) {
+    next()
+    return
+  }
+  next('/')
+}
+
+const ifAuthenticated = (to, from, next) => {
+  if (localStorage.getItem('user-token')) {
+    next()
+    return
+  }
+  next('/login')
+}
 
 export default new Router({
   mode: process.env.VUE_APP_ROUTER_MODE_HISTORY === 'true' ? 'history' : 'hash',
   routes: [
-    ...demoRoutes,
     {
       path: '*',
       redirect: { name: 'dashboard' },
     },
     {
+      name: 'Login',
+      path: '/login',
+      component: Login,
+      beforeEnter: ifNotAuthenticated,
+    },
+    {
+      name: 'Logout',
+      path: '/logout',
+      component: Logout,
+    },
+    {
       name: 'Admin',
       path: '/admin',
+      beforeEnter: ifAuthenticated,
       component: AppLayout,
       children: [
         {

@@ -14,6 +14,7 @@ import YmapPlugin from 'vue-yandex-maps'
 import VueClipboard from 'vue-clipboard2'
 
 import VertxEventBus from 'vue-vertx3-eventbus-client'
+import axios from 'axios'
 
 import '../metrics'
 import '../registerServiceWorker'
@@ -59,6 +60,11 @@ router.beforeEach((to, from, next) => {
 router.afterEach((to, from) => {
   store.commit('setLoading', false)
 })
+
+const token = localStorage.getItem('user-token')
+if (token) {
+  axios.defaults.headers.common.Authorization = 'Bearer ' + token
+}
 
 /* eslint-disable no-new */
 new Vue({
