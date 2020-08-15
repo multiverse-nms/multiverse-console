@@ -16,7 +16,7 @@
       </thead>
       <tbody>
         <tr v-for="(pa, index) in pas" :key="index" :class="getAvailableClass(pa.available)">
-          <td>{{ pa.name }}</td>
+          <td>{{ decodeName(pa.name) }}</td>
           <td>{{ findNodeName(pa.originId) }}</td>
           <td>{{ new Date(pa.created).toLocaleString() }}</td>
           <td>
@@ -31,6 +31,9 @@
 
 <script>
 import { getAvailableClass } from '../../../../assets/icons/colors.js'
+import { Decoder } from '@ndn/tlv'
+import { Name } from '@ndn/packet'
+
 export default {
   name: 'PATable',
   props: ['pas', 'nodes', 'onDelete'],
@@ -46,6 +49,12 @@ export default {
   watch: {
   },
   methods: {
+    decodeName (b64s) {
+      const o = Uint8Array.from(atob(b64s), c => c.charCodeAt(0))
+      const decoder = new Decoder(o)
+      const name = decoder.decode(Name)
+      return name.toString()
+    },
     findNodeName (id) {
       return this.nodes.find(x => x.id === id).name.split(':')[1]
     },

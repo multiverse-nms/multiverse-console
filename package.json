@@ -1,9 +1,9 @@
 {
-  "name": "vuestic-admin",
-  "version": "2.0.0",
+  "name": "nms-gui",
+  "version": "1.0.0",
   "private": false,
-  "description": "Vue.js admin template",
-  "author": "smartapant <smartapant@gmail.com>",
+  "description": "Vue.js GUI for Network Management System",
+  "author": "amar",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -13,6 +13,9 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@ndn/cli-common": "https://ndnts-nightly.ndn.today/cli-common.tgz",
+    "@ndn/endpoint": "https://ndnts-nightly.ndn.today/endpoint.tgz",
+    "@ndn/packet": "https://ndnts-nightly.ndn.today/packet.tgz",
     "@types/jest": "^24.0.11",
     "amcharts3": "^3.21.14",
     "ammap3": "^3.21.14",
@@ -20,6 +23,7 @@
     "asva-executors": "^0.1.22",
     "axios": "^0.19.0",
     "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
     "chart.js": "^2.9.3",
     "core-js": "3",
     "detect-browser": "^4.8.0",
@@ -28,10 +32,9 @@
     "extend": "3.0.2",
     "flag-icon-css": "^3.4.5",
     "font-awesome": "^4.7.0",
-    "google-maps": "^3.3.0",
     "ionicons": "^4.6.3",
     "leaflet-map": "^0.2.1",
-    "lodash": "4.17.15",
+    "lodash": "^4.17.20",
     "medium-editor": "^5.23.3",
     "normalize.css": "^8.0.1",
     "popper.js": "^1.16.0",
@@ -61,6 +64,8 @@
     "vuex-router-sync": "^5.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.1",
     "@vue/cli-plugin-babel": "^4.0.5",
     "@vue/cli-plugin-eslint": "^4.0.5",
     "@vue/cli-plugin-pwa": "^4.0.5",
@@ -78,7 +83,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "eslint-plugin-vue": "^6.0.1",
     "lint-staged": "^9.2.1",
-    "node-sass": "^4.13.0",
+    "node-sass": "^4.14.1",
     "sass-loader": "^7.3.1",
     "sass-resources-loader": "^2.0.1",
     "stylelint": "^12.0.0",
@@ -89,8 +94,8 @@
     "vue-template-compiler": "^2.6.10"
   },
   "engines": {
-    "node": ">= 4.0.0",
-    "npm": ">= 3.0.0"
+    "node": ">= 12.0.0",
+    "npm": ">= 6.0.0"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
@@ -114,6 +119,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/epicmaxco/vuestic-admin.git"
+    "url": "https://github.com/amar-ox/nms-console.git"
   }
 }

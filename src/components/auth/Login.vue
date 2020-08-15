@@ -71,7 +71,7 @@ export default {
         return
       }
       const user = { username: this.username, password: this.password }
-      axios.post('https://nms.controller:8787/login/user', user, {
+      axios.post('https://localhost:8787/login/user', user, {
         headers: {},
       })
         .then(response => {

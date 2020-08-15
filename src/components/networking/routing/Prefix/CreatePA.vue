@@ -44,6 +44,9 @@
 
 <script>
 import axios from 'axios'
+import { Encoder } from '@ndn/tlv'
+import { Name } from '@ndn/packet'
+
 export default {
   name: 'CreatePA',
   props: ['show', 'subnetId', 'originId'],
@@ -96,6 +99,14 @@ export default {
         this.error = 'Name is required'
         return
       }
+
+      const encoder = new Encoder()
+      encoder.encode(new Name(this.nPA.name))
+      console.log('encoded: ' + encoder.output)
+      const b64 = btoa(String.fromCharCode.apply(null, encoder.output))
+      console.log('encoded b64: ' + b64)
+      this.nPA.name = b64
+
       if (this.nPA.originId === 0) {
         if (this.originName === '') {
           this.error = 'Origin is required'

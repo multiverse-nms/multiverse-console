@@ -1,6 +1,6 @@
 {
-  "name": "vuestic-admin",
-  "short_name": "vuestic-admin",
+  "name": "nms-gui",
+  "short_name": "nms-gui",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
