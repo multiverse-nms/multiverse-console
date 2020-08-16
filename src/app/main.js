@@ -66,6 +66,14 @@ if (token) {
   axios.defaults.headers.common.Authorization = 'Bearer ' + token
 }
 
+axios.interceptors.response.use((response) => { // intercept the global error
+  return response
+}, function (error) {
+  if (error.response.status === 401) {
+    router.push({ name: 'Logout' })
+  }
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

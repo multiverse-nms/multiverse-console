@@ -24,7 +24,7 @@ export default {
         .then(response => {
         })
         .catch(e => {
-          console.log('login error: ', e)
+          console.log('logout error: ', e)
         })
       delete axios.defaults.headers.common.Authorization
       localStorage.removeItem('user-token')
