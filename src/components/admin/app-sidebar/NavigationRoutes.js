@@ -12,8 +12,8 @@ export const navigationRoutes = {
       },
     },
     {
-      name: 'data-streaming',
-      displayName: 'menu.data-streaming',
+      name: 'telemetry',
+      displayName: 'menu.telemetry',
       meta: {
         iconClass: 'va-icon fa fa-exchange',
       },
@@ -22,7 +22,7 @@ export const navigationRoutes = {
       name: 'networking',
       displayName: 'menu.networking',
       meta: {
-        iconClass: 'vuestic-iconset vuestic-iconset-graph',
+        iconClass: 'va-icon fa fa-map',
       },
     },
     {
@@ -50,10 +50,24 @@ export const navigationRoutes = {
       ],
     },
     {
-      name: 'rest-api',
-      displayName: 'menu.rest-api',
+      name: 'notifications',
+      displayName: 'menu.notifications',
       meta: {
-        iconClass: 'va-icon fa fa-desktop',
+        iconClass: 'va-icon fa fa-comment',
+      },
+    },
+    {
+      name: 'accounts',
+      displayName: 'menu.accounts',
+      meta: {
+        iconClass: 'va-icon fa fa-users',
+      },
+    },
+    {
+      name: 'configuration',
+      displayName: 'menu.configuration',
+      meta: {
+        iconClass: 'va-icon fa fa-gears',
       },
     },
     /* {

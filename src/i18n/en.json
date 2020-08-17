@@ -290,13 +290,14 @@
     "persian": "Persian"
   },
   "menu": {
-    "data-streaming": "Data Streaming",
+    "telemetry": "Telemetry",
     "networking": "Networking",
     "storage": "Storage",
     "measurements": "Measurements",
     "collections": "Collections",
-    "rest-api": "REST API",
-
+    "notifications": "Notifications",
+    "accounts": "Accounts",
+    "configuration": "Configuration",
     "auth": "Auth",
     "rating": "Rating",
     "buttons": "Buttons",
@@ -316,7 +317,6 @@
     "maps": "Maps",
     "pages": "Pages",
     "modals": "Modals",
-    "notifications": "Notifications",
     "progressBars": "Progress Bars",
     "signUp": "Sign up",
     "statistics": "Statistics",
