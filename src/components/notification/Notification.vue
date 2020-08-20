@@ -1,27 +1,78 @@
 <template>
   <div class="notifications">
     <div class="row row-equal">
-      <div class="flex xs12 lg8">
+      <div class="flex xs12 lg6">
         <va-card title="Events">
-          <div v-for="(event, index) in events" :key="index" class="event">
-            <va-notification :color="getEventColor(event.severity)" closeable @input="deleteEvent(event.id)">
-              <va-badge :color="getEventColor(event.severity)">
-                {{ findNodeName(event.origin) }}
-              </va-badge>
-              <p>{{ event.timestamp }} | [{{ event.code }}] | {{ event.msg }}</p>
-            </va-notification>
+          <div v-if="events.length === 0" class="text-center mt-5">
+            <va-chip color="gray">No Events to show</va-chip>
           </div>
+          <table v-if="events.length > 0" class="va-table va-table--hoverable">
+            <thead>
+              <tr>
+                <th>Severity</th>
+                <th>Origin</th>
+                <th>Code</th>
+                <th>Timestamp</th>
+                <th>Message</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(event, index) in events" :key="index">
+                <td>
+                  <va-icon name="fa fa-exclamation-circle" :color="getEventColor(event.severity)" size="30px"></va-icon>
+                </td>
+                <td>{{ findNodeName(event.origin) }}</td>
+                <td>{{ event.code }}</td>
+                <td>{{ event.timestamp }}</td>
+                <td>{{ event.msg }}</td>
+                <td>
+                  <va-button small @click="deleteEvent(event.id)" color="warning" > Ignore </va-button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </va-card>
       </div>
 
-      <div class="flex xs12 lg4">
+      <div class="flex xs12 lg6">
         <va-card title="Faults">
-          <va-notification v-for="(fault, index) in faults" :key="index" color="danger" closeable @input="deleteFault(fault.id)">
+          <div v-if="faults.length === 0" class="text-center mt-5">
+            <va-chip color="gray">No Events to show</va-chip>
+          </div>
+          <table v-if="faults.length > 0" class="va-table va-table--hoverable">
+            <thead>
+              <tr>
+                <th>Severity</th>
+                <th>Origin</th>
+                <th>Code</th>
+                <th>Timestamp</th>
+                <th>Message</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(fault, index) in faults" :key="index">
+                <td>
+                  <va-icon name="fa fa-exclamation-circle" color="danger" size="30px"></va-icon>
+                </td>
+                <td>{{ findNodeName(fault.origin) }}</td>
+                <td>{{ fault.code }}</td>
+                <td>{{ fault.timestamp }}</td>
+                <td>{{ fault.msg }}</td>
+                <td>
+                  <va-button small @click="deleteFault(fault.id)" color="warning" > Ignore </va-button>
+                  <va-button small @click="deleteFault(fault.id)" color="info" > Acknowledge </va-button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- va-notification v-for="(fault, index) in faults" :key="index" color="danger" closeable @input="deleteFault(fault.id)">
             <va-badge color="danger">
               {{ findNodeName(fault.origin) }}
             </va-badge>
             <p>{{ fault.timestamp }} | [{{ fault.code }}] | {{ fault.msg }}</p>
-          </va-notification>
+          </va-notification -->
         </va-card>
       </div>
     </div>
@@ -100,7 +151,7 @@ export default {
         })
     },
     findNodeName (id) {
-      return this.nodes.find(x => x.id === id).name.split(':')[1]
+      return this.nodes.find(x => x.id === id).name
     },
 
     getEventColor (status) {

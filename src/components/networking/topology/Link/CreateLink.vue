@@ -8,84 +8,73 @@
     noEscDismiss
   >
     <div class="modal-create-link">
-      <div class="row">
-        <va-notification color="danger" v-if="error != ''">
-          {{ error }}
-        </va-notification>
-      </div>
-
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Name</label>
-          <va-input disabled v-model="nLink.name"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Label</label>
-          <va-input v-model="nLink.label"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Description</label>
-          <va-input v-model="nLink.description"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Type</label>
-          <va-select
-            v-model="nLink.type"
-            textBy="source"
-            :options="['IN','EXT']"
-          />
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Source LTP</label>
-          <va-select
-            v-model="srcVltpName"
-            textBy="source"
-            :options="Array.from(ltpsNameToId.keys())"
-          />
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Destination LTP</label>
-          <va-select
-            v-model="destVltpName"
-            textBy="source"
-            :options="Array.from(ltpsNameToId.keys())"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label class="label">Info</label>
-        <div v-for="(info, index) in infoArray" :key="index" class="row">
-          <div class="flex xs5 offset--xs1">
-            <va-input v-model="info[0]"/>
+      <form>
+        <va-input
+          readonly
+          v-model="nLink.name"
+          type="text"
+          label="Name"
+        />
+        <va-input
+          removable
+          v-model="nLink.label"
+          type="text"
+          label="Label"
+          :error="!!labelErrors.length"
+          :error-messages="labelErrors"
+        />
+        <va-input
+          removable
+          v-model="nLink.description"
+          type="text"
+          label="Description"
+          :error="!!descErrors.length"
+          :error-messages="descErrors"
+        />
+        <va-select
+          label="Source LTP"
+          v-model="srcVltpName"
+          textBy="source"
+          :options="Array.from(ltpsNameToId.keys())"
+          :error="!!ltpErrors.length"
+          :error-messages="ltpErrors"
+        />
+        <va-select
+          label="Destination LTP"
+          v-model="destVltpName"
+          textBy="destination"
+          :options="Array.from(ltpsNameToId.keys())"
+          :error="!!ltpErrors.length"
+          :error-messages="ltpErrors"
+        />
+        <div>
+          <div v-for="(info, index) in infoArray" :key="index" class="row">
+            <div class="flex xs5 offset--xs1">
+              <va-input
+                v-model="info[0]"
+                type="text"
+                label="Info key"
+              />
+            </div>
+            <div class="flex xs5 ml-1">
+              <va-input
+                v-model="info[1]"
+                type="text"
+                label="Info value"
+              />
+            </div>
           </div>
-          <div class="flex xs5 ml-1">
-            <va-input v-model="info[1]"/>
+          <div class="text-center">
+            <va-button color="gray" @click="addInfoItem">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            </va-button>
           </div>
         </div>
-        <div class="text-center">
-          <va-button color="gray" @click="addInfoItem">
-            <i class="fa fa-plus-circle" aria-hidden="true"></i>
-          </va-button>
+        <div class="d-flex justify--center mt-3">
+          <va-button small color="danger" @click="cancel">Cancel</va-button>
+          <va-button small color="primary" @click="submit">Submit</va-button>
         </div>
-      </div>
-
-      <div class="row mt-5">
-        <div class="flex xs6 offset--xs6">
-          <va-button  small color="danger" @click="cancel"> Cancel </va-button>
-          <va-button  small @click="submit"> Submit </va-button>
-        </div>
-      </div>
+      </form>
     </div>
   </va-modal>
 </template>
@@ -100,7 +89,6 @@ export default {
   data: function () {
     return {
       showModal: false,
-      error: '',
       infoArray: [['', '']],
       nLink: {
         name: '',
@@ -111,6 +99,11 @@ export default {
         destVltpId: 0,
         type: 'IN',
       },
+
+      labelErrors: [],
+      descErrors: [],
+      ltpErrors: [],
+
       srcVltpName: '',
       destVltpName: '',
       ltpsNameToId: new Map(),
@@ -152,14 +145,17 @@ export default {
       this.infoArray = [['', '']]
       this.srcVltpName = ''
       this.destVltpName = ''
-      this.error = ''
+
+      this.labelErrors = []
+      this.descErrors = []
+      this.ltpErrors = []
+
       this.showModal = true
     },
     getLtps () {
       const ltpsApi = 'https://localhost:8787/api/topology/ltps'
       axios.get(ltpsApi)
         .then(response => {
-          // this.ltps = response.data
           this.ltpsNameToId = new Map()
           response.data.forEach(ltp => {
             if (!ltp.busy) {
@@ -181,11 +177,7 @@ export default {
       const srcNode = this.srcVltpName.split(':')[1]
       const destNode = this.destVltpName.split(':')[1]
       if (srcNode === destNode) {
-        this.error = 'Source and destination nodes must be different'
-        return
-      }
-      if (this.nLink.name === '') {
-        this.error = 'Name is required'
+        this.ltpErrors = ['Source and destination nodes must be different']
         return
       }
       this.nLink.srcVltpId = this.ltpsNameToId.get(this.srcVltpName)

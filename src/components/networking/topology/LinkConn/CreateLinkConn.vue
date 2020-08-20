@@ -8,65 +8,63 @@
     noEscDismiss
   >
     <div class="modal-create-link">
-      <div class="row">
-        <va-notification color="danger" v-if="error != ''">
-          {{ error }}
-        </va-notification>
-      </div>
-
-      <div v-if="selectLink" class="row">
-        <div class="flex xs12">
-          <label class="label">Link</label>
-          <va-select
-            v-model="selectedLinkName"
-            textBy="source"
-            :options="Array.from(linksNameToId.keys())"
-          />
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Name</label>
-          <va-input disabled v-model="nLc.name"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Label</label>
-          <va-input v-model="nLc.label"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Description</label>
-          <va-input v-model="nLc.description"/>
-        </div>
-      </div>
-
-      <div>
-        <label class="label">Info</label>
-        <div v-for="(info, index) in infoArray" :key="index" class="row">
-          <div class="flex xs5 offset--xs1">
-            <va-input v-model="info[0]"/>
+      <form>
+        <va-select v-if="selectLink"
+          v-model="selectedLinkName"
+          label="Link"
+          textBy="link"
+          :options="Array.from(linksNameToId.keys())"
+        />
+        <va-input
+          readonly
+          v-model="nLc.name"
+          type="text"
+          label="Name"
+        />
+        <va-input
+          removable
+          v-model="nLc.label"
+          type="text"
+          label="Label"
+          :error="!!labelErrors.length"
+          :error-messages="labelErrors"
+        />
+        <va-input
+          removable
+          v-model="nLc.description"
+          type="text"
+          label="Description"
+          :error="!!descErrors.length"
+          :error-messages="descErrors"
+        />
+        <div>
+          <div v-for="(info, index) in infoArray" :key="index" class="row">
+            <div class="flex xs5 offset--xs1">
+              <va-input
+                v-model="info[0]"
+                type="text"
+                label="Info key"
+              />
+            </div>
+            <div class="flex xs5 ml-1">
+              <va-input
+                v-model="info[1]"
+                type="text"
+                label="Info value"
+              />
+            </div>
           </div>
-          <div class="flex xs5 ml-1">
-            <va-input v-model="info[1]"/>
+          <div class="text-center">
+            <va-button color="gray" @click="addInfoItem">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            </va-button>
           </div>
         </div>
-        <div class="text-center">
-          <va-button color="gray" @click="addInfoItem">
-            <i class="fa fa-plus-circle" aria-hidden="true"></i>
-          </va-button>
+        <div class="d-flex justify--center mt-3">
+          <va-button small color="danger" @click="cancel">Cancel</va-button>
+          <va-button small color="primary" @click="submit">Submit</va-button>
         </div>
-      </div>
-
-      <div class="row mt-5">
-        <div class="flex xs6 offset--xs6">
-          <va-button  small color="danger" @click="cancel"> Cancel </va-button>
-          <va-button  small  @click="submit"> Submit </va-button>
-        </div>
-      </div>
+      </form>
     </div>
   </va-modal>
 </template>
@@ -81,7 +79,6 @@ export default {
   data: function () {
     return {
       showModal: false,
-      error: '',
       infoArray: [['', '']],
       nLc: {
         name: '',
@@ -95,6 +92,9 @@ export default {
       selectedLinkName: '',
       selectLink: false,
       linksNameToId: new Map(),
+
+      labelErrors: [],
+      descErrors: [],
     }
   },
 
@@ -136,7 +136,10 @@ export default {
         vlinkId: this.linkId,
       }
       this.infoArray = [['', '']]
-      this.error = ''
+
+      this.labelErrors = []
+      this.descErrors = []
+
       this.showModal = true
     },
     addInfoItem () {
@@ -176,10 +179,6 @@ export default {
         })
     },
     submit () {
-      if (this.nLc.name === 'undefined') {
-        this.error = 'Name is required'
-        return
-      }
       if (this.linkId === 0) {
         this.nLc.vlinkId = this.linksNameToId.get(this.selectedLinkName)
       }

@@ -16,13 +16,13 @@
               <va-item-label>{{ node.name }}</va-item-label>
             </va-item-section>
 
-            <va-item-section>
+            <va-item-section side>
               <va-button v-if="!node.hasAgent" small color="info" @click="initSetAgAccount(node)">
-                Create Agent
+                Setup Agent
               </va-button>
             </va-item-section>
             <va-item-section>
-              <va-button v-if="node.hasAgent" small color="warning" @click="initSetAgAccount(node)">
+              <va-button v-if="node.hasAgent" small color="warning" @click="initEditAgAccount(node)">
                 Edit
               </va-button>
             </va-item-section>
@@ -45,30 +45,32 @@
       noEscDismiss
     >
       <div class="x">
-        <div class="row">
-          <va-notification color="danger" v-if="error != ''">
-            {{ error }}
-          </va-notification>
-        </div>
-
-        <div class="row">
-          <div class="flex xs12">
-            <label class="label">Username</label>
-            <va-input disabled v-model="nAgent.username"/>
+        <form>
+          <va-input
+            readonly
+            v-model="nAgent.username"
+            type="text"
+            label="Username"
+          />
+          <div class="row">
+            <div class="flex xs8">
+              <va-input
+                v-model="nAgent.password"
+                :type="passwordType"
+                label="Password"
+                :error="!!passwordErrors.length"
+                :error-messages="passwordErrors"
+              />
+            </div>
+            <div class="flex xs3 ml-1">
+              <a @click="togglepw()"> <va-icon :name="passwordIcon" size="30px"></va-icon> </a>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="flex xs12">
-            <label class="label">Password</label>
-            <va-input v-model="nAgent.password"/>
+          <div class="d-flex justify--center mt-3">
+            <va-button small color="danger" @click="cancel">Cancel</va-button>
+            <va-button small color="primary" @click="submit">Submit</va-button>
           </div>
-        </div>
-        <div class="row mt-3">
-          <div class="flex xs12">
-            <va-button  small color="danger" @click="cancel"> Cancel </va-button>
-            <va-button  small  @click="submitAgAccount"> Submit </va-button>
-          </div>
-        </div>
+        </form>
       </div>
     </va-modal>
   </div>
@@ -92,7 +94,10 @@ export default {
         role: 'agent',
       },
       showModal: false,
-      error: '',
+      passwordType: 'password',
+      passwordIcon: 'fa fa-eye',
+
+      passwordErrors: [],
     }
   },
   created () {
@@ -126,13 +131,25 @@ export default {
       this.nAgent.nodeId = node.id
       this.nAgent.role = 'agent'
       this.nAgent.password = ''
-      this.error = ''
+
+      this.passwordErrors = []
+
+      this.showModal = true
+    },
+    initEditAgAccount (node) {
+      this.nAgent.username = node.name
+      this.nAgent.nodeId = node.id
+      this.nAgent.role = 'agent'
+      this.nAgent.password = this.agents.find(x => x.username === node.name).password
+
+      this.passwordErrors = []
+
       this.showModal = true
     },
 
-    submitAgAccount () {
+    submit () {
       if (this.nAgent.password === '') {
-        this.error = 'Password is required'
+        this.passwordErrors = ['Password is required']
         return
       }
       axios.put('https://localhost:8787/api/account/agent/' + this.nAgent.username, this.nAgent, {
@@ -185,6 +202,16 @@ export default {
         return 'info'
       } else {
         return 'gray'
+      }
+    },
+
+    togglepw () {
+      if (this.passwordType === 'password') {
+        this.passwordType = 'text'
+        this.passwordIcon = 'fa fa-eye-slash'
+      } else {
+        this.passwordType = 'password'
+        this.passwordIcon = 'fa fa-eye'
       }
     },
   },

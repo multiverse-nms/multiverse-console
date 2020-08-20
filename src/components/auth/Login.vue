@@ -2,7 +2,7 @@
   <div class="auth-layout row align-content--center">
     <div class="flex xs12 pa-3 flex-center">
       <router-link class="py-5 flex-center" to="/">
-        <va-icon-vuestic />
+        <va-icon-vue />
       </router-link>
     </div>
 
@@ -44,11 +44,11 @@
 
 <script>
 import axios from 'axios'
-import VaIconVuestic from '../../iconset/VaIconVuestic'
+import VaIconVue from '../../iconset/VaIconVue'
 
 export default {
   name: 'Login',
-  components: { VaIconVuestic },
+  components: { VaIconVue },
   data () {
     return {
       username: '',

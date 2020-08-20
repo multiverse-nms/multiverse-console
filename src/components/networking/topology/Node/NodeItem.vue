@@ -143,13 +143,13 @@
           </div>
           <div class="mt-3" v-if="tabValue == 1">
             <xc-table :xcs="node.vxcs" :onSelected="getXc" />
-            <va-button small color="warning" @click="initAddXc()">
+            <va-button disabled small color="warning" @click="initAddXc()">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
-              Add XC </va-button>
+              Add XC
+            </va-button>
           </div>
-
           <div class="mt-3" v-if="tabValue == 2">
-            <p-a-table :pas="node.pas" :nodes="nodes" :onDelete="deletePrefixAnn" />
+            <p-a-table :pas="pas" :nodes="nodes" :onDelete="deletePrefixAnn" />
             <va-button small color="warning" @click="initPrefixAnn()">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
               Announce Prefix </va-button>
@@ -214,10 +214,12 @@ export default {
       nextXcName: '',
 
       nodes: [],
+      pas: [],
     }
   },
 
   created () {
+    this.pas = this.node.pas
     this.nodes.push({ id: this.node.id, name: this.node.name })
   },
   watch: {
@@ -414,10 +416,11 @@ export default {
         })
     },
     getPAsByNode () {
+      console.log('getPAsByNode')
       const pasApi = 'https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/prefixAnns'
       axios.get(pasApi)
         .then(response => {
-          this.node.pas = response.data
+          this.pas = response.data
         })
         .catch(e => {
           console.log(e)

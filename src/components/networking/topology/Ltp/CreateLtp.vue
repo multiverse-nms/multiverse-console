@@ -13,49 +13,57 @@
           {{ error }}
         </va-notification>
       </div>
-
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Name</label>
-          <va-input disabled v-model="nLtp.name"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Label</label>
-          <va-input v-model="nLtp.label"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Description</label>
-          <va-input v-model="nLtp.description"/>
-        </div>
-      </div>
-
-      <div>
-        <label class="label">Info</label>
-        <div v-for="(info, index) in infoArray" :key="index" class="row">
-          <div class="flex xs5 offset--xs1">
-            <va-input v-model="info[0]"/>
+      <form>
+        <va-input
+          readonly
+          v-model="nLtp.name"
+          type="text"
+          label="Name"
+        />
+        <va-input
+          removable
+          v-model="nLtp.label"
+          type="text"
+          label="Label"
+          :error="!!labelErrors.length"
+          :error-messages="labelErrors"
+        />
+        <va-input
+          removable
+          v-model="nLtp.description"
+          type="text"
+          label="Description"
+          :error="!!descErrors.length"
+          :error-messages="descErrors"
+        />
+        <div>
+          <div v-for="(info, index) in infoArray" :key="index" class="row">
+            <div class="flex xs5 offset--xs1">
+              <va-input
+                v-model="info[0]"
+                type="text"
+                label="Info key"
+              />
+            </div>
+            <div class="flex xs5 ml-1">
+              <va-input
+                v-model="info[1]"
+                type="text"
+                label="Info value"
+              />
+            </div>
           </div>
-          <div class="flex xs5 ml-1">
-            <va-input v-model="info[1]"/>
+          <div class="text-center">
+            <va-button color="gray" @click="addInfoItem">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            </va-button>
           </div>
         </div>
-        <div class="text-center">
-          <va-button color="gray" @click="addInfoItem">
-            <i class="fa fa-plus-circle" aria-hidden="true"></i>
-          </va-button>
+        <div class="d-flex justify--center mt-3">
+          <va-button small color="danger" @click="cancel">Cancel</va-button>
+          <va-button small color="primary" @click="submit">Submit</va-button>
         </div>
-      </div>
-
-      <div class="row mt-5">
-        <div class="flex xs6 offset--xs6">
-          <va-button  small color="danger" @click="cancel"> Cancel </va-button>
-          <va-button  small  @click="submit"> Submit </va-button>
-        </div>
-      </div>
+      </form>
     </div>
   </va-modal>
 </template>
@@ -68,7 +76,6 @@ export default {
   data: function () {
     return {
       showModal: false,
-      error: '',
       infoArray: [['', '']],
       nLtp: {
         vnodeId: this.nodeId,
@@ -78,6 +85,9 @@ export default {
         info: {},
         busy: false,
       },
+      error: '',
+      labelErrors: [],
+      descErrors: [],
     }
   },
 
@@ -106,7 +116,11 @@ export default {
         busy: false,
       }
       this.infoArray = [['port', '']]
+
       this.error = ''
+      this.labelErrors = []
+      this.descErrors = []
+
       this.showModal = true
     },
     addInfoItem () {
@@ -119,7 +133,7 @@ export default {
       const macRegex = new RegExp('^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
       const portValue = this.infoArray.find(x => x[0] === 'port')[1]
       if (!macRegex.test(portValue)) {
-        this.error = 'port is required'
+        this.error = 'MAC address format port is required'
         return
       }
       for (var i = 0, len = this.infoArray.length; i < len; i++) {

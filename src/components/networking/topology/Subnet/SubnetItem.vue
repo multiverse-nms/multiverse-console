@@ -47,7 +47,7 @@
         <va-card :title="tTrails">
           <trail-table :trails="trails" :onSelected="getTrail" />
           <div v-if="subnet.id != 0" class="text-center mt-5">
-            <va-button small color="warning" @click="initCreateTrail">
+            <va-button disabled small color="warning" @click="initCreateTrail">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
               Create trail
             </va-button>

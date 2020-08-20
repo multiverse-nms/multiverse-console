@@ -8,36 +8,28 @@
     noEscDismiss
   >
     <div class="modal-create-pa">
-      <div class="row">
-        <va-notification color="danger" v-if="error != ''">
-          {{ error }}
-        </va-notification>
-      </div>
-
-      <div v-if="selectOrigin" class="row">
-        <div class="flex xs12">
-          <label class="label">Origin</label>
-          <va-select
-            v-model="originName"
-            textBy="source"
-            :options="Array.from(nodesNameToId.keys())"
-          />
+      <form>
+        <va-select v-if="selectOrigin"
+          label="Origin"
+          v-model="originName"
+          textBy="origin"
+          :options="Array.from(nodesNameToId.keys())"
+          :error="!!originErrors.length"
+          :error-messages="originErrors"
+        />
+        <va-input
+          removable
+          v-model="nPA.name"
+          type="text"
+          label="Name"
+          :error="!!nameErrors.length"
+          :error-messages="nameErrors"
+        />
+        <div class="d-flex justify--center mt-3">
+          <va-button small color="danger" @click="cancel">Cancel</va-button>
+          <va-button small color="primary" @click="submit">Submit</va-button>
         </div>
-      </div>
-
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Name</label>
-          <va-input v-model="nPA.name"/>
-        </div>
-      </div>
-
-      <div class="row mt-5">
-        <div class="flex xs6 offset--xs6">
-          <va-button  small color="danger" @click="cancel"> Cancel </va-button>
-          <va-button  small  @click="submit"> Submit </va-button>
-        </div>
-      </div>
+      </form>
     </div>
   </va-modal>
 </template>
@@ -54,7 +46,6 @@ export default {
   data: function () {
     return {
       showModal: false,
-      error: '',
       nPA: {
         name: '/',
         originId: 0,
@@ -63,6 +54,9 @@ export default {
       nodesNameToId: new Map(),
       originName: '',
       selectOrigin: false,
+
+      nameErrors: [],
+      originErrors: [],
     }
   },
 
@@ -90,26 +84,27 @@ export default {
         this.nPA.originId = 0
         this.selectOrigin = true
       }
-      this.error = ''
+      this.nPA.name = '/'
       this.originName = ''
+
+      this.nameErrors = []
+      this.originErrors = []
+
       this.showModal = true
     },
     submit () {
       if (this.nPA.name === '' || this.nPA.name === '/') {
-        this.error = 'Name is required'
+        this.nameErrors = ['Name is required']
         return
       }
-
       const encoder = new Encoder()
       encoder.encode(new Name(this.nPA.name))
-      console.log('encoded: ' + encoder.output)
       const b64 = btoa(String.fromCharCode.apply(null, encoder.output))
-      console.log('encoded b64: ' + b64)
       this.nPA.name = b64
 
       if (this.nPA.originId === 0) {
         if (this.originName === '') {
-          this.error = 'Origin is required'
+          this.originErrors = ['Origin is required']
           return
         }
         this.nPA.originId = this.nodesNameToId.get(this.originName)

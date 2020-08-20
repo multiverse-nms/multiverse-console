@@ -8,66 +8,70 @@
     noEscDismiss
   >
     <div class="modal-create-node">
-      <div class="row">
-        <va-notification color="danger" v-if="error != ''">
-          {{ error }}
-        </va-notification>
-      </div>
-
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Name</label>
-          <va-input disabled v-model="nNode.name"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Label</label>
-          <va-input v-model="nNode.label"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Description</label>
-          <va-input v-model="nNode.description"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Type</label>
-          <va-input v-model="nNode.type"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Location</label>
-          <va-input v-model="nNode.location"/>
-        </div>
-      </div>
-
-      <div>
-        <label class="label">Info</label>
-        <div v-for="(info, index) in infoArray" :key="index" class="row">
-          <div class="flex xs5 offset--xs1">
-            <va-input v-model="info[0]"/>
+      <form>
+        <va-input
+          readonly
+          v-model="nNode.name"
+          type="text"
+          label="Name"
+        />
+        <va-input
+          removable
+          v-model="nNode.label"
+          type="text"
+          label="Label"
+          :error="!!labelErrors.length"
+          :error-messages="labelErrors"
+        />
+        <va-input
+          removable
+          v-model="nNode.description"
+          type="text"
+          label="Description"
+          :error="!!descErrors.length"
+          :error-messages="descErrors"
+        />
+        <va-input
+          readonly
+          v-model="nNode.type"
+          type="text"
+          label="Type"
+        />
+        <va-input
+          v-model="nNode.location"
+          type="text"
+          label="Location"
+          :error="!!locationErrors.length"
+          :error-messages="locationErrors"
+        />
+        <div>
+          <div v-for="(info, index) in infoArray" :key="index" class="row">
+            <div class="flex xs5 offset--xs1">
+              <va-input
+                v-model="info[0]"
+                type="text"
+                label="Info key"
+              />
+            </div>
+            <div class="flex xs5 ml-1">
+              <va-input
+                v-model="info[1]"
+                type="text"
+                label="Info value"
+              />
+            </div>
           </div>
-          <div class="flex xs5 ml-1">
-            <va-input v-model="info[1]"/>
+          <div class="text-center">
+            <va-button color="gray" @click="addInfoItem">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            </va-button>
           </div>
         </div>
-        <div class="text-center">
-          <va-button color="gray" @click="addInfoItem">
-            <i class="fa fa-plus-circle" aria-hidden="true"></i>
-          </va-button>
+        <div class="d-flex justify--center mt-3">
+          <va-button small color="danger" @click="cancel">Cancel</va-button>
+          <va-button small color="primary" @click="submit">Submit</va-button>
         </div>
-      </div>
-
-      <div class="row mt-5">
-        <div class="flex xs6 offset--xs6">
-          <va-button  small color="danger" @click="cancel"> Cancel </va-button>
-          <va-button  small  @click="submit"> Submit </va-button>
-        </div>
-      </div>
+      </form>
     </div>
   </va-modal>
 </template>
@@ -80,7 +84,6 @@ export default {
   data: function () {
     return {
       showModal: false,
-      error: '',
       infoArray: [['', '']],
       nNode: {
         vsubnetId: this.subnetId,
@@ -93,6 +96,9 @@ export default {
         posy: 0,
         location: '',
       },
+      labelErrors: [],
+      descErrors: [],
+      locationErrors: [],
     }
   },
 
@@ -109,10 +115,6 @@ export default {
       },
       deep: true,
     },
-    /* 'nPrefix.node': function (newVal, oldVal) {
-      this.nPrefix.interface = ''
-      this.getInterfaces(newVal)
-    }, */
   },
   methods: {
     initCreateNode () {
@@ -122,13 +124,17 @@ export default {
         label: '',
         description: '',
         info: {},
-        type: '',
+        type: 'fwd',
         posx: Math.floor(Math.random() * Math.floor(800)),
         posy: Math.floor(Math.random() * Math.floor(500)),
         location: '',
       }
       this.infoArray = [['', '']]
-      this.error = ''
+
+      this.labelErrors = []
+      this.descErrors = []
+      this.locationErrors = []
+
       this.showModal = true
     },
     addInfoItem () {
@@ -138,10 +144,6 @@ export default {
       }
     },
     submit () {
-      if (this.nNode.name === '') {
-        this.error = 'Name is required'
-        return
-      }
       for (var i = 0, len = this.infoArray.length; i < len; i++) {
         const item = this.infoArray[i]
         if (item[0] !== '' && item[1] !== '') {
@@ -154,7 +156,6 @@ export default {
         }
       }
       this.$emit('onOk', this.nNode)
-      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

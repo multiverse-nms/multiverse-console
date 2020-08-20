@@ -7,56 +7,60 @@
     noOutsideDismiss
     noEscDismiss
   >
-
     <div class="modal-create-subnet">
-      <div class="row">
-        <va-notification color="danger" v-if="error != ''">
-          {{ error }}
-        </va-notification>
-      </div>
-
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Name</label>
-          <va-input disabled placeholder="e.g., ..." v-model="nSubnet.name"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Label</label>
-          <va-input placeholder="e.g., ..." v-model="nSubnet.label"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="flex xs12">
-          <label class="label">Description</label>
-          <va-input placeholder="e.g., ..." v-model="nSubnet.description"/>
-        </div>
-      </div>
-
-      <div>
-        <label class="label">Info</label>
-        <div v-for="(info, index) in infoArray" :key="index" class="row">
-          <div class="flex xs5 offset--xs1">
-            <va-input v-model="info[0]"/>
+      <form>
+        <va-input
+          readonly
+          v-model="nSubnet.name"
+          type="text"
+          label="Name"
+          :error="!!nameErrors.length"
+          :error-messages="nameErrors"
+        />
+        <va-input
+          removable
+          v-model="nSubnet.label"
+          type="text"
+          label="Label"
+          :error="!!labelErrors.length"
+          :error-messages="labelErrors"
+        />
+        <va-input
+          removable
+          v-model="nSubnet.description"
+          type="text"
+          label="Description"
+          :error="!!descErrors.length"
+          :error-messages="descErrors"
+        />
+        <div>
+          <div v-for="(info, index) in infoArray" :key="index" class="row">
+            <div class="flex xs5 offset--xs1">
+              <va-input
+                v-model="info[0]"
+                type="text"
+                label="Info key"
+              />
+            </div>
+            <div class="flex xs5 ml-1">
+              <va-input
+                v-model="info[1]"
+                type="text"
+                label="Info value"
+              />
+            </div>
           </div>
-          <div class="flex xs5 ml-1">
-            <va-input v-model="info[1]"/>
+          <div class="text-center">
+            <va-button color="gray" @click="addInfoItem">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            </va-button>
           </div>
         </div>
-        <div class="text-center">
-          <va-button color="gray" @click="addInfoItem">
-            <i class="fa fa-plus-circle" aria-hidden="true"></i>
-          </va-button>
+        <div class="d-flex justify--center mt-3">
+          <va-button small color="danger" @click="cancel">Cancel</va-button>
+          <va-button small color="primary" @click="submit">Submit</va-button>
         </div>
-      </div>
-
-      <div class="row mt-5">
-        <div class="flex xs6 offset--xs6">
-          <va-button  small color="danger" @click="cancel"> Cancel </va-button>
-          <va-button  small  @click="submit"> Submit </va-button>
-        </div>
-      </div>
+      </form>
     </div>
   </va-modal>
 </template>
@@ -69,7 +73,6 @@ export default {
   data: function () {
     return {
       showModal: false,
-      error: '',
       infoArray: [['', '']],
       nSubnet: {
         name: '',
@@ -77,6 +80,9 @@ export default {
         description: '',
         info: {},
       },
+      nameErrors: [],
+      labelErrors: [],
+      descErrors: [],
     }
   },
 
@@ -93,10 +99,6 @@ export default {
       },
       deep: true,
     },
-    /* 'nPrefix.node': function (newVal, oldVal) {
-      this.nPrefix.interface = ''
-      this.getInterfaces(newVal)
-    }, */
   },
   methods: {
     initCreateModal () {
@@ -107,7 +109,11 @@ export default {
         info: {},
       }
       this.infoArray = [['', '']]
-      this.error = ''
+
+      this.nameErrors = []
+      this.labelErrors = []
+      this.descErrors = []
+
       this.showModal = true
     },
     addInfoItem () {
@@ -117,10 +123,6 @@ export default {
       }
     },
     submit () {
-      if (this.nSubnet.name === '') {
-        this.error = 'Name is required'
-        return
-      }
       for (var i = 0, len = this.infoArray.length; i < len; i++) {
         const item = this.infoArray[i]
         if (item[0] !== '' && item[1] !== '') {
