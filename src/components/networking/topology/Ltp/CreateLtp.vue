@@ -71,7 +71,7 @@
 <script>
 export default {
   name: 'CreateLtp',
-  props: ['show', 'nodeId', 'name'],
+  props: ['show', 'nodeId', 'name', 'macs'],
 
   data: function () {
     return {
@@ -133,7 +133,11 @@ export default {
       const macRegex = new RegExp('^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
       const portValue = this.infoArray.find(x => x[0] === 'port')[1]
       if (!macRegex.test(portValue)) {
-        this.error = 'MAC address format port is required'
+        this.error = 'A MAC address is required for port'
+        return
+      }
+      if (this.macs.includes(portValue)) {
+        this.error = 'MAC address already assigned'
         return
       }
       for (var i = 0, len = this.infoArray.length; i < len; i++) {

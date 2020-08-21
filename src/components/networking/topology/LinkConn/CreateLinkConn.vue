@@ -20,6 +20,8 @@
           v-model="nLc.name"
           type="text"
           label="Name"
+          :error="!!nameErrors.length"
+          :error-messages="nameErrors"
         />
         <va-input
           removable
@@ -93,6 +95,7 @@ export default {
       selectLink: false,
       linksNameToId: new Map(),
 
+      nameErrors: [],
       labelErrors: [],
       descErrors: [],
     }
@@ -112,20 +115,15 @@ export default {
       deep: true,
     },
     selectedLinkName: function (newVal, oldVal) {
-      this.nLc.name = this.setNextLcName(this.linksNameToId.get(newVal))
+      this.setNextLcName(this.linksNameToId.get(newVal), newVal)
     },
   },
   methods: {
     initCreateLc () {
-      if (this.linkId > 0) {
-        this.selectedLinkName = this.linkName
-        this.setNextLcName(this.linkId)
-        this.selectLink = false
-      } else {
-        this.getLinks()
-        this.selectedLinkName = ''
-        this.selectLink = true
-      }
+      this.nameErrors = []
+      this.labelErrors = []
+      this.descErrors = []
+
       this.nLc = {
         name: '',
         label: '',
@@ -137,8 +135,14 @@ export default {
       }
       this.infoArray = [['', '']]
 
-      this.labelErrors = []
-      this.descErrors = []
+      if (this.linkId > 0) {
+        this.setNextLcName(this.linkId, this.linkName)
+        this.selectLink = false
+      } else {
+        this.getLinks()
+        // this.selectedLinkName = ''
+        this.selectLink = true
+      }
 
       this.showModal = true
     },
@@ -148,16 +152,17 @@ export default {
         this.infoArray.push(['', ''])
       }
     },
-    setNextLcName (id) {
-      const lcsApi = 'https://localhost:8787/api/topology/link/' + id + '/linkConns'
+    setNextLcName (linkId, linkName) {
+      const lcsApi = 'https://localhost:8787/api/topology/link/' + linkId + '/linkConns'
       axios.get(lcsApi)
         .then(response => {
           const lcs = response.data
           if (lcs.length > 0) {
             const maxLcNo = lcs[lcs.length - 1].name.split('|')[1].substring(1)
-            this.nLc.name = this.selectedLinkName + '|c' + (parseInt(maxLcNo, 10) + 1)
+            this.nLc.name = linkName + '|c' + (parseInt(maxLcNo, 10) + 1)
+            this.nameErrors = ['Only ONE linkConnection is supported per link']
           } else {
-            this.nLc.name = this.selectedLinkName + '|c0'
+            this.nLc.name = linkName + '|c0'
           }
         })
         .catch(e => {
@@ -179,6 +184,9 @@ export default {
         })
     },
     submit () {
+      if (this.nameErrors.length) {
+        return
+      }
       if (this.linkId === 0) {
         this.nLc.vlinkId = this.linksNameToId.get(this.selectedLinkName)
       }

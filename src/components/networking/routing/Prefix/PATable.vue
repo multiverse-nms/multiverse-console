@@ -50,7 +50,9 @@ export default {
   },
   methods: {
     decodeName (b64s) {
+      // console.log('b64', b64s)
       const o = Uint8Array.from(atob(b64s), c => c.charCodeAt(0))
+      // console.log('bytes', o)
       const decoder = new Decoder(o)
       const name = decoder.decode(Name)
       return name.toString()

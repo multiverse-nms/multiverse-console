@@ -21,7 +21,7 @@
       <tbody>
         <tr v-for="(route, index) in routes" :key="index" >
           <td>{{ findNodeName(route.nodeId) }}</td>
-          <td>{{ route.prefix }}</td>
+          <td>{{ decodeName(route.prefix) }}</td>
           <td>{{ findNodeName(route.nextHopId) }}</td>
           <td>{{ route.faceId }}</td>
           <td>{{ route.cost }}</td>
@@ -37,6 +37,9 @@
 </template>
 
 <script>
+import { Decoder } from '@ndn/tlv'
+import { Name } from '@ndn/packet'
+
 export default {
   name: 'RouteTable',
   props: ['routes', 'nodes', 'onDelete'],
@@ -51,6 +54,14 @@ export default {
   watch: {
   },
   methods: {
+    decodeName (b64s) {
+      // console.log('b64', b64s)
+      const o = Uint8Array.from(atob(b64s), c => c.charCodeAt(0))
+      // console.log('bytes', o)
+      const decoder = new Decoder(o)
+      const name = decoder.decode(Name)
+      return name.toString()
+    },
     findNodeName (id) {
       return this.nodes.find(x => x.id === id).name.split(':')[1]
     },

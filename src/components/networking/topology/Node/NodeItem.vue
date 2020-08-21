@@ -167,7 +167,7 @@
       <xc-item v-if="type === 2" :xc="selectedXc" :onDelete="deleteXc" :onEdit="initEditXc" />
     </va-modal>
 
-    <create-ltp @onOk="postLtp" @onCancel="showCreateLtp = false" :show="showCreateLtp" :nodeId="node.id" :name="nextLtpName" />
+    <create-ltp @onOk="postLtp" @onCancel="showCreateLtp = false" :show="showCreateLtp" :nodeId="node.id" :name="nextLtpName" :macs="macs" />
     <create-xc @onOk="postXc" @onCancel="showCreateXc = false" :show="showCreateXc" :nodeId="node.id" :name="nextXcName" />
     <create-p-a @onOk="postPrefixAnn" @onCancel="showCreatePA = false" :show="showCreatePA" :originId="node.id" />
   </div>
@@ -215,12 +215,14 @@ export default {
 
       nodes: [],
       pas: [],
+      macs: [],
     }
   },
 
   created () {
     this.pas = this.node.pas
     this.nodes.push({ id: this.node.id, name: this.node.name })
+    this.macs = this.node.vltps.map((o) => (o.info.port))
   },
   watch: {
   },
