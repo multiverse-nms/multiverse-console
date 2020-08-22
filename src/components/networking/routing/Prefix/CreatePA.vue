@@ -49,7 +49,7 @@ export default {
       nPA: {
         name: '/',
         originId: 0,
-        available: false,
+        available: true,
       },
       nodesNameToId: new Map(),
       originName: '',

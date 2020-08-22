@@ -362,6 +362,7 @@ export default {
         headers: {},
       })
         .then(response => {
+          console.log(response)
           this.showToast('Prefix advertized', {
             icon: 'fa-check',
             position: 'top-right',
