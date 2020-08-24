@@ -358,7 +358,7 @@ export default {
       this.showCreatePA = true
     },
     postPrefixAnn (pa) {
-      axios.post('https://localhost:8787/api/topology/prefixAnns', pa, {
+      axios.post('https://localhost:8787/api/topology/pa', pa, {
         headers: {},
       })
         .then(response => {
@@ -382,7 +382,7 @@ export default {
       this.showCreatePA = false
     },
     deletePrefixAnn (id) {
-      axios.delete('https://localhost:8787/api/topology/prefixAnn/' + id.toString())
+      axios.delete('https://localhost:8787/api/topology/pa/' + id.toString())
         .then(response => {
           this.showToast('Prefix withdrawn', {
             icon: 'fa-check',
@@ -420,7 +420,7 @@ export default {
     },
     getPAsByNode () {
       console.log('getPAsByNode')
-      const pasApi = 'https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/prefixAnns'
+      const pasApi = 'https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/pas'
       axios.get(pasApi)
         .then(response => {
           this.pas = response.data

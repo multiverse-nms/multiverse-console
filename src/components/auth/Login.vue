@@ -71,7 +71,7 @@ export default {
         return
       }
       const user = { username: this.username, password: this.password }
-      axios.post('https://localhost:8787/login/user', user, {
+      axios.post('https://localhost:8787/api/login/user', user, {
         headers: {},
       })
         .then(response => {
@@ -80,7 +80,6 @@ export default {
           axios.defaults.headers.common.Authorization = 'Bearer ' + token
           localStorage.setItem('user-token', token)
           this.$router.push({ name: 'dashboard' })
-          // this.$router.push('/')
         })
         .catch(e => {
           this.error = 'Authentication failed'

@@ -175,6 +175,8 @@ export default {
     },
     cancel () {
       this.showModal = false
+      this.passwordType = 'password'
+      this.passwordIcon = 'fa fa-eye'
     },
     deleteAgAccount (username) {
       axios.delete('https://localhost:8787/api/account/agent/' + username, {

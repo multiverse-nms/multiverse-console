@@ -175,13 +175,13 @@ export default {
       let linksApi = ''
       let pasApi = ''
       if (this.subnet.id === 0) {
-        pasApi = api + 'prefixAnns'
+        pasApi = api + 'pas'
         nodesApi = api + 'nodes'
         linksApi = api + this.kind + 's'
       } else {
         nodesApi = api + 'subnet/' + this.subnet.id.toString() + '/nodes'
         linksApi = api + 'subnet/' + this.subnet.id.toString() + '/' + this.kind + 's'
-        pasApi = api + '/subnet/' + this.subnet.id.toString() + '/prefixAnns'
+        pasApi = api + '/subnet/' + this.subnet.id.toString() + '/pas'
       }
       axios.get(nodesApi)
         .then(response => {
@@ -255,7 +255,7 @@ export default {
       this.showItem = false
       const nodeApi = 'https://localhost:8787/api/topology/node/' + id.toString()
       const xcsApi = 'https://localhost:8787/api/topology/node/' + id.toString() + '/xcs'
-      const pasApi = 'https://localhost:8787/api/topology/node/' + id.toString() + '/prefixAnns'
+      const pasApi = 'https://localhost:8787/api/topology/node/' + id.toString() + '/pas'
       axios.get(nodeApi)
         .then(response => {
           this.selectedNode = response.data

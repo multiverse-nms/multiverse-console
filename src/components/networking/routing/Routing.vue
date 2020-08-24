@@ -155,7 +155,7 @@ export default {
       if (this.subnet.id !== 0) {
         paApi += '/subnet/' + this.subnet.id.toString()
       }
-      paApi += '/prefixAnns'
+      paApi += '/pas'
       axios.get(paApi)
         .then(response => {
           this.pas = response.data
@@ -168,7 +168,7 @@ export default {
       this.showCreatePA = true
     },
     postPrefixAnn (pa) {
-      axios.post('https://localhost:8787/api/topology/prefixAnns', pa, {
+      axios.post('https://localhost:8787/api/topology/pa', pa, {
         headers: {},
       })
         .then(response => {
@@ -192,7 +192,7 @@ export default {
       this.showCreatePA = false
     },
     deletePrefixAnn (id) {
-      axios.delete('https://localhost:8787/api/topology/prefixAnn/' + id.toString())
+      axios.delete('https://localhost:8787/api/topology/pa/' + id.toString())
         .then(response => {
           this.showToast('Prefix withdrawn', {
             icon: 'fa-check',

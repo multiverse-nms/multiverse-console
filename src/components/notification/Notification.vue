@@ -155,11 +155,11 @@ export default {
     },
 
     getEventColor (status) {
-      if (status === 'low') {
+      if (status === 'LOW') {
         return 'gray'
-      } else if (status === 'medium') {
+      } else if (status === 'MEDIUM') {
         return 'info'
-      } else if (status === 'high') {
+      } else if (status === 'HIGH') {
         return 'warning'
       }
       return 'dark'

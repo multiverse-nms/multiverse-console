@@ -32,6 +32,7 @@ export default new Router({
     {
       path: '*',
       redirect: { name: 'dashboard' },
+      beforeEnter: ifAuthenticated,
     },
     {
       name: 'Login',

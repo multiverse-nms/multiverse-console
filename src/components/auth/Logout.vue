@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     logout () {
-      axios.post('https://localhost:8787/logout', {}, {
+      axios.post('https://localhost:8787/api/logout', {}, {
         headers: {},
       })
         .then(response => {
