@@ -1,12 +1,17 @@
 <template>
   <div>
-    <div  v-for="(graph, index) in graphs" :key="index" class="chart-row row">
-      <p class="display-4">
-        [{{ operationInfo[index].name }}] data from [{{operationInfo[index].agent}}]
-      </p>
-      <va-button small color="danger" v-on:click="remove(index)" >
-        Remove
-      </va-button>
+
+    <div v-if="graphs.length == 0" class="text-center mt-5">
+      <va-chip color="gray">No results to show</va-chip>
+    </div>
+
+    <div v-else v-for="(graph, index) in graphs" :key="index" class="chart-lines">
+      <div>
+        <span class="display-6"> [{{ operationInfo[index].name }}] from {{operationInfo[index].agent}} </span>
+        <va-button small color="danger" v-on:click="unpin(index)" >
+          Unpin
+        </va-button>
+      </div>
       <va-chart :data="graph" type="line" class="chartt"/>
     </div>
   </div>
@@ -15,7 +20,7 @@
 <script>
 
 export default {
-  name: 'visualizeMultiple',
+  name: 'visualize-multiple',
   components: {
   },
   data () {
@@ -80,7 +85,7 @@ export default {
         this.operationInfo.splice(index, 1)
       }
     },
-    remove (index) {
+    unpin (index) {
       this.graphs.splice(index, 1)
       this.operationInfo.splice(index, 1)
     },
@@ -102,12 +107,19 @@ export default {
 
 <style lang="scss">
 .chartt {
-  padding: 5px;
+  padding: 1px;
 }
 
-.chart-row {
-  height: 400px;
-  padding: 10px;
+.chart-lines {
+  display: inline-block;
+  width: 100%;
+  height: 300px;
+}
+
+.chart-gird {
+  display: inline-block;
+  width: 58%;
+  height: 300px;
 }
 
 .grid {

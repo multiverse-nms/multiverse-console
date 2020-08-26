@@ -79,7 +79,7 @@ export default {
           console.log('token: ', token)
           axios.defaults.headers.common.Authorization = 'Bearer ' + token
           localStorage.setItem('user-token', token)
-          this.$router.push({ name: 'dashboard' })
+          this.$router.push('/')
         })
         .catch(e => {
           this.error = 'Authentication failed'

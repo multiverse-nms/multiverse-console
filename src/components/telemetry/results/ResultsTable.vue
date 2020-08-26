@@ -1,46 +1,52 @@
 <template>
-  <div v-if="rawResults.length">
-    <va-button-toggle
-      outline
-      v-model="model"
-      :options="options"
-      color="info"
-    />
+  <div>
 
-    <table v-if="model == 'table'" class="va-table va-table--striped va-table--hoverable">
-      <thead>
-        <tr>
-          <th v-for="(header, index) in table.resultColumns" :key="index">{{ header }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(values, index) in table.resultValues" :key="index">
-          <td v-for="(rowValue, index) in Object.values(values).slice(1)" :key="index">
-            {{ rowValue }}
-          </td>
-          <td>
-            <va-button small color="info" v-on:click="detailRes(index)" >
-              Details
-            </va-button>
-            <va-button small color="danger" v-on:click="deleteRes(index)" >
-              Delete
-            </va-button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="chartt">
-      <va-chart v-if="model == 'graph'" :data="chartData" type="line"/>
+    <div v-if="results.length == 0" class="text-center mt-5">
+      <va-chip color="gray">No results to show</va-chip>
     </div>
+
+    <div v-else>
+      <va-button-toggle
+        v-if="!graphOnly"
+        outline small
+        v-model="model"
+        :options="options"
+        color="info"
+      />
+
+      <table v-if="model === 'table'" class="va-table va-table--striped va-table--hoverable">
+        <thead>
+          <tr>
+            <th v-for="(header, index) in table.resultColumns" :key="index">{{ header }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(values, index) in table.resultValues" :key="index">
+            <td v-for="(rowValue, index) in Object.values(values).slice(1)" :key="index">
+              {{ rowValue }}
+            </td>
+            <td>
+              <va-button small color="info" @click="expandRes(index)" >
+                Details
+              </va-button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="chartt">
+        <va-chart v-if="model === 'graph'" :data="chartData" type="line"/>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
 
 export default {
-  name: 'resultsTable',
-  props: ['rawResults'],
+  name: 'results-table',
+  props: ['results', 'graphOnly'],
   components: {
   },
   data () {
@@ -49,7 +55,7 @@ export default {
         { label: 'Table', value: 'table' },
         { label: 'Graph', value: 'graph' },
       ],
-      model: 'table',
+      model: 'graph',
 
       colors: ['primary', 'secondary', 'danger', 'warning', 'dark'],
 
@@ -75,9 +81,9 @@ export default {
   mounted () {
   },
   watch: {
-    rawResults: {
+    results: {
       handler: function () {
-        if (this.rawResults.length) {
+        if (this.results.length) {
           this.processResults()
         } else {
           this.resetData()
@@ -87,24 +93,21 @@ export default {
     },
   },
   methods: {
-    detailRes (index) {
+    expandRes (index) {
       const id = this.table.resultValues[index][0]
-      this.$emit('expand-res', id)
-    },
-    deleteRes (index) {
-      const id = this.table.resultValues[index][0]
-      this.$emit('delete-res', id)
+      console.log('expand: ' + id)
+      this.$emit('onExpand', id)
     },
     processResults () {
       // process table
       const values = []
-      for (var i = 0; i < this.rawResults.length; i++) {
-        let row = [this.rawResults[i]._id, this.rawResults[i].timestamp]
-        row = row.concat(this.rawResults[i].resultValues[0])
+      for (var i = 0; i < this.results.length; i++) {
+        let row = [this.results[i].id, this.results[i].timestamp]
+        row = row.concat(this.results[i].resultValues[0])
         values.push(row)
       }
       let results = ['timestamp']
-      results = results.concat(this.rawResults[0].results)
+      results = results.concat(this.results[0].results)
       results = results.concat(['Action'])
       this.table.resultColumns = results
       this.table.resultValues = values
@@ -112,16 +115,16 @@ export default {
       // process graph
       this.data = []
       this.labels = []
-      for (i = 0; i < this.rawResults.length; i++) {
-        this.labels.push(this.rawResults[i].timestamp.split('.')[0])
+      for (i = 0; i < this.results.length; i++) {
+        this.labels.push(this.results[i].timestamp.split('.')[0])
       }
-      for (i = 0; i < this.rawResults[0].results.length; i++) {
-        const resultLabel = (this.rawResults[0].results[i]).split('.')
+      for (i = 0; i < this.results[0].results.length; i++) {
+        const resultLabel = (this.results[0].results[i]).split('.')
         if (resultLabel[1]) {
           const oneResultData = []
           const oneResultLabel = resultLabel[0] + ' ' + this.getUnitLabel(resultLabel[1])
-          for (var j = 0; j < this.rawResults.length; j++) {
-            oneResultData.push(Number(this.rawResults[j].resultValues[0][i]))
+          for (var j = 0; j < this.results.length; j++) {
+            oneResultData.push(Number(this.results[j].resultValues[0][i]))
           }
           const oneResultPlot = {
             label: oneResultLabel,
@@ -158,7 +161,9 @@ export default {
 
 <style lang="scss">
 .chartt {
-  height: 500px;
+  display: inline-block;
+  width: 100%;
+  height: 300px;
 }
 
 .grid {

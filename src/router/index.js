@@ -31,7 +31,7 @@ export default new Router({
   routes: [
     {
       path: '*',
-      redirect: { name: 'dashboard' },
+      redirect: { name: 'networking' },
       beforeEnter: ifAuthenticated,
     },
     {
@@ -51,18 +51,12 @@ export default new Router({
       beforeEnter: ifAuthenticated,
       component: AppLayout,
       children: [
-        {
+        /* {
           name: 'dashboard',
           path: 'dashboard',
           component: () => import('../components/dashboard/Dashboard.vue'),
           default: true,
-        },
-        {
-          name: 'telemetry',
-          path: 'telemetry',
-          component: () => import('../components/data-streaming/DataStreaming.vue'),
-          default: true,
-        },
+        }, */
         {
           name: 'networking',
           path: 'networking',
@@ -70,19 +64,19 @@ export default new Router({
           default: true,
         },
         {
-          name: 'storage',
-          path: 'storage',
+          name: 'telemetry',
+          path: 'telemetry',
           component: EmptyParentComponent,
           children: [
             {
               name: 'measurements',
               path: 'measurements',
-              component: () => import('../components/storage/measurements/Measurements.vue'),
+              component: () => import('../components/telemetry/measurements/Measurements.vue'),
             },
             {
-              name: 'collections',
-              path: 'collections',
-              component: () => import('../components/storage/collections/Collections.vue'),
+              name: 'results',
+              path: 'results',
+              component: () => import('../components/telemetry/results/Results.vue'),
             },
           ],
         },

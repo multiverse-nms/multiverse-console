@@ -53,8 +53,8 @@ Vue.use(ColorThemePlugin, {
 
 router.beforeEach((to, from, next) => {
   store.commit('setLoading', true)
-  setTimeout(() => { next() }, 100)
-  // next()
+  // setTimeout(() => { next() }, 100)
+  next()
 })
 
 router.afterEach((to, from) => {
@@ -66,13 +66,18 @@ if (token) {
   axios.defaults.headers.common.Authorization = 'Bearer ' + token
 }
 
-axios.interceptors.response.use((response) => { // intercept the global error
-  return response
-}, function (error) {
-  if (error.response.status === 401) {
-    router.push({ name: 'Logout' })
-  }
-})
+axios.interceptors.response.use(
+  (response) => {
+    return response
+  },
+  (error) => {
+    if (error.response.status === 401) {
+      router.push({ name: 'Logout' })
+    } else {
+      return Promise.reject(error)
+    }
+  },
+)
 
 /* eslint-disable no-new */
 new Vue({

@@ -21,11 +21,6 @@ export default {
       axios.post('https://localhost:8787/api/logout', {}, {
         headers: {},
       })
-        .then(response => {
-        })
-        .catch(e => {
-          console.log('logout error: ', e)
-        })
       delete axios.defaults.headers.common.Authorization
       localStorage.removeItem('user-token')
       this.$router.push({ name: 'Login' })

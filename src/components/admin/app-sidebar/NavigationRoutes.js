@@ -4,20 +4,13 @@ export const navigationRoutes = {
     displayName: 'navigationRoutes.home',
   },
   routes: [
-    {
+    /* {
       name: 'dashboard',
       displayName: 'menu.dashboard',
       meta: {
         iconClass: 'va-icon fa fa-dashboard',
       },
-    },
-    {
-      name: 'telemetry',
-      displayName: 'menu.telemetry',
-      meta: {
-        iconClass: 'va-icon fa fa-exchange',
-      },
-    },
+    }, */
     {
       name: 'networking',
       displayName: 'menu.networking',
@@ -47,23 +40,23 @@ export const navigationRoutes = {
       },
     },
     {
-      name: 'storage',
-      displayName: 'menu.storage',
+      name: 'telemetry',
+      displayName: 'menu.telemetry',
       meta: {
-        iconClass: 'va-icon fa fa-database',
+        iconClass: 'va-icon fa fa-exchange',
       },
-      disabled: true,
+      disabled: false,
       children: [
         {
           name: 'measurements',
           displayName: 'menu.measurements',
           meta: {
-            iconClass: 'vuestic-iconset vuestic-iconset-tables',
+            iconClass: 'va-icon fa fa-database',
           },
         },
         {
-          name: 'collections',
-          displayName: 'menu.collections',
+          name: 'results',
+          displayName: 'menu.results',
           meta: {
             iconClass: 'vuestic-iconset vuestic-iconset-tables',
           },
