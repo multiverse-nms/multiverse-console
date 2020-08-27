@@ -110,6 +110,10 @@ export default {
   padding: 1px;
 }
 
+.chartt > canvas {
+  position: relative;
+}
+
 .chart-lines {
   display: inline-block;
   width: 100%;

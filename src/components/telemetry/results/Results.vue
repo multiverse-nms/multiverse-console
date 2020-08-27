@@ -87,13 +87,13 @@ export default {
     },
     getOperations () {
       this.operations = []
-      const uri = 'https://localhost:8787/api/telemetry/operations/measure'
+      const uri = this.$apiURI + '/telemetry/operations/measure'
       axios.get(uri)
         .then(response => {
           this.operations = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     expandOp (id) {
@@ -107,19 +107,19 @@ export default {
       this.getResultsByOp(id)
     },
     deleteOp (id) {
-      const uri = 'https://localhost:8787/api/telemetry/operation/' + id
+      const uri = this.$apiURI + '/telemetry/operation/' + id
       axios.delete(uri)
         .then(response => {
           this.refresh()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     getResultsByOp (id) {
       this.opResults = []
-      const uri = 'https://localhost:8787/api/telemetry/operation/' + id + '/results'
+      const uri = this.$apiURI + '/telemetry/operation/' + id + '/results'
       axios.get(uri)
         .then(response => {
           if (this.multiple) {
@@ -129,21 +129,20 @@ export default {
           }
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     expandResult (id) {
       this.resultDetails = {}
-      const uri = 'https://localhost:8787/api/telemetry/result/' + id
+      const uri = this.$apiURI + '/telemetry/result/' + id
       axios.get(uri)
         .then(response => {
           this.resultDetails = response.data
-          console.log(response.data)
           this.showResultDetails = true
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
   },

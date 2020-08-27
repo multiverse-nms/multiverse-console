@@ -154,18 +154,11 @@ export default {
       },
       deep: true,
     },
-    /* 'srcVctpName': function (newVal, oldVal) {
-      this.nLc.name = newVal + '#' + this.destVctpName
-    },
-    'destVctpName': function (newVal, oldVal) {
-      this.nLc.name = this.srcVctpName + '#' + newVal
-    }, */
   },
   methods: {
     initModal () {
       this.getCtpsByNode()
       this.getTrails()
-      console.log('init create ctp modal')
       this.nXc = {
         vnodeId: this.nodeId,
         vtrailId: 0,
@@ -183,7 +176,7 @@ export default {
       this.showModal = true
     },
     getCtpsByNode () {
-      const ctpsApi = 'https://localhost:8787/api/topology/node/' + this.nodeId.toString() + '/ctps'
+      const ctpsApi = this.$apiURI + '/topology/node/' + this.nodeId.toString() + '/ctps'
       axios.get(ctpsApi)
         .then(response => {
           this.ctpsNameToId = new Map()
@@ -192,11 +185,11 @@ export default {
           })
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     getTrails () {
-      const trailsApi = 'https://localhost:8787/api/topology/trails'
+      const trailsApi = this.$apiURI + '/topology/trails'
       axios.get(trailsApi)
         .then(response => {
           this.trailsNameToId = new Map()
@@ -205,7 +198,7 @@ export default {
           })
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     addInfoItem () {

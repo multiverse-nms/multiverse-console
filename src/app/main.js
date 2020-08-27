@@ -31,8 +31,16 @@ if (process.env.VUE_APP_BUILD_VERSION) {
   )
 }
 
+if (process.env.NODE_ENV === 'production') {
+  Vue.prototype.$apiURI = 'https://localhost:8787/api'
+  Vue.prototype.$apiHost = 'localhost'
+} else {
+  Vue.prototype.$apiURI = 'https://localhost:8787/api'
+  Vue.prototype.$apiHost = 'localhost'
+}
+
 Vue.use(VertxEventBus, {
-  host: 'localhost',
+  host: Vue.prototype.$apiHost,
   path: '/eventbus',
   port: 8888,
   options: {
@@ -53,7 +61,6 @@ Vue.use(ColorThemePlugin, {
 
 router.beforeEach((to, from, next) => {
   store.commit('setLoading', true)
-  // setTimeout(() => { next() }, 100)
   next()
 })
 
@@ -68,14 +75,13 @@ if (token) {
 
 axios.interceptors.response.use(
   (response) => {
-    return response
+    return Promise.resolve(response)
   },
   (error) => {
     if (error.response.status === 401) {
       router.push({ name: 'Logout' })
-    } else {
-      return Promise.reject(error)
     }
+    return Promise.reject(error)
   },
 )
 

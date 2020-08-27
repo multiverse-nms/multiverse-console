@@ -159,14 +159,14 @@ export default {
     // CRUD LinkConn (get/edit/delete only)
     getLc (id) {
       this.showItem = false
-      const lcApi = 'https://localhost:8787/api/topology/linkConn/' + id.toString()
+      const lcApi = this.$apiURI + '/topology/linkConn/' + id.toString()
       axios.get(lcApi)
         .then(response => {
           this.selectedLc = response.data
           this.showItem = true
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
@@ -174,7 +174,7 @@ export default {
       this.showAddLc = true
     },
     postLc (lc) {
-      axios.post('https://localhost:8787/api/topology/linkConns', lc, {
+      axios.post(this.$apiURI + '/topology/linkConns', lc, {
         headers: {},
       })
         .then(response => {
@@ -187,7 +187,7 @@ export default {
           this.getLcsByLink()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
       this.showAddLc = false
     },
@@ -195,25 +195,25 @@ export default {
     initEditLc (lc) {},
     patchLc (lc) {},
     deleteLc (lc) {
-      axios.delete('https://localhost:8787/api/topology/linkConn/' + lc.id.toString())
+      axios.delete(this.$apiURI + '/topology/linkConn/' + lc.id.toString())
         .then(response => {
           this.showItem = false
           this.$emit('refresh', 'topology.lc')
           this.getLcsByLink()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     getLcsByLink () {
-      const lcsApi = 'https://localhost:8787/api/topology/link/' + this.link.id.toString() + '/linkConns'
+      const lcsApi = this.$apiURI + '/topology/link/' + this.link.id.toString() + '/linkConns'
       axios.get(lcsApi)
         .then(response => {
           this.link.vlinkConns = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
   },

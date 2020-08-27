@@ -18,12 +18,20 @@ export default {
   },
   methods: {
     logout () {
-      axios.post('https://localhost:8787/api/logout', {}, {
+      axios.post(this.$apiURI + '/logout', {}, {
         headers: {},
       })
-      delete axios.defaults.headers.common.Authorization
-      localStorage.removeItem('user-token')
-      this.$router.push({ name: 'Login' })
+        .then(response => {
+          // console.log(response)
+        })
+        .catch(e => {
+          // console.log(e)
+        })
+        .finally(r => {
+          delete axios.defaults.headers.common.Authorization
+          localStorage.removeItem('user-token')
+          this.$router.push({ name: 'Login' })
+        })
     },
   },
 }

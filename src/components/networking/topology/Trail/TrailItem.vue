@@ -148,14 +148,14 @@ export default {
     // CRUD XC
     getXc (id) {
       this.showItem = false
-      const xcApi = 'https://localhost:8787/api/topology/xc/' + id.toString()
+      const xcApi = this.$apiURI + '/topology/xc/' + id.toString()
       axios.get(xcApi)
         .then(response => {
           this.selectedXc = response.data
           this.showItem = true
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     initAddXc () {
@@ -170,26 +170,25 @@ export default {
     patchXc (xc) {},
 
     deleteXc (id) {
-      axios.delete('https://localhost:8787/api/topology/xc/' + id.toString())
+      axios.delete(this.$apiURI + '/topology/xc/' + id.toString())
         .then(response => {
-          console.log(response.data)
           // this.$emit('refresh', 'trail.xc.delete')
           this.showItem = false
           this.getXcsByTrail()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     getXcsByTrail () {
-      const xcsApi = 'https://localhost:8787/api/topology/trail/' + this.trail.id.toString() + '/xcs'
+      const xcsApi = this.$apiURI + '/topology/trail/' + this.trail.id.toString() + '/xcs'
       axios.get(xcsApi)
         .then(response => {
           this.trail.vxcs = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
   },

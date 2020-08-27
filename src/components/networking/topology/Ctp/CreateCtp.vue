@@ -94,14 +94,9 @@ export default {
       },
       deep: true,
     },
-    /* 'nPrefix.node': function (newVal, oldVal) {
-      this.nPrefix.interface = ''
-      this.getInterfaces(newVal)
-    }, */
   },
   methods: {
     initModal () {
-      console.log('init create ctp modal')
       this.nCtp = {
         vltpId: this.ltpId,
         name: this.name,

@@ -129,7 +129,6 @@ export default {
   methods: {
     initCreateTrail () {
       this.getCtps()
-      console.log('init create trail modal')
       this.nTrail = {
         name: '',
         label: '',
@@ -145,17 +144,16 @@ export default {
       this.showModal = true
     },
     getCtps () {
-      const ctpsApi = 'https://localhost:8787/api/topology/ctps'
+      const ctpsApi = this.$apiURI + '/topology/ctps'
       axios.get(ctpsApi)
         .then(response => {
-          // this.ltps = response.data
           this.ctpsNameToId = new Map()
           response.data.forEach(ctp => {
             this.ctpsNameToId.set(ctp.name, ctp.id)
           })
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     addInfoItem () {
@@ -189,10 +187,7 @@ export default {
           }
         }
       }
-
-      console.log('nTrail: ', JSON.stringify(this.nTrail))
       this.$emit('onOk', this.nTrail)
-      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

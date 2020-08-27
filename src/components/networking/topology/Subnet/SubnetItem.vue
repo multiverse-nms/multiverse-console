@@ -170,7 +170,7 @@ export default {
   },
   methods: {
     getSubnetContent () {
-      const api = 'https://localhost:8787/api/topology/'
+      const api = this.$apiURI + '/topology/'
       let nodesApi = ''
       let linksApi = ''
       let pasApi = ''
@@ -195,15 +195,15 @@ export default {
                   this.processGraph()
                 })
                 .catch(e => {
-                  console.log(e)
+                  // console.log(e)
                 })
             })
             .catch(e => {
-              console.log(e)
+              // console.log(e)
             })
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
       this.getTrails()
     },
@@ -253,9 +253,9 @@ export default {
     // CRUD Node
     getNode (id) {
       this.showItem = false
-      const nodeApi = 'https://localhost:8787/api/topology/node/' + id.toString()
-      const xcsApi = 'https://localhost:8787/api/topology/node/' + id.toString() + '/xcs'
-      const pasApi = 'https://localhost:8787/api/topology/node/' + id.toString() + '/pas'
+      const nodeApi = this.$apiURI + '/topology/node/' + id.toString()
+      const xcsApi = this.$apiURI + '/topology/node/' + id.toString() + '/xcs'
+      const pasApi = this.$apiURI + '/topology/node/' + id.toString() + '/pas'
       axios.get(nodeApi)
         .then(response => {
           this.selectedNode = response.data
@@ -269,15 +269,15 @@ export default {
                   this.type = 1
                 })
                 .catch(e => {
-                  console.log(e)
+                  // console.log(e)
                 })
             })
             .catch(e => {
-              console.log(e)
+              // console.log(e)
             })
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     initCreateNode () {
@@ -285,7 +285,7 @@ export default {
       this.showCreateNode = true
     },
     postNode (node) {
-      axios.post('https://localhost:8787/api/topology/nodes', node, {
+      axios.post(this.$apiURI + '/topology/nodes', node, {
         headers: {},
       })
         .then(response => {
@@ -297,7 +297,7 @@ export default {
           this.getSubnetContent()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('Node creation failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -308,7 +308,7 @@ export default {
     },
     initEditNode (node) {},
     updateNode (node) {
-      axios.put('https://localhost:8787/api/topology/node/' + node.id, node, {
+      axios.put(this.$apiURI + '/topology/node/' + node.id, node, {
         headers: {},
       })
         .then(response => {
@@ -320,7 +320,7 @@ export default {
           this.getSubnetContent()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('Failed to update node', {
             icon: 'fa-close',
             position: 'top-right',
@@ -329,21 +329,21 @@ export default {
         })
     },
     deleteNode (id) {
-      axios.delete('https://localhost:8787/api/topology/node/' + id.toString())
+      axios.delete(this.$apiURI + '/topology/node/' + id.toString())
         .then(response => {
           this.getSubnetContent()
           this.$emit('refresh', 'topology.node')
           this.showItem = false
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     // CRUD Link
     getLink (id) {
       this.showItem = false
-      const linkApi = 'https://localhost:8787/api/topology/link/' + id.toString()
+      const linkApi = this.$apiURI + '/topology/link/' + id.toString()
       axios.get(linkApi)
         .then(response => {
           this.selectedLink = response.data
@@ -351,11 +351,11 @@ export default {
           this.type = 2
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     postLink (link) {
-      axios.post('https://localhost:8787/api/topology/links', link, {
+      axios.post(this.$apiURI + '/topology/links', link, {
         headers: {},
       })
         .then(response => {
@@ -367,7 +367,7 @@ export default {
           this.getSubnetContent()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('Link creation failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -379,21 +379,21 @@ export default {
     initEditLink (link) {},
     patchLink (link) {},
     deleteLink (link) {
-      axios.delete('https://localhost:8787/api/topology/link/' + link.id.toString())
+      axios.delete(this.$apiURI + '/topology/link/' + link.id.toString())
         .then(response => {
           this.getSubnetContent()
           this.$emit('refresh', 'topology.link')
           this.showItem = false
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     // CRUD LinkConn
     getLc (id) {
       this.showItem = false
-      const lcApi = 'https://localhost:8787/api/topology/linkConn/' + id.toString()
+      const lcApi = this.$apiURI + '/topology/linkConn/' + id.toString()
       axios.get(lcApi)
         .then(response => {
           this.selectedLc = response.data
@@ -401,11 +401,11 @@ export default {
           this.type = 3
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     postLc (lc) {
-      axios.post('https://localhost:8787/api/topology/linkConns', lc, {
+      axios.post(this.$apiURI + '/topology/linkConns', lc, {
         headers: {},
       })
         .then(response => {
@@ -418,7 +418,7 @@ export default {
           this.getSubnetContent()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('LinkConn creation failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -429,14 +429,14 @@ export default {
     },
     initEditLc (lc) {},
     deleteLc (lc) {
-      axios.delete('https://localhost:8787/api/topology/linkConn/' + lc.id.toString())
+      axios.delete(this.$apiURI + '/topology/linkConn/' + lc.id.toString())
         .then(response => {
           this.getSubnetContent()
           this.$emit('refresh', 'topology.lc')
           this.showItem = false
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
@@ -474,7 +474,7 @@ export default {
 
     // CRUD Trail
     getTrails () {
-      let trailsApi = 'https://localhost:8787/api/topology'
+      let trailsApi = this.$apiURI + '/topology'
       if (this.subnet.id === 0) {
         trailsApi = trailsApi + '/trails'
       } else {
@@ -485,13 +485,13 @@ export default {
           this.trails = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     getTrail (id) {
       this.showItem = false
-      const trailApi = 'https://localhost:8787/api/topology/trail/' + id.toString()
+      const trailApi = this.$apiURI + '/topology/trail/' + id.toString()
       axios.get(trailApi)
         .then(response => {
           this.selectedTrail = response.data
@@ -499,7 +499,7 @@ export default {
           this.type = 4
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     initCreateTrail () {
@@ -516,7 +516,7 @@ export default {
           return
         }
       }
-      axios.post('https://localhost:8787/api/topology/trails', trail, {
+      axios.post(this.$apiURI + '/topology/trails', trail, {
         headers: {},
       })
         .then(response => {
@@ -528,7 +528,7 @@ export default {
           this.getTrails()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('Trail creation failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -540,14 +540,14 @@ export default {
     initEditTrail (trail) {},
     patchTrail (trail) {},
     deleteTrail (id) {
-      axios.delete('https://localhost:8787/api/topology/trail/' + id.toString())
+      axios.delete(this.$apiURI + '/topology/trail/' + id.toString())
         .then(response => {
           this.$emit('refresh', 'topology.trail')
           this.getTrails()
           this.showItem = false
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 

@@ -99,55 +99,55 @@ export default {
   },
   methods: {
     getEvents () {
-      const eUri = 'https://localhost:8787/api/notification/event/all'
+      const eUri = this.$apiURI + '/notification/event/all'
       axios.get(eUri)
         .then(response => {
           this.events = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     getFaults () {
-      const fUri = 'https://localhost:8787/api/notification/fault/all'
+      const fUri = this.$apiURI + '/notification/fault/all'
       axios.get(fUri)
         .then(response => {
           this.faults = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     deleteEvent (id) {
-      axios.delete('https://localhost:8787/api/notification/event/' + id, {
+      axios.delete(this.$apiURI + '/notification/event/' + id, {
         headers: {},
       })
         .then(response => {
           this.getEvents()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     deleteFault (id) {
-      axios.delete('https://localhost:8787/api/notification/fault/' + id, {
+      axios.delete(this.$apiURI + '/notification/fault/' + id, {
         headers: {},
       })
         .then(response => {
           this.getFaults()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     getNodeNames () {
-      const nUri = 'https://localhost:8787/api/topology/nodes'
+      const nUri = this.$apiURI + '/topology/nodes'
       axios.get(nUri)
         .then(response => {
           this.nodes = response.data.map((o) => ({ id: o.id, name: o.name }))
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     findNodeName (id) {

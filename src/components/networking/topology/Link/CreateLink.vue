@@ -153,7 +153,7 @@ export default {
       this.showModal = true
     },
     getLtps () {
-      const ltpsApi = 'https://localhost:8787/api/topology/ltps'
+      const ltpsApi = this.$apiURI + '/topology/ltps'
       axios.get(ltpsApi)
         .then(response => {
           this.ltpsNameToId = new Map()
@@ -164,7 +164,7 @@ export default {
           })
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     addInfoItem () {

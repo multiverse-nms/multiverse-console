@@ -65,19 +65,19 @@ export default {
   },
   methods: {
     getNodes () {
-      const nUri = 'https://localhost:8787/api/topology/nodes'
+      const nUri = this.$apiURI + '/topology/nodes'
       axios.get(nUri)
         .then(response => {
           this.nodes = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     getConfigs (nodeId) {
       this.selectedId = nodeId
-      const ccUri = 'https://localhost:8787/api/configuration/candidate-config/' + nodeId
+      const ccUri = this.$apiURI + '/configuration/candidate-config/' + nodeId
       axios.get(ccUri)
         .then(response => {
           this.cconfig = response.data
@@ -85,7 +85,7 @@ export default {
         .catch(e => {
           this.cconfig = ''
         })
-      const rcUri = 'https://localhost:8787/api/configuration/running-config/' + nodeId
+      const rcUri = this.$apiURI + '/configuration/running-config/' + nodeId
       axios.get(rcUri)
         .then(response => {
           this.rconfig = response.data

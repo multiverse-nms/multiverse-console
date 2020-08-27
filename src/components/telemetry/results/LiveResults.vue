@@ -81,13 +81,13 @@ export default {
     },
 
     getResultsByOp (id) {
-      const uri = 'https://localhost:8787/api/telemetry/operation/' + id + '/results'
+      const uri = this.$apiURI + '/telemetry/operation/' + id + '/results'
       axios.get(uri)
         .then(response => {
           this.opResults = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 

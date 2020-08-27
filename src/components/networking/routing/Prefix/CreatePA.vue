@@ -116,7 +116,7 @@ export default {
       this.showModal = false
     },
     getNodes () {
-      let nodesApi = 'https://localhost:8787/api/topology'
+      let nodesApi = this.$apiURI + '/topology'
       if (this.subnetId !== 0) {
         nodesApi += '/subnet/' + this.subnetId.toString()
       }
@@ -129,7 +129,7 @@ export default {
           })
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
   },

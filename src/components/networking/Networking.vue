@@ -64,13 +64,18 @@ export default {
       selectedSn: {},
       showCreateSubnet: false,
       nextSnName: 's0',
+
+      hidden: true,
     }
   },
   created () {
     this.getAllSubnets()
     this.selectAllSubnets()
+    this.hidden = false
   },
-
+  destroyed () {
+    this.hidden = true
+  },
   methods: {
     selectAllSubnets () {
       this.selectedSn = this.subnetAll
@@ -81,12 +86,12 @@ export default {
 
     // CRUD Subnet
     getAllSubnets () {
-      axios.get('https://localhost:8787/api/topology/subnets')
+      axios.get(this.$apiURI + '/topology/subnets')
         .then(response => {
           this.subnets = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     initCreateSubnet () {
@@ -94,7 +99,7 @@ export default {
       this.showCreateSubnet = true
     },
     postSubnet (subnet) {
-      axios.post('https://localhost:8787/api/topology/subnets', subnet, {
+      axios.post(this.$apiURI + '/topology/subnets', subnet, {
         headers: {},
       })
         .then(response => {
@@ -106,7 +111,7 @@ export default {
           this.getAllSubnets()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('Subnet creation failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -144,6 +149,10 @@ export default {
         this.selectAllSubnets()
       }
     },
+    refreshChildren () {
+      this.$refs.topology.refreshAll()
+      this.$refs.routing.refreshAll()
+    },
   },
   eventbus: {
     lifecycleHooks: {
@@ -151,12 +160,15 @@ export default {
         // subscribe to topology service info
         eventbus.registerHandler('nms.to.ui', function (err, msg) {
           if (err) {
-            console.log('VertxEventBus error: ', err)
+            // console.log('VertxEventBus error: ', err)
             return
           }
-          context.getAllSubnets()
-          context.$refs.topology.refreshAll()
-          context.$refs.routing.refreshAll()
+          if (msg.body.service === 'service.topology') {
+            if (!context.hidden) {
+              context.getAllSubnets()
+              context.refreshChildren()
+            }
+          }
         })
       },
     },

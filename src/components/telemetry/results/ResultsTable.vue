@@ -95,7 +95,6 @@ export default {
   methods: {
     expandRes (index) {
       const id = this.table.resultValues[index][0]
-      console.log('expand: ' + id)
       this.$emit('onExpand', id)
     },
     processResults () {

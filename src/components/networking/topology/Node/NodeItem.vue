@@ -233,7 +233,7 @@ export default {
       this.showCreateLtp = true
     },
     postLtp (ltp) {
-      axios.post('https://localhost:8787/api/topology/ltps', ltp, {
+      axios.post(this.$apiURI + '/topology/ltps', ltp, {
         headers: {},
       })
         .then(response => {
@@ -245,7 +245,7 @@ export default {
           this.getLtpsByNode()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('LTP creation failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -256,7 +256,7 @@ export default {
     },
     getLtp (id) {
       this.showItem = false
-      const ltpApi = 'https://localhost:8787/api/topology/ltp/' + id.toString()
+      const ltpApi = this.$apiURI + '/topology/ltp/' + id.toString()
       axios.get(ltpApi)
         .then(response => {
           this.selectedLtp = response.data
@@ -264,26 +264,26 @@ export default {
           this.type = 1
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     initEditLtp (ltp) {},
     patchLtp (ltp) {},
     deleteLtp (id) {
-      axios.delete('https://localhost:8787/api/topology/ltp/' + id.toString())
+      axios.delete(this.$apiURI + '/topology/ltp/' + id.toString())
         .then(response => {
           this.$emit('refresh', 'topology.ltp')
           this.showItem = false
           this.getLtpsByNode()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     // CRUD XC
     initAddXc () {
-      axios.get('https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/ctps')
+      axios.get(this.$apiURI + '/topology/node/' + this.node.id.toString() + '/ctps')
         .then(response => {
           if (response.data.length < 2) {
             this.showToast('Not enough CTPs ', {
@@ -305,7 +305,7 @@ export default {
         })
     },
     postXc (xc) {
-      axios.post('https://localhost:8787/api/topology/xcs', xc, {
+      axios.post(this.$apiURI + '/topology/xcs', xc, {
         headers: {},
       })
         .then(response => {
@@ -317,7 +317,7 @@ export default {
           this.getXcsByNode()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('XC creation failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -328,7 +328,7 @@ export default {
     },
     getXc (id) {
       this.showItem = false
-      const xcApi = 'https://localhost:8787/api/topology/xc/' + id.toString()
+      const xcApi = this.$apiURI + '/topology/xc/' + id.toString()
       axios.get(xcApi)
         .then(response => {
           this.selectedXc = response.data
@@ -336,20 +336,20 @@ export default {
           this.type = 2
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     initEditXc (xc) {},
     patchXc (xc) {},
     deleteXc (id) {
-      axios.delete('https://localhost:8787/api/topology/xc/' + id.toString())
+      axios.delete(this.$apiURI + '/topology/xc/' + id.toString())
         .then(response => {
           this.$emit('refresh', 'topology.xc')
           this.showItem = false
           this.getXcsByNode()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
@@ -358,11 +358,11 @@ export default {
       this.showCreatePA = true
     },
     postPrefixAnn (pa) {
-      axios.post('https://localhost:8787/api/topology/pa', pa, {
+      axios.post(this.$apiURI + '/topology/pa', pa, {
         headers: {},
       })
         .then(response => {
-          console.log(response)
+          // console.log(response)
           this.showToast('Prefix advertized', {
             icon: 'fa-check',
             position: 'top-right',
@@ -372,7 +372,7 @@ export default {
           this.$emit('refresh', 'topology.pa')
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('Prefix announcement failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -382,7 +382,7 @@ export default {
       this.showCreatePA = false
     },
     deletePrefixAnn (id) {
-      axios.delete('https://localhost:8787/api/topology/pa/' + id.toString())
+      axios.delete(this.$apiURI + '/topology/pa/' + id.toString())
         .then(response => {
           this.showToast('Prefix withdrawn', {
             icon: 'fa-check',
@@ -393,40 +393,39 @@ export default {
           this.$emit('refresh', 'topology.pa')
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     // other
     getLtpsByNode () {
-      const ltpsApi = 'https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/ltps'
+      const ltpsApi = this.$apiURI + '/topology/node/' + this.node.id.toString() + '/ltps'
       axios.get(ltpsApi)
         .then(response => {
           this.node.vltps = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     getXcsByNode () {
-      const xcsApi = 'https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/xcs'
+      const xcsApi = this.$apiURI + '/topology/node/' + this.node.id.toString() + '/xcs'
       axios.get(xcsApi)
         .then(response => {
           this.node.vxcs = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     getPAsByNode () {
-      console.log('getPAsByNode')
-      const pasApi = 'https://localhost:8787/api/topology/node/' + this.node.id.toString() + '/pas'
+      const pasApi = this.$apiURI + '/topology/node/' + this.node.id.toString() + '/pas'
       axios.get(pasApi)
         .then(response => {
           this.pas = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 

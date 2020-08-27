@@ -150,15 +150,14 @@ export default {
     // CRUD CTP
     getCtp (id) {
       this.showItem = false
-      console.log('get ctpId:', id)
-      const ctpApi = 'https://localhost:8787/api/topology/ctp/' + id.toString()
+      const ctpApi = this.$apiURI + '/topology/ctp/' + id.toString()
       axios.get(ctpApi)
         .then(response => {
           this.selectedCtp = response.data
           this.showItem = true
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
@@ -167,7 +166,7 @@ export default {
       this.showCreateCtp = true
     },
     postCtp (ctp) {
-      axios.post('https://localhost:8787/api/topology/ctps', ctp, {
+      axios.post(this.$apiURI + '/topology/ctps', ctp, {
         headers: {},
       })
         .then(response => {
@@ -179,7 +178,7 @@ export default {
           this.getCtpsByLtp()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('CTP creation failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -193,25 +192,25 @@ export default {
     patchCtp (ctp) {},
 
     deleteCtp (id) {
-      axios.delete('https://localhost:8787/api/topology/ctp/' + id.toString())
+      axios.delete(this.$apiURI + '/topology/ctp/' + id.toString())
         .then(response => {
           this.$emit('refresh', 'topology.ctp')
           this.showItem = false
           this.getCtpsByLtp()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     getCtpsByLtp () {
-      const ctpsApi = 'https://localhost:8787/api/topology/ltp/' + this.ltp.id.toString() + '/ctps'
+      const ctpsApi = this.$apiURI + '/topology/ltp/' + this.ltp.id.toString() + '/ctps'
       axios.get(ctpsApi)
         .then(response => {
           this.ltp.vctps = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 

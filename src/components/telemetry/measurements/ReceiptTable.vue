@@ -55,7 +55,6 @@ export default {
       const dtNow = new Date()
 
       const dtStop = new Date(Number(stop))
-      console.log('stop', dtStop)
 
       if (start === 'now') {
         if (dtNow < dtStop) {
@@ -65,7 +64,6 @@ export default {
         }
       }
       const dtStart = new Date(Number(start))
-      console.log('start', dtStart)
       if (dtNow < dtStart) {
         return 'scheduled'
       } else if (dtNow < dtStop) {

@@ -60,7 +60,7 @@ export default {
     getCapabilities () {
       const context = this
       return new Promise(function (resolve, reject) {
-        const uri = 'https://localhost:8787/api/telemetry/capabilities'
+        const uri = context.$apiURI + '/telemetry/capabilities'
         axios.get(uri)
           .then(response => {
             const caps = response.data
@@ -77,7 +77,7 @@ export default {
             resolve()
           })
           .catch(e => {
-            console.log(e)
+            // console.log(e)
             reject(e)
           })
       })
@@ -85,14 +85,14 @@ export default {
     getReceipts () {
       const context = this
       return new Promise(function (resolve, reject) {
-        const uri = 'https://localhost:8787/api/telemetry/receipts'
+        const uri = context.$apiURI + '/telemetry/receipts'
         axios.get(uri)
           .then(response => {
             context.receipts = response.data
             resolve()
           })
           .catch(e => {
-            console.log(e)
+            // console.log(e)
             reject(e)
           })
       })
@@ -103,7 +103,7 @@ export default {
       this.showCreateSpec = true
     },
     postSpecification (specification) {
-      axios.post('https://localhost:8787/api/telemetry/specification', specification, {
+      axios.post(this.$apiURI + '/telemetry/specification', specification, {
         headers: {},
       })
         .then(response => {
@@ -132,7 +132,7 @@ export default {
       const interrupt = receipt
       interrupt.interrupt = receipt.receipt
       delete interrupt.receipt
-      axios.post('https://localhost:8787/api/telemetry/interrupt', interrupt, {
+      axios.post(this.$apiURI + '/telemetry/interrupt', interrupt, {
         headers: {},
       })
         .then(response => {
@@ -144,12 +144,28 @@ export default {
           this.refreshAll()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     streamLive (rct) {
       this.liveSpec = rct
+    },
+  },
+  eventbus: {
+    lifecycleHooks: {
+      created (context, eventbus) {
+        // subscribe to topology service info
+        eventbus.registerHandler('nms.to.ui', function (err, msg) {
+          if (err) {
+            // console.log('VertxEventBus error: ', err)
+            return
+          }
+          if (msg.body.service === 'service.telemetry') {
+            context.refreshAll()
+          }
+        })
+      },
     },
   },
 }

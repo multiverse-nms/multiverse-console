@@ -35,12 +35,12 @@ export default {
     initEditSubnet (subnet) {},
     patchSubnet (subnet) {},
     deleteSubnet (id) {
-      axios.delete('https://localhost:8787/api/topology/subnet/' + id.toString())
+      axios.delete(this.$apiURI + '/topology/subnet/' + id.toString())
         .then(response => {
           this.$emit('refresh', 'topology.subnet')
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 

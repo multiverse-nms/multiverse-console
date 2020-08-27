@@ -140,7 +140,6 @@ export default {
         this.selectLink = false
       } else {
         this.getLinks()
-        // this.selectedLinkName = ''
         this.selectLink = true
       }
 
@@ -153,7 +152,7 @@ export default {
       }
     },
     setNextLcName (linkId, linkName) {
-      const lcsApi = 'https://localhost:8787/api/topology/link/' + linkId + '/linkConns'
+      const lcsApi = this.$apiURI + '/topology/link/' + linkId + '/linkConns'
       axios.get(lcsApi)
         .then(response => {
           const lcs = response.data
@@ -167,11 +166,11 @@ export default {
         })
         .catch(e => {
           this.nLc.name = 'undefined'
-          console.log(e)
+          // console.log(e)
         })
     },
     getLinks () {
-      const linksApi = 'https://localhost:8787/api/topology/links'
+      const linksApi = this.$apiURI + '/topology/links'
       axios.get(linksApi)
         .then(response => {
           this.linksNameToId = new Map()
@@ -180,7 +179,7 @@ export default {
           })
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     submit () {

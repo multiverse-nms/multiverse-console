@@ -100,7 +100,7 @@ export default {
 
     // CRUD Face
     getFaces () {
-      let facesApi = 'https://localhost:8787/api/topology'
+      let facesApi = this.$apiURI + '/topology'
       if (this.subnet.id !== 0) {
         facesApi += '/subnet/' + this.subnet.id.toString()
       }
@@ -110,23 +110,23 @@ export default {
           this.faces = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     deleteFace (id) {
-      axios.delete('https://localhost:8787/api/topology/face/' + id.toString())
+      axios.delete(this.$apiURI + '/topology/face/' + id.toString())
         .then(response => {
           this.getFaces()
           this.getRoutes()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     // CRUD Route
     getRoutes () {
-      let routesApi = 'https://localhost:8787/api/topology'
+      let routesApi = this.$apiURI + '/topology'
       if (this.subnet.id !== 0) {
         routesApi += '/subnet/' + this.subnet.id.toString()
       }
@@ -136,22 +136,22 @@ export default {
           this.routes = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     deleteRoute (id) {
-      axios.delete('https://localhost:8787/api/topology/route/' + id.toString())
+      axios.delete(this.$apiURI + '/topology/route/' + id.toString())
         .then(response => {
           this.getRoutes()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     // CRUD PA
     getPrefixAnns () {
-      let paApi = 'https://localhost:8787/api/topology'
+      let paApi = this.$apiURI + '/topology'
       if (this.subnet.id !== 0) {
         paApi += '/subnet/' + this.subnet.id.toString()
       }
@@ -161,14 +161,14 @@ export default {
           this.pas = response.data
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     initPrefixAnn () {
       this.showCreatePA = true
     },
     postPrefixAnn (pa) {
-      axios.post('https://localhost:8787/api/topology/pa', pa, {
+      axios.post(this.$apiURI + '/topology/pa', pa, {
         headers: {},
       })
         .then(response => {
@@ -182,7 +182,7 @@ export default {
           this.$emit('refresh', 'routing.pa')
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('Prefix announcement failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -192,7 +192,7 @@ export default {
       this.showCreatePA = false
     },
     deletePrefixAnn (id) {
-      axios.delete('https://localhost:8787/api/topology/pa/' + id.toString())
+      axios.delete(this.$apiURI + '/topology/pa/' + id.toString())
         .then(response => {
           this.showToast('Prefix withdrawn', {
             icon: 'fa-check',
@@ -204,12 +204,12 @@ export default {
           this.$emit('refresh', 'routing.pa')
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 
     getNodes () {
-      let nodesApi = 'https://localhost:8787/api/topology'
+      let nodesApi = this.$apiURI + '/topology'
       if (this.subnet.id !== 0) {
         nodesApi += '/subnet/' + this.subnet.id.toString()
       }
@@ -219,7 +219,7 @@ export default {
           this.nodes = response.data.map((o) => ({ id: o.id, name: o.name }))
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
 

@@ -71,12 +71,11 @@ export default {
         return
       }
       const user = { username: this.username, password: this.password }
-      axios.post('https://localhost:8787/api/login/user', user, {
+      axios.post(this.$apiURI + '/login/user', user, {
         headers: {},
       })
         .then(response => {
           const token = response.data
-          console.log('token: ', token)
           axios.defaults.headers.common.Authorization = 'Bearer ' + token
           localStorage.setItem('user-token', token)
           this.$router.push('/')
@@ -84,7 +83,6 @@ export default {
         .catch(e => {
           this.error = 'Authentication failed'
           localStorage.removeItem('user-token')
-          console.log('login error: ', e)
         })
     },
   },

@@ -105,11 +105,11 @@ export default {
   },
   methods: {
     getAgents () {
-      const nUri = 'https://localhost:8787/api/topology/nodes'
+      const nUri = this.$apiURI + '/topology/nodes'
       axios.get(nUri)
         .then(response => {
           const nodes = response.data
-          const agUri = 'https://localhost:8787/api/account/agent/all'
+          const agUri = this.$apiURI + '/account/agent/all'
           axios.get(agUri)
             .then(response => {
               this.agents = response.data
@@ -119,11 +119,11 @@ export default {
               this.nodes = nodes
             })
             .catch(e => {
-              console.log(e)
+              // console.log(e)
             })
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
         })
     },
     initSetAgAccount (node) {
@@ -152,7 +152,7 @@ export default {
         this.passwordErrors = ['Password is required']
         return
       }
-      axios.put('https://localhost:8787/api/account/agent/' + this.nAgent.username, this.nAgent, {
+      axios.put(this.$apiURI + '/account/agent/' + this.nAgent.username, this.nAgent, {
         headers: {},
       })
         .then(response => {
@@ -164,7 +164,7 @@ export default {
           this.getAgents()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('Agent creation failed', {
             icon: 'fa-close',
             position: 'top-right',
@@ -179,7 +179,7 @@ export default {
       this.passwordIcon = 'fa fa-eye'
     },
     deleteAgAccount (username) {
-      axios.delete('https://localhost:8787/api/account/agent/' + username, {
+      axios.delete(this.$apiURI + '/account/agent/' + username, {
         headers: {},
       })
         .then(response => {
@@ -191,7 +191,7 @@ export default {
           this.getAgents()
         })
         .catch(e => {
-          console.log(e)
+          // console.log(e)
           this.showToast('Failed to delete Agent', {
             icon: 'fa-close',
             position: 'top-right',
