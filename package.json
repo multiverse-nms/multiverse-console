@@ -13,9 +13,9 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "@ndn/cli-common": "https://ndnts-nightly.ndn.today/cli-common.tgz",
-    "@ndn/endpoint": "https://ndnts-nightly.ndn.today/endpoint.tgz",
-    "@ndn/packet": "https://ndnts-nightly.ndn.today/packet.tgz",
+    "@ndn/cli-common": "0.0.20200606",
+    "@ndn/endpoint": "0.0.20200606",
+    "@ndn/packet": "0.0.20200606",
     "@types/jest": "^24.0.11",
     "amcharts3": "^3.21.14",
     "ammap3": "^3.21.14",
