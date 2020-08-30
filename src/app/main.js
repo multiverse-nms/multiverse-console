@@ -15,6 +15,7 @@ import VueClipboard from 'vue-clipboard2'
 
 import VertxEventBus from 'vue-vertx3-eventbus-client'
 import axios from 'axios'
+// import https from 'https'
 
 import '../metrics'
 import '../registerServiceWorker'
@@ -32,17 +33,18 @@ if (process.env.VUE_APP_BUILD_VERSION) {
 }
 
 if (process.env.NODE_ENV === 'production') {
-  Vue.prototype.$apiURI = 'https://localhost:8787/api'
-  Vue.prototype.$apiHost = 'localhost'
+  Vue.prototype.$apiURI = 'https://mnms.controller.com:8787/api'
+  Vue.prototype.$apiHost = 'mnms.controller.com'
 } else {
-  Vue.prototype.$apiURI = 'https://localhost:8787/api'
-  Vue.prototype.$apiHost = 'localhost'
+  Vue.prototype.$apiURI = 'https://mnms.controller.com:8787/api'
+  Vue.prototype.$apiHost = 'mnms.controller.com'
 }
 
+// TODO: if auth only
 Vue.use(VertxEventBus, {
   host: Vue.prototype.$apiHost,
   path: '/eventbus',
-  port: 8888,
+  port: 8787,
   options: {
     transports: [
       'xhr-polling',
@@ -67,6 +69,9 @@ router.beforeEach((to, from, next) => {
 router.afterEach((to, from) => {
   store.commit('setLoading', false)
 })
+
+// const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+// axios.defaults.httpsAgent = new https.Agent({ ca: caCert })
 
 const token = localStorage.getItem('user-token')
 if (token) {
