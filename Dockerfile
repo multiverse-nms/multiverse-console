@@ -2,7 +2,7 @@
 FROM node:14 as build-stage
 WORKDIR /app
 COPY package*.json ./
-RUN npm cache verify
+RUN rm -rf package-lock.json node_modules/\@ndn
 RUN npm install
 COPY . .
 RUN npm run build

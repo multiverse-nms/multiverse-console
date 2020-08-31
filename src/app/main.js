@@ -33,11 +33,11 @@ if (process.env.VUE_APP_BUILD_VERSION) {
 }
 
 if (process.env.NODE_ENV === 'production') {
-  Vue.prototype.$apiURI = 'https://mnms.controller.com:8787/api'
-  Vue.prototype.$apiHost = 'mnms.controller.com'
+  Vue.prototype.$apiURI = 'https://mnms.controller:8787/api'
+  Vue.prototype.$apiHost = 'mnms.controller'
 } else {
-  Vue.prototype.$apiURI = 'https://mnms.controller.com:8787/api'
-  Vue.prototype.$apiHost = 'mnms.controller.com'
+  Vue.prototype.$apiURI = 'https://mnms.controller:8787/api'
+  Vue.prototype.$apiHost = 'mnms.controller'
 }
 
 // TODO: if auth only
