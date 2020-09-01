@@ -15,7 +15,6 @@ import VueClipboard from 'vue-clipboard2'
 
 import VertxEventBus from 'vue-vertx3-eventbus-client'
 import axios from 'axios'
-import https from 'https'
 
 import '../metrics'
 import '../registerServiceWorker'
@@ -69,11 +68,6 @@ router.beforeEach((to, from, next) => {
 router.afterEach((to, from) => {
   store.commit('setLoading', false)
 })
-
-axios.get('https://raw.githubusercontent.com/amar-ox/nms-console/master/docker/cert/mnms-rootCA.crt.pem')
-  .then(response => {
-    axios.defaults.httpsAgent = new https.Agent({ ca: response.data })
-  })
 
 const token = localStorage.getItem('user-token')
 if (token) {
