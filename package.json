@@ -2,8 +2,8 @@
   "name": "nms-gui",
   "version": "1.0.0",
   "private": false,
-  "description": "Vue.js GUI for Network Management System",
-  "author": "amar",
+  "description": "Web-console of the Multiverse Network Management System project",
+  "author": "Amar Abane",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
