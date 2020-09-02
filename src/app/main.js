@@ -55,9 +55,7 @@ Vue.use(VuesticPlugin)
 Vue.use(YmapPlugin)
 Vue.use(VueClipboard)
 
-Vue.use(ColorThemePlugin, {
-  themes: { primary: '#f85d03', secondary: '#3a3636' },
-})
+ColorThemePlugin.install(Vue, { primary: '#0581B5', secondary: '#101017' })
 
 router.beforeEach((to, from, next) => {
   store.commit('setLoading', true)
