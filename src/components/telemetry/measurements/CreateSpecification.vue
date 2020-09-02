@@ -39,25 +39,6 @@
 
     </div>
   </va-modal>
-  <!-- div class="flex md12 sm12 xs12">
-              <label class="label">Results to request</label>
-              <va-select
-                :label="$t('forms.selects.multi')"
-                v-model="specification.selectedResults"
-                textBy="description"
-                multiple
-                :options="selectedCapability.results"
-              />
-            </div -->
-  <!-- div class="flex md12 sm12 xs12">
-            <label class="label">Specification parameters</label>
-            <div v-for="(vParam, nParam) in selectedCapability.parameters" :key="nParam">
-              <va-input
-                :label="nParam"
-                v-model="specification.parameters[nParam]"
-              />
-            </div>
-          </div -->
 </template>
 
 <script>

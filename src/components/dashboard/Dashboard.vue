@@ -12,8 +12,6 @@
 </template>
 
 <script>
-// import DashboardInfoBlock from './DashboardInfoBlock'
-// import DashboardCharts from './DashboardCharts'
 import DashboardServiceList from './DashboardServiceList'
 import DashboardServiceLogs from './DashboardServiceLogs'
 

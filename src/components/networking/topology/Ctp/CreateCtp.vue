@@ -132,7 +132,6 @@ export default {
         }
       }
       this.$emit('onOk', this.nCtp)
-      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

@@ -63,7 +63,6 @@ export default {
           return this.nodes[i].name.split(':')[1]
         }
       }
-      // return this.nodes.find(x => x.id === id).name.split(':')[1]
     },
   },
   computed: {},

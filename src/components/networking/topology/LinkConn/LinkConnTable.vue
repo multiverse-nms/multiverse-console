@@ -16,10 +16,6 @@
         <tr v-for="(lc, index) in lcs" :key="index" @click="onSelected(lc.id)" :class="getStatusClass(lc.status)">
           <td>{{ lc.name }}</td>
           <td>{{ lc.label }}</td>
-        <!--  td>
-          <va-button small color="danger" @click="onDelete(lc.id)"> Delete </va-button>
-          <va-button small color="info" @click="onEdit(lc)"> Edit </va-button>
-        </td -->
         </tr>
       </tbody>
     </table>

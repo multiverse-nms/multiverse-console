@@ -8,8 +8,8 @@ export const AvailableColorThemes = [
   {
     name: ColorThemes.DEFAULT,
     themes: {
-      primary: '#40e583',
-      secondary: '#002c85',
+      primary: '#f85d03',
+      secondary: '#3a3636',
       success: '#40e583',
       info: '#2c82e0',
       danger: '#e34b4a',

@@ -19,17 +19,7 @@
           :color="contextConfig.invertedColor ? $themes.gray : 'white'"
         />
 
-        <!-- router-link
-          class="app-navbar__logo md-4"
-          to="/"
-        >
-          <va-icon-vuestic />
-          <span
-            class="app-navbar__text"
-            :style="{color: this.$themes.gray}"
-          >
-            NIST Network Management System
-          </span>
+        <!-- router-link class="app-navbar__logo md-4" to="/">
         </router-link -->
 
         <div class="app-navbar__center lg5 md4">
@@ -37,36 +27,10 @@
             class="app-navbar__text"
             :style="{color: this.$themes.gray}"
           >
-            {{$t('navbar.title')}}
+            {{$t('menu.title')}}
           </span>
         </div>
-
       </div>
-      <!-- div class="app-navbar__center lg5 md4">
-        <span
-          class="app-navbar__text"
-          :style="{color: this.$themes.gray}"
-        >
-          {{$t('navbar.messageUs')}}&nbsp;
-          <a
-            href="mailto:hello@epicmax.co"
-            target="_blank"
-            class="app-navbar__mailto-link"
-            :style="{color: this.$themes.primary}"
-          >
-            hello@epicmax.co
-          </a>
-        </span>
-        <va-button
-          href="https://github.com/epicmaxco/vuestic-admin"
-          color="#000000"
-          class="app-navbar__button"
-          icon="fa fa-github"
-          target="_blank"
-        >
-          {{$t('navbar.repository')}}
-        </va-button>
-      </div -->
       <app-navbar-actions
         class="app-navbar__actions md5 lg4"
         :user-name="userName"
@@ -81,7 +45,6 @@
 </template>
 
 <script>
-// import VaIconVuestic from '../../../iconset/VaIconVuestic'
 import VaIconMenu from '../../../iconset/VaIconMenu'
 import VaIconMenuCollapsed from '../../../iconset/VaIconMenuCollapsed'
 import AppNavbarActions from './components/AppNavbarActions'
@@ -92,7 +55,6 @@ export default {
   mixins: [ColorThemeMixin],
   inject: ['contextConfig'],
   components: {
-    // VaIconVuestic,
     VaIconMenu,
     VaIconMenuCollapsed,
     AppNavbarActions,

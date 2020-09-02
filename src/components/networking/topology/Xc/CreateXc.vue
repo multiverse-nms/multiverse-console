@@ -231,7 +231,6 @@ export default {
         }
       }
       this.$emit('onOk', this.nXc)
-      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

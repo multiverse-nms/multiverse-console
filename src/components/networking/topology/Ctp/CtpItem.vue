@@ -89,7 +89,6 @@
 </template>
 
 <script>
-// import { getStatusColor, getStatusClass, getBusyColor } from '../../../../assets/icons/colors.js'
 export default {
   name: 'CtpItem',
   props: ['ctp', 'onEdit', 'onDelete'],

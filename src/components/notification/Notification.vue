@@ -67,12 +67,6 @@
               </tr>
             </tbody>
           </table>
-          <!-- va-notification v-for="(fault, index) in faults" :key="index" color="danger" closeable @input="deleteFault(fault.id)">
-            <va-badge color="danger">
-              {{ findNodeName(fault.origin) }}
-            </va-badge>
-            <p>{{ fault.timestamp }} | [{{ fault.code }}] | {{ fault.msg }}</p>
-          </va-notification -->
         </va-card>
       </div>
     </div>

@@ -1,13 +1,9 @@
 <template>
   <div class="flex xs12 md6 xl3">
-    <!-- va-card :title="$t('dashboard.serviceActivity')">
-        <va-chart class="chart chart--donut" :data="serviceActivityData" type="donut"/>
-      </va-card -->
   </div>
 </template>
 
 <script>
-// import { getLineChartData } from '../../data/charts/LineChartData'
 
 const themes = {
   primary: '#40e583',

@@ -39,7 +39,6 @@ if (process.env.NODE_ENV === 'production') {
   Vue.prototype.$apiHost = 'mnms.controller'
 }
 
-// TODO: if auth only
 Vue.use(VertxEventBus, {
   host: Vue.prototype.$apiHost,
   path: '/eventbus',
@@ -57,7 +56,7 @@ Vue.use(YmapPlugin)
 Vue.use(VueClipboard)
 
 Vue.use(ColorThemePlugin, {
-  // override colors here.
+  themes: { primary: '#f85d03', secondary: '#3a3636' },
 })
 
 router.beforeEach((to, from, next) => {

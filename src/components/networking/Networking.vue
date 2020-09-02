@@ -130,7 +130,6 @@ export default {
     },
 
     getNextSnName () {
-      // this.nodes.sort(function(a, b){return a.name - b.name})
       if (this.subnets.length > 0) {
         const maxSnNo = this.subnets[this.subnets.length - 1].name.substring(1)
         this.nextSnName = 's' + (parseInt(maxSnNo, 10) + 1)

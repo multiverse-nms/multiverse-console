@@ -1,9 +1,9 @@
 <template>
   <div class="auth-layout row align-content--center">
     <div class="flex xs12 pa-3 flex-center">
-      <router-link class="py-5 flex-center" to="/">
-        <va-icon-vue />
-      </router-link>
+      <p align="center">
+        <img src="./logo.png" />
+      </p>
     </div>
 
     <div class="flex xs12 pa-3">
@@ -44,11 +44,10 @@
 
 <script>
 import axios from 'axios'
-import VaIconVue from '../../iconset/VaIconVue'
 
 export default {
   name: 'Login',
-  components: { VaIconVue },
+  components: {},
   data () {
     return {
       username: '',

@@ -156,7 +156,6 @@ export default {
   watch: {
   },
   methods: {
-    // CRUD LinkConn (get/edit/delete only)
     getLc (id) {
       this.showItem = false
       const lcApi = this.$apiURI + '/topology/linkConn/' + id.toString()

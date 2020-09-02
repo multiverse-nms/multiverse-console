@@ -194,7 +194,6 @@ export default {
         }
       }
       this.$emit('onOk', this.nLink)
-      // this.showModal = false
     },
     cancel () {
       this.$emit('onCancel')

@@ -18,10 +18,6 @@
           <td>{{ trail.name }}</td>
           <td>{{ trail.label }}</td>
           <td>{{ trail.created }}</td>
-        <!-- td>
-          <va-button small color="danger" @click="onDelete(trail.id)"> Delete </va-button>
-          <va-button small color="info" @click="onEdit(trail)"> Edit </va-button>
-        </td -->
         </tr>
       </tbody>
     </table>

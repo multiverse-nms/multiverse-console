@@ -50,30 +50,7 @@ export default {
   props: {
     options: {
       type: Array,
-      default: () => [
-        {
-          name: 'sentMessage',
-          details: { name: 'Vasily S', avatar: 'https://picsum.photos/123' },
-          unread: true,
-          id: 1,
-        },
-        {
-          name: 'uploadedZip',
-          details: {
-            name: 'Oleg M',
-            avatar: 'https://picsum.photos/100',
-            type: 'typography component',
-          },
-          unread: true,
-          id: 2,
-        },
-        {
-          name: 'startedTopic',
-          details: { name: 'Andrei H', avatar: 'https://picsum.photos/24' },
-          unread: true,
-          id: 3,
-        },
-      ],
+      default: () => [],
     },
   },
   computed: {

@@ -18,10 +18,6 @@
           <td>{{ ctp.name }}</td>
           <td>{{ ctp.label }}</td>
           <td>{{ ctp.created }}</td>
-        <!-- td>
-          <va-button small color="danger" @click="onDelete(ctp.id)"> Delete </va-button>
-          <va-button small color="info" @click="onEdit(ctp)"> Edit </va-button>
-        </td -->
         </tr>
       </tbody>
     </table>
@@ -29,7 +25,6 @@
 </template>
 
 <script>
-// import { getStatusColor, getStatusClass, getBusyColor } from '../../../../assets/icons/colors.js'
 export default {
   name: 'CtpTable',
   props: ['ctps', 'onSelected'],

@@ -18,10 +18,6 @@
           <td>{{ xc.name }}</td>
           <td>{{ xc.label }}</td>
           <td>{{ xc.created }}</td>
-        <!-- td>
-          <va-button small color="danger" @click="onDelete(xc.id)"> Delete </va-button>
-          <va-button small color="info" @click="onEdit(xc)"> Edit </va-button>
-        </td -->
         </tr>
       </tbody>
     </table>

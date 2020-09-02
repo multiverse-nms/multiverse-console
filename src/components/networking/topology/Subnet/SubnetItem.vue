@@ -77,8 +77,6 @@
 
 <script>
 import axios from 'axios'
-// import icons from '../../../../assets/icons/graph-icons.json'
-
 import { getStatusColor } from '../../../../assets/icons/colors.js'
 import D3Network from 'vue-d3-network/src/vue-d3-network.vue'
 import LinkItem from '../Link/LinkItem'
@@ -558,7 +556,6 @@ export default {
     },
 
     getNextNodeName () {
-      // this.nodes.sort(function(a, b){return a.name - b.name})
       if (this.nodes.length > 0) {
         const maxNodeNo = this.nodes[this.nodes.length - 1].name.split(':')[1].substring(1)
         this.nextNodeName = this.subnet.name + ':n' + (parseInt(maxNodeNo, 10) + 1)

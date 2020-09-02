@@ -62,8 +62,6 @@ export default {
   },
   methods: {
     initModal () {
-      console.log('init create PA modal')
-      // TODO: if no origin, get list of nodes...
       this.nRoute = {
         paId: this.paId,
       }
