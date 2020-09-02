@@ -113,7 +113,7 @@ export default {
     },
     cancel () {
       this.$emit('onCancel')
-      this.showModal = false
+      // this.showModal = false
     },
     getNodes () {
       let nodesApi = this.$apiURI + '/topology'

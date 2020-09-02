@@ -234,7 +234,7 @@ export default {
     },
     cancel () {
       this.$emit('onCancel')
-      this.showModal = false
+      // this.showModal = false
     },
   },
 }
