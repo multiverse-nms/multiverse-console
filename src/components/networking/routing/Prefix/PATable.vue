@@ -31,7 +31,6 @@
 
 <script>
 import { getAvailableClass } from '../../../../assets/icons/colors.js'
-import { Decoder } from '@ndn/tlv'
 import { Name } from '@ndn/packet'
 
 export default {
@@ -50,11 +49,8 @@ export default {
   },
   methods: {
     decodeName (b64s) {
-      // console.log('b64', b64s)
       const o = Uint8Array.from(atob(b64s), c => c.charCodeAt(0))
-      // console.log('bytes', o)
-      const decoder = new Decoder(o)
-      const name = decoder.decode(Name)
+      const name = new Name(o)
       return name.toString()
     },
     findNodeName (id) {

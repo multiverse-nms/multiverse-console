@@ -36,7 +36,6 @@
 
 <script>
 import axios from 'axios'
-import { Encoder } from '@ndn/tlv'
 import { Name } from '@ndn/packet'
 
 export default {
@@ -97,9 +96,7 @@ export default {
         this.nameErrors = ['Name is required']
         return
       }
-      const encoder = new Encoder()
-      encoder.encode(new Name(this.nPA.name))
-      const b64 = btoa(String.fromCharCode.apply(null, encoder.output))
+      const b64 = btoa(String.fromCharCode.apply(null, new Name(this.nPA.name).value))
       this.nPA.name = b64
 
       if (this.nPA.originId === 0) {
