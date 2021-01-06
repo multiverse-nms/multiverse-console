@@ -35,8 +35,8 @@ if (process.env.NODE_ENV === 'production') {
   Vue.prototype.$apiURI = 'https://mnms.controller:8787/api'
   Vue.prototype.$apiHost = 'mnms.controller'
 } else {
-  Vue.prototype.$apiURI = 'https://mnms.controller:8787/api'
-  Vue.prototype.$apiHost = 'mnms.controller'
+  Vue.prototype.$apiURI = 'http://localhost:8787/api'
+  Vue.prototype.$apiHost = 'localhost'
 }
 
 Vue.use(VertxEventBus, {
