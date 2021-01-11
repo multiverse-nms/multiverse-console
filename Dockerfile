@@ -17,8 +17,8 @@ COPY --from=build-stage /app/dist /usr/share/nginx/html
 COPY ./docker/nginx/nginx.conf /etc/nginx/conf.d/nginx.conf
 
 # certs
-COPY ./docker/cert/mnms.gui.crt.pem /etc/nginx/certs/mnms.gui.crt.pem
-COPY ./docker/cert/mnms.gui.key.pem /etc/nginx/certs/mnms.gui.key.pem
+COPY ./docker/cert/multiverse.console.crt.pem /etc/nginx/certs/multiverse.console.crt.pem
+COPY ./docker/cert/multiverse.console.key.pem /etc/nginx/certs/multiverse.console.key.pem
 
 EXPOSE 443
 CMD ["nginx", "-g", "daemon off;"]
