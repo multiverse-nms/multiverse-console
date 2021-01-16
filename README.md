@@ -3,4 +3,4 @@
   <img src="docs/images/logo.png" />
 </p -->
 
-This repo is the Web-console part of the [MNMS project](https://github.com/amar-ox/nms-microservice).
+This is the Web-console component of the [Multiverse project](https://github.com/multiverse-nms/multiverse-controller).
