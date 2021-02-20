@@ -105,6 +105,7 @@ export default {
         posy: 0,
         location: '',
         hwaddr: '',
+        status: 'DOWN',
       },
       nameErrors: [],
       labelErrors: [],
@@ -141,6 +142,7 @@ export default {
         posy: Math.floor(Math.random() * Math.floor(500)),
         location: '',
         hwaddr: '',
+        status: 'DOWN',
       }
       this.clearErrors()
       this.showModal = true

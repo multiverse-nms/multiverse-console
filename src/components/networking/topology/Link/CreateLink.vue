@@ -96,6 +96,7 @@ export default {
         info: {},
         srcVltpId: 0,
         destVltpId: 0,
+        status: 'DOWN',
       },
 
       labelErrors: [],
@@ -122,10 +123,10 @@ export default {
       deep: true,
     },
     srcVltpName: function (newVal, oldVal) {
-      this.nLink.name = newVal + '=' + this.destVltpName
+      this.nLink.name = newVal.split(' ')[0] + '=' + this.destVltpName.split(' ')[0]
     },
     destVltpName: function (newVal, oldVal) {
-      this.nLink.name = this.srcVltpName + '=' + newVal
+      this.nLink.name = this.srcVltpName.split(' ')[0] + '=' + newVal.split(' ')[0]
     },
   },
   methods: {
@@ -138,6 +139,7 @@ export default {
         info: {},
         srcVltpId: 0,
         destVltpId: 0,
+        status: 'DOWN',
       }
       this.infoArray = [['', '']]
       this.srcVltpName = ''
@@ -156,7 +158,7 @@ export default {
           this.ltpsNameToId = new Map()
           response.data.forEach(ltp => {
             if (!ltp.busy) {
-              this.ltpsNameToId.set(ltp.name, ltp.id)
+              this.ltpsNameToId.set(ltp.name + ' [' + ltp.vnodeId + ']', ltp.id)
             }
           })
         })

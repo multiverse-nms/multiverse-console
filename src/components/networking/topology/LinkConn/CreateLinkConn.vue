@@ -38,22 +38,25 @@
           :error="!!descErrors.length"
           :error-messages="descErrors"
         />
-        <va-select
-          label="Source CTP"
-          v-model="srcVctpName"
-          textBy="source"
-          :options="Array.from(ctpsNameToId.keys())"
-          :error="!!ctpErrors.length"
-          :error-messages="ctpErrors"
-        />
-        <va-select
-          label="Destination CTP"
-          v-model="destVctpName"
-          textBy="destination"
-          :options="Array.from(ctpsNameToId.keys())"
-          :error="!!ctpErrors.length"
-          :error-messages="ctpErrors"
-        />
+        <div v-if="ctpsNameToId.size > 1">
+          <va-select
+            label="Source CTP"
+            v-model="srcVctpName"
+            textBy="source"
+            :options="Array.from(ctpsNameToId.keys())"
+            :error="!!ctpErrors.length"
+            :error-messages="ctpErrors"
+          />
+          <va-select
+            label="Destination CTP"
+            v-model="destVctpName"
+            textBy="destination"
+            :options="Array.from(ctpsNameToId.keys())"
+            :error="!!ctpErrors.length"
+            :error-messages="ctpErrors"
+          />
+        </div>
+        <p v-else> Not enough CTPs to create a Link-connection </p>
         <!-- div>
           <div v-for="(info, index) in infoArray" :key="index" class="row">
             <div class="flex xs5 offset--xs1">
@@ -91,7 +94,7 @@ import axios from 'axios'
 
 export default {
   name: 'CreateLinkConn',
-  props: ['show', 'linkId', 'linkName'],
+  props: ['show', 'linkId'],
 
   data: function () {
     return {
@@ -105,6 +108,7 @@ export default {
         srcVctpId: 0,
         destVctpId: 0,
         vlinkId: 0,
+        status: 'DOWN',
       },
       selectedLinkName: '',
       selectLink: false,
@@ -135,7 +139,8 @@ export default {
       deep: true,
     },
     selectedLinkName: function (newVal, oldVal) {
-      this.setNextLcName(this.linksNameToId.get(newVal), newVal)
+      this.nLc.vlinkId = this.linksNameToId.get(newVal)
+      this.getCtps()
     },
   },
   methods: {
@@ -152,6 +157,7 @@ export default {
         srcVctpId: 0,
         destVctpId: 0,
         vlinkId: this.linkId,
+        status: 'DOWN',
       }
       this.infoArray = [['', '']]
       this.srcVctpName = ''
@@ -159,10 +165,10 @@ export default {
       this.ctpErrors = []
 
       if (this.linkId > 0) {
+        this.getCtps()
         this.selectLink = false
       } else {
         this.getLinks()
-        this.getCtps()
         this.selectLink = true
       }
 
@@ -174,7 +180,7 @@ export default {
         this.infoArray.push(['', ''])
       }
     },
-    setNextLcName (linkId, linkName) {
+    setNextLcName () {
       /* const lcsApi = this.$apiURI + '/topology/link/' + linkId + '/lcs'
       axios.get(lcsApi)
         .then(response => {
@@ -207,13 +213,24 @@ export default {
         })
     },
     getCtps () {
+      const linkApi = this.$apiURI + '/topology/link/' + this.nLc.vlinkId
       const ctpsApi = this.$apiURI + '/topology/ctp/type/Ether'
-      axios.get(ctpsApi)
+      axios.get(linkApi)
         .then(response => {
-          this.ctpsNameToId = new Map()
-          response.data.forEach(ctp => {
-            this.ctpsNameToId.set(ctp.name, ctp.id)
-          })
+          const link = response.data
+          this.nLc.name = link.name + '#'
+          axios.get(ctpsApi)
+            .then(response => {
+              this.ctpsNameToId = new Map()
+              response.data.forEach(ctp => {
+                if (ctp.parentId === link.srcVltpId || ctp.parentId === link.destVltpId) {
+                  this.ctpsNameToId.set(ctp.name + ' [' + ctp.vnodeId + ']', ctp.id, ctp.id)
+                }
+              })
+            })
+            .catch(e => {
+              // console.log(e)
+            })
         })
         .catch(e => {
           // console.log(e)
@@ -223,10 +240,13 @@ export default {
       if (this.nameErrors.length) {
         return
       }
-      if (this.linkId === 0) {
-        this.nLc.vlinkId = this.linksNameToId.get(this.selectedLinkName)
+      if (this.ctpsNameToId.size < 2 || this.nLc.vlinkId === 0) {
+        return
       }
-      for (var i = 0, len = this.infoArray.length; i < len; i++) {
+      this.nLc.srcVctpId = this.ctpsNameToId.get(this.srcVctpName)
+      this.nLc.destVctpId = this.ctpsNameToId.get(this.destVctpName)
+
+      /* for (var i = 0, len = this.infoArray.length; i < len; i++) {
         const item = this.infoArray[i]
         if (item[0] !== '' && item[1] !== '') {
           // TODO: support boolean
@@ -236,7 +256,7 @@ export default {
             this.nLc.info[item[0]] = Number(item[1])
           }
         }
-      }
+      } */
       this.$emit('onOk', this.nLc)
     },
     cancel () {

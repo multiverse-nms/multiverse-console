@@ -105,6 +105,7 @@ export default {
         port: '',
         bandwidth: '',
         mtu: 0,
+        status: 'DOWN',
       },
       error: '',
       labelErrors: [],
@@ -138,6 +139,7 @@ export default {
         port: '',
         bandwidth: '',
         mtu: 0,
+        status: 'DOWN',
       }
 
       this.error = ''

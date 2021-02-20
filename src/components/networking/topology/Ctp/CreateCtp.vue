@@ -133,6 +133,7 @@ export default {
         info: {},
         connType: 'Ether',
         connInfo: {},
+        status: 'DOWN',
       },
       nameErrors: [],
       labelErrors: [],
@@ -201,6 +202,7 @@ export default {
         info: {},
         connType: 'Ether',
         connInfo: {},
+        status: 'DOWN',
       }
       this.etherCtp = {
         address: '',

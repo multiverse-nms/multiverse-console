@@ -86,6 +86,7 @@ export default {
         info: {},
         srcVctpId: 0,
         destVctpId: 0,
+        status: 'DOWN',
       },
 
       nameErrors: [],
@@ -113,10 +114,10 @@ export default {
       deep: true,
     },
     srcVctpName: function (newVal, oldVal) {
-      this.nConn.name = newVal + '#' + this.destVctpName
+      this.nConn.name = newVal.split(' ')[0] + '#' + this.destVctpName.split(' ')[0]
     },
     destVctpName: function (newVal, oldVal) {
-      this.nConn.name = this.srcVctpName + '#' + newVal
+      this.nConn.name = this.srcVctpName.split(' ')[0] + '#' + newVal.split(' ')[0]
     },
     connType: function (newVal, oldVal) {
       this.getCtps(newVal)
@@ -135,6 +136,7 @@ export default {
         info: {},
         srcVctpId: 0,
         destVctpId: 0,
+        status: 'DOWN',
       }
 
       this.infoArray = [['', '']]
@@ -156,7 +158,7 @@ export default {
         .then(response => {
           this.ctpsNameToId = new Map()
           response.data.forEach(ctp => {
-            this.ctpsNameToId.set(ctp.name, ctp.id)
+            this.ctpsNameToId.set(ctp.name + ' [' + ctp.vnodeId + ']', ctp.id, ctp.id)
           })
         })
         .catch(e => {
