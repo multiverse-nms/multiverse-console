@@ -10,7 +10,6 @@
     <div class="modal-create-link">
       <form>
         <va-input
-          readonly
           v-model="nLink.name"
           type="text"
           label="Name"
@@ -47,7 +46,7 @@
           :error="!!ltpErrors.length"
           :error-messages="ltpErrors"
         />
-        <div>
+        <!-- div>
           <div v-for="(info, index) in infoArray" :key="index" class="row">
             <div class="flex xs5 offset--xs1">
               <va-input
@@ -69,7 +68,7 @@
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
             </va-button>
           </div>
-        </div>
+        </div -->
         <div class="d-flex justify--center mt-3">
           <va-button small color="danger" @click="cancel">Cancel</va-button>
           <va-button small color="primary" @click="submit">Submit</va-button>
@@ -97,7 +96,6 @@ export default {
         info: {},
         srcVltpId: 0,
         destVltpId: 0,
-        type: 'IN',
       },
 
       labelErrors: [],
@@ -140,7 +138,6 @@ export default {
         info: {},
         srcVltpId: 0,
         destVltpId: 0,
-        type: 'IN',
       }
       this.infoArray = [['', '']]
       this.srcVltpName = ''
@@ -153,7 +150,7 @@ export default {
       this.showModal = true
     },
     getLtps () {
-      const ltpsApi = this.$apiURI + '/topology/ltps'
+      const ltpsApi = this.$apiURI + '/topology/ltp'
       axios.get(ltpsApi)
         .then(response => {
           this.ltpsNameToId = new Map()
@@ -174,12 +171,12 @@ export default {
       }
     },
     submit () {
-      const srcNode = this.srcVltpName.split(':')[1]
+      /* const srcNode = this.srcVltpName.split(':')[1]
       const destNode = this.destVltpName.split(':')[1]
       if (srcNode === destNode) {
         this.ltpErrors = ['Source and destination nodes must be different']
         return
-      }
+      } */
       this.nLink.srcVltpId = this.ltpsNameToId.get(this.srcVltpName)
       this.nLink.destVltpId = this.ltpsNameToId.get(this.destVltpName)
       for (var i = 0, len = this.infoArray.length; i < len; i++) {

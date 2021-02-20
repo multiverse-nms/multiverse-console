@@ -1,21 +1,16 @@
 <template>
   <div>
     <div class="row">
+
       <div class="flex md4 column">
-        <va-card :title="tFace">
+        <va-card :title="tCtp">
           <div class="table-card">
-            <face-table :faces="faces" :onDelete="deleteFace" ></face-table>
-          </div>
-          <div class="text-center mt-5">
-            <va-button disabled small color="warning">
-              <i class="fa fa-plus-circle" aria-hidden="true"></i>
-              Create Face
-            </va-button>
+            <ctp-table :ctps="ctps" :nodes="nodes" :onSelected="getCtp"></ctp-table>
           </div>
         </va-card>
       </div>
 
-      <div class="flex md3 column">
+      <div class="flex md4 column">
         <va-card :title="tPa">
           <div class="table-card">
             <p-a-table :pas="pas" :nodes="nodes" :onDelete="deletePrefixAnn"></p-a-table>
@@ -29,7 +24,7 @@
         </va-card>
       </div>
 
-      <div class="flex md5 column">
+      <div class="flex md4 column">
         <va-card :title="tRoute">
           <div class="table-card">
             <route-table :routes="routes" :nodes="nodes" :onDelete="deleteRoute"></route-table>
@@ -44,6 +39,13 @@
       </div>
     </div>
 
+    <va-modal
+      v-model="showItem"
+      size="large"
+      hideDefaultActions
+    >
+      <ctp-item :ctp="selectedCtp" :onDelete="deleteCtp" :onEdit="initEditCtp" />
+    </va-modal>
     <create-p-a @onOk="postPrefixAnn" @onCancel="showCreatePA = false" :show="showCreatePA" :subnetId="subnet.id" />
 
   </div>
@@ -51,31 +53,36 @@
 
 <script>
 import axios from 'axios'
-import FaceTable from './Face/FaceTable.vue'
 import PATable from './Prefix/PATable.vue'
 import RouteTable from './Route/RouteTable.vue'
 import CreatePA from './Prefix/CreatePA.vue'
+import CtpTable from '../topology/Ctp/CtpTable'
+import CtpItem from '../topology/Ctp/CtpItem'
 
 export default {
   name: 'routing',
   props: ['subnet'],
   components: {
-    FaceTable,
     PATable,
     RouteTable,
     CreatePA,
+    CtpTable,
+    CtpItem,
   },
   data: function () {
     return {
       title: 'Routing Info',
       showCreatePA: false,
-      tFace: 'Faces',
+      tCtp: 'CTPs',
       tPa: 'Prefix Announcements',
       tRoute: 'Routes',
-      faces: [],
       pas: [],
       routes: [],
       nodes: [],
+      ctps: [],
+
+      showItem: false,
+      selectedCtp: {},
     }
   },
   created () {
@@ -93,44 +100,14 @@ export default {
   methods: {
     refreshAll () {
       this.getNodes()
-      this.getFaces()
       this.getPrefixAnns()
       this.getRoutes()
-    },
-
-    // CRUD Face
-    getFaces () {
-      let facesApi = this.$apiURI + '/topology'
-      if (this.subnet.id !== 0) {
-        facesApi += '/subnet/' + this.subnet.id.toString()
-      }
-      facesApi += '/faces'
-      axios.get(facesApi)
-        .then(response => {
-          this.faces = response.data
-        })
-        .catch(e => {
-          // console.log(e)
-        })
-    },
-    deleteFace (id) {
-      axios.delete(this.$apiURI + '/topology/face/' + id.toString())
-        .then(response => {
-          this.getFaces()
-          this.getRoutes()
-        })
-        .catch(e => {
-          // console.log(e)
-        })
+      this.getCtps()
     },
 
     // CRUD Route
     getRoutes () {
-      let routesApi = this.$apiURI + '/topology'
-      if (this.subnet.id !== 0) {
-        routesApi += '/subnet/' + this.subnet.id.toString()
-      }
-      routesApi += '/routes'
+      const routesApi = this.$apiURI + '/topology/route'
       axios.get(routesApi)
         .then(response => {
           this.routes = response.data
@@ -151,11 +128,7 @@ export default {
 
     // CRUD PA
     getPrefixAnns () {
-      let paApi = this.$apiURI + '/topology'
-      if (this.subnet.id !== 0) {
-        paApi += '/subnet/' + this.subnet.id.toString()
-      }
-      paApi += '/pas'
+      const paApi = this.$apiURI + '/topology/pa'
       axios.get(paApi)
         .then(response => {
           this.pas = response.data
@@ -209,11 +182,7 @@ export default {
     },
 
     getNodes () {
-      let nodesApi = this.$apiURI + '/topology'
-      if (this.subnet.id !== 0) {
-        nodesApi += '/subnet/' + this.subnet.id.toString()
-      }
-      nodesApi += '/nodes'
+      const nodesApi = this.$apiURI + '/topology/node'
       axios.get(nodesApi)
         .then(response => {
           this.nodes = response.data.map((o) => ({ id: o.id, name: o.name }))
@@ -222,6 +191,49 @@ export default {
           // console.log(e)
         })
     },
+
+    // CRUD CTP
+    getCtps () {
+      const ctpsApi = this.$apiURI + '/topology/ctp'
+      axios.get(ctpsApi)
+        .then(response => {
+          this.ctps = response.data
+        })
+        .catch(e => {
+          // console.log(e)
+        })
+    },
+    deleteCtp (id) {
+      axios.delete(this.$apiURI + '/topology/ctp/' + id.toString())
+        .then(response => {
+          this.getCtps()
+        })
+        .catch(e => {
+          // console.log(e)
+        })
+    },
+    getCtp (id) {
+      this.showItem = false
+      const ctpApi = this.$apiURI + '/topology/ctp/' + id.toString()
+      const ctpCtpApi = this.$apiURI + '/topology/ctp/' + id.toString() + '/ctps'
+      axios.get(ctpApi)
+        .then(response => {
+          this.selectedCtp = response.data
+          axios.get(ctpCtpApi)
+            .then(response => {
+              this.selectedCtp.vctps = response.data
+              this.showItem = true
+            })
+            .catch(e => {
+              // console.log(e)
+            })
+        })
+        .catch(e => {
+          // console.log(e)
+        })
+    },
+    initEditCtp (ctp) {},
+    patchCtp (ctp) {},
 
     refresh (type) {
       this.$emit('refresh', type)

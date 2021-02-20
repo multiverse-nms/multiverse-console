@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row row-equal">
-      <div class="flex lg8">
+      <div class="flex lg12">
         <va-card :title="tTopology">
           <div class="row mt-1">
             <va-button-toggle
@@ -42,18 +42,6 @@
           </div>
         </va-card>
       </div>
-
-      <div class="flex lg4">
-        <va-card :title="tTrails">
-          <trail-table :trails="trails" :onSelected="getTrail" />
-          <div v-if="subnet.id != 0" class="text-center mt-5">
-            <va-button disabled small color="warning" @click="initCreateTrail">
-              <i class="fa fa-plus-circle" aria-hidden="true"></i>
-              Create trail
-            </va-button>
-          </div>
-        </va-card>
-      </div>
     </div>
 
     <va-modal
@@ -64,13 +52,13 @@
       <node-item v-if="type === 1" :node="selectedNode" :onEdit="initEditNode" :onDelete="deleteNode" @refresh="refresh" />
       <link-item v-if="type === 2" :link="selectedLink" :onEdit="initEditLink" :onDelete="deleteLink" @refresh="refresh"/>
       <link-conn-item v-if="type === 3" :linkConn="selectedLc" :onEdit="initEditLc" :onDelete="deleteLc" @refresh="refresh" />
-      <trail-item v-if="type === 4" :trail="selectedTrail" :onEdit="initEditTrail" :onDelete="deleteTrail" @refresh="refresh" />
+      <conn-item v-if="type === 4" :conn="selectedConn" :onEdit="initEditConn" :onDelete="deleteConn" @refresh="refresh" />
     </va-modal>
 
-    <create-node @onOk="postNode" @onCancel="showCreateNode = false" :show="showCreateNode" :subnetId="subnet.id" :name="nextNodeName" />
+    <create-node @onOk="postNode" @onCancel="showCreateNode = false" :show="showCreateNode" :subnetId="subnet.id" />
     <create-link @onOk="postLink" @onCancel="showCreateLink = false" :show="showCreateLink"/>
     <create-link-conn @onOk="postLc" @onCancel="showCreateLc = false" :show="showCreateLc" :linkId="0"/>
-    <create-trail @onOk="postTrail" @onCancel="showCreateTrail = false" :show="showCreateTrail" />
+    <create-conn @onOk="postConn" @onCancel="showCreateConn = false" :show="showCreateConn" :type="kind" />
 
   </div>
 </template>
@@ -85,9 +73,8 @@ import LinkConnItem from '../LinkConn/LinkConnItem.vue'
 import CreateLinkConn from '../LinkConn/CreateLinkConn.vue'
 import NodeItem from '../Node/NodeItem.vue'
 import CreateNode from '../Node/CreateNode.vue'
-import TrailTable from '../Trail/TrailTable.vue'
-import TrailItem from '../Trail/TrailItem.vue'
-import CreateTrail from '../Trail/CreateTrail.vue'
+import ConnItem from '../Conn/ConnItem.vue'
+import CreateConn from '../Conn/CreateConn.vue'
 
 export default {
   name: 'subnet-item',
@@ -97,28 +84,28 @@ export default {
     LinkItem,
     LinkConnItem,
     NodeItem,
-    TrailTable,
-    TrailItem,
-    CreateTrail,
+    ConnItem,
     CreateNode,
     CreateLink,
     CreateLinkConn,
+    CreateConn,
   },
   data: function () {
     return {
       tTopology: 'Topology',
-      tTrails: 'Trails',
 
       kind: 'link',
       kindOptions: [
-        { label: 'Physical', value: 'link' },
-        { label: 'Logical', value: 'linkConn' },
+        { label: 'PHY', value: 'link' },
+        { label: 'MAC', value: 'lc' },
+        { label: 'IP', value: 'IPv4' },
+        { label: 'NDN', value: 'NDN' },
+        { label: 'UDP', value: 'UDP' },
       ],
 
       nodes: [],
       links: [],
       pas: [],
-      trails: [],
 
       graphNodes: [],
       graphLinks: [],
@@ -128,14 +115,12 @@ export default {
       selectedNode: {},
       selectedLink: {},
       selectedLc: {},
-      selectedTrail: {},
+      selectedConn: {},
 
       showCreateNode: false,
       showCreateLink: false,
       showCreateLc: false,
-      showCreateTrail: false,
-
-      nextNodeName: '',
+      showCreateConn: false,
     }
   },
   created () {
@@ -169,32 +154,33 @@ export default {
   methods: {
     getSubnetContent () {
       const api = this.$apiURI + '/topology/'
-      let nodesApi = ''
+      const nodesApi = api + 'node'
       let linksApi = ''
-      let pasApi = ''
-      if (this.subnet.id === 0) {
-        pasApi = api + 'pas'
-        nodesApi = api + 'nodes'
-        linksApi = api + this.kind + 's'
+      if (this.kind === 'link' || this.kind === 'lc') {
+        linksApi = api + this.kind
       } else {
-        nodesApi = api + 'subnet/' + this.subnet.id.toString() + '/nodes'
-        linksApi = api + 'subnet/' + this.subnet.id.toString() + '/' + this.kind + 's'
-        pasApi = api + '/subnet/' + this.subnet.id.toString() + '/pas'
+        linksApi = api + 'connection/type/' + this.kind
       }
+
       axios.get(nodesApi)
         .then(response => {
           this.nodes = response.data
           axios.get(linksApi)
             .then(response => {
               this.links = response.data
-              axios.get(pasApi)
-                .then(response => {
-                  this.pas = response.data
-                  this.processGraph()
-                })
-                .catch(e => {
-                  // console.log(e)
-                })
+              if (this.kind === 'NDN') {
+                axios.get(api + 'pa')
+                  .then(response => {
+                    this.pas = response.data
+                    this.processGraph()
+                  })
+                  .catch(e => {
+                    // console.log(e)
+                  })
+              } else {
+                this.pas = []
+                this.processGraph()
+              }
             })
             .catch(e => {
               // console.log(e)
@@ -203,7 +189,6 @@ export default {
         .catch(e => {
           // console.log(e)
         })
-      this.getTrails()
     },
     processGraph () {
       this.graphNodes = []
@@ -220,7 +205,7 @@ export default {
         }
         const newNode = {
           id: node.id,
-          name: node.name.split(':')[1] + pasLabel,
+          name: node.name + pasLabel,
           pinned: true,
           fixed: true,
           fx: node.posx,
@@ -236,15 +221,13 @@ export default {
         this.graphNodes.push(newNode)
       })
       this.links.forEach(link => {
-        if (this.kind === 'linkConn' || this.subnet.id === 0 || link.type === 'IN') {
-          const newLink = {
-            id: link.id,
-            sid: link.srcVnodeId,
-            tid: link.destVnodeId,
-          }
-          newLink._color = getStatusColor(link.status)
-          this.graphLinks.push(newLink)
+        const newLink = {
+          id: link.id,
+          sid: link.srcVnodeId,
+          tid: link.destVnodeId,
         }
+        newLink._color = getStatusColor(link.status)
+        this.graphLinks.push(newLink)
       })
     },
 
@@ -252,14 +235,14 @@ export default {
     getNode (id) {
       this.showItem = false
       const nodeApi = this.$apiURI + '/topology/node/' + id.toString()
-      const xcsApi = this.$apiURI + '/topology/node/' + id.toString() + '/xcs'
+      const ltpsApi = this.$apiURI + '/topology/node/' + id.toString() + '/ltps'
       const pasApi = this.$apiURI + '/topology/node/' + id.toString() + '/pas'
       axios.get(nodeApi)
         .then(response => {
           this.selectedNode = response.data
-          axios.get(xcsApi)
+          axios.get(ltpsApi)
             .then(response => {
-              this.selectedNode.vxcs = response.data
+              this.selectedNode.vltps = response.data
               axios.get(pasApi)
                 .then(response => {
                   this.selectedNode.pas = response.data
@@ -279,11 +262,10 @@ export default {
         })
     },
     initCreateNode () {
-      this.getNextNodeName()
       this.showCreateNode = true
     },
     postNode (node) {
-      axios.post(this.$apiURI + '/topology/nodes', node, {
+      axios.post(this.$apiURI + '/topology/node', node, {
         headers: {},
       })
         .then(response => {
@@ -342,18 +324,26 @@ export default {
     getLink (id) {
       this.showItem = false
       const linkApi = this.$apiURI + '/topology/link/' + id.toString()
+      const lcsApi = this.$apiURI + '/topology/link/' + id.toString() + '/lcs'
       axios.get(linkApi)
         .then(response => {
           this.selectedLink = response.data
-          this.showItem = true
-          this.type = 2
+          axios.get(lcsApi)
+            .then(response => {
+              this.selectedLink.vlcs = response.data
+              this.showItem = true
+              this.type = 2
+            })
+            .catch(e => {
+              // console.log(e)
+            })
         })
         .catch(e => {
           // console.log(e)
         })
     },
     postLink (link) {
-      axios.post(this.$apiURI + '/topology/links', link, {
+      axios.post(this.$apiURI + '/topology/link', link, {
         headers: {},
       })
         .then(response => {
@@ -391,7 +381,7 @@ export default {
     // CRUD LinkConn
     getLc (id) {
       this.showItem = false
-      const lcApi = this.$apiURI + '/topology/linkConn/' + id.toString()
+      const lcApi = this.$apiURI + '/topology/lc/' + id.toString()
       axios.get(lcApi)
         .then(response => {
           this.selectedLc = response.data
@@ -403,7 +393,7 @@ export default {
         })
     },
     postLc (lc) {
-      axios.post(this.$apiURI + '/topology/linkConns', lc, {
+      axios.post(this.$apiURI + '/topology/lc', lc, {
         headers: {},
       })
         .then(response => {
@@ -427,10 +417,60 @@ export default {
     },
     initEditLc (lc) {},
     deleteLc (lc) {
-      axios.delete(this.$apiURI + '/topology/linkConn/' + lc.id.toString())
+      axios.delete(this.$apiURI + '/topology/lc/' + lc.id.toString())
         .then(response => {
           this.getSubnetContent()
           this.$emit('refresh', 'topology.lc')
+          this.showItem = false
+        })
+        .catch(e => {
+          // console.log(e)
+        })
+    },
+
+    // CRUD Conn
+    getConn (id) {
+      this.showItem = false
+      const connApi = this.$apiURI + '/topology/connection/' + id.toString()
+      axios.get(connApi)
+        .then(response => {
+          this.selectedConn = response.data
+          this.showItem = true
+          this.type = 4
+        })
+        .catch(e => {
+          // console.log(e)
+        })
+    },
+    postConn (conn) {
+      axios.post(this.$apiURI + '/topology/connection', conn, {
+        headers: {},
+      })
+        .then(response => {
+          this.showToast('Connection ' + conn.name + ' created', {
+            icon: 'fa-check',
+            position: 'top-right',
+            duration: 3000,
+          })
+          this.$emit('refresh', 'topology.face')
+          this.getSubnetContent()
+        })
+        .catch(e => {
+          // console.log(e)
+          this.showToast('Connection creation failed', {
+            icon: 'fa-close',
+            position: 'top-right',
+            duration: 3000,
+          })
+        })
+      this.showCreateConn = false
+    },
+    initEditConn (conn) {},
+    deleteConn (conn) {
+      axios.delete(this.$apiURI + '/topology/connection/' + conn.id.toString())
+        .then(response => {
+          this.getSubnetContent()
+          this.$emit('refresh', 'topology.conn')
           this.showItem = false
         })
         .catch(e => {
@@ -442,8 +482,10 @@ export default {
     initCreateLink () {
       if (this.kind === 'link') {
         this.showCreateLink = true
-      } else {
+      } else if (this.kind === 'lc') {
         this.showCreateLc = true
+      } else {
+        this.showCreateConn = true
       }
     },
 
@@ -465,103 +507,25 @@ export default {
     linkClick (event, link) {
       if (this.kind === 'link') {
         this.getLink(link.id)
-      } else {
+      } else if (this.kind === 'lc') {
         this.getLc(link.id)
-      }
-    },
-
-    // CRUD Trail
-    getTrails () {
-      let trailsApi = this.$apiURI + '/topology'
-      if (this.subnet.id === 0) {
-        trailsApi = trailsApi + '/trails'
       } else {
-        trailsApi = trailsApi + '/subnet/' + this.subnet.id.toString() + '/trails'
+        this.getConn(link.id)
       }
-      axios.get(trailsApi)
-        .then(response => {
-          this.trails = response.data
-        })
-        .catch(e => {
-          // console.log(e)
-        })
-    },
-
-    getTrail (id) {
-      this.showItem = false
-      const trailApi = this.$apiURI + '/topology/trail/' + id.toString()
-      axios.get(trailApi)
-        .then(response => {
-          this.selectedTrail = response.data
-          this.showItem = true
-          this.type = 4
-        })
-        .catch(e => {
-          // console.log(e)
-        })
-    },
-    initCreateTrail () {
-      this.showCreateTrail = true
-    },
-    postTrail (trail) {
-      for (var i = 0, len = this.trails.length; i < len; i++) {
-        if (this.trails[i].name === trail.name) {
-          this.showToast('Name ' + trail.name + ' already exists', {
-            icon: 'fa-close',
-            position: 'top-right',
-            duration: 3000,
-          })
-          return
-        }
-      }
-      axios.post(this.$apiURI + '/topology/trails', trail, {
-        headers: {},
-      })
-        .then(response => {
-          this.showToast('Trail ' + trail.name + ' created', {
-            icon: 'fa-check',
-            position: 'top-right',
-            duration: 3000,
-          })
-          this.getTrails()
-        })
-        .catch(e => {
-          // console.log(e)
-          this.showToast('Trail creation failed', {
-            icon: 'fa-close',
-            position: 'top-right',
-            duration: 3000,
-          })
-        })
-      this.showCreateTrail = false
-    },
-    initEditTrail (trail) {},
-    patchTrail (trail) {},
-    deleteTrail (id) {
-      axios.delete(this.$apiURI + '/topology/trail/' + id.toString())
-        .then(response => {
-          this.$emit('refresh', 'topology.trail')
-          this.getTrails()
-          this.showItem = false
-        })
-        .catch(e => {
-          // console.log(e)
-        })
     },
 
     refresh (type) {
       this.$emit('refresh', type)
       this.getSubnetContent()
-      this.getTrails()
     },
 
     getNextNodeName () {
-      if (this.nodes.length > 0) {
+      /* if (this.nodes.length > 0) {
         const maxNodeNo = this.nodes[this.nodes.length - 1].name.split(':')[1].substring(1)
         this.nextNodeName = this.subnet.name + ':n' + (parseInt(maxNodeNo, 10) + 1)
       } else {
         this.nextNodeName = this.subnet.name + ':n0'
-      }
+      } */
     },
   },
 }

@@ -65,7 +65,7 @@ export default {
   },
   methods: {
     getNodes () {
-      const nUri = this.$apiURI + '/topology/nodes'
+      const nUri = this.$apiURI + '/topology/node'
       axios.get(nUri)
         .then(response => {
           this.nodes = response.data

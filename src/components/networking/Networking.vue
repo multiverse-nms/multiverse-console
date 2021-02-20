@@ -1,6 +1,6 @@
 <template>
   <div class="networking">
-    <div class="row">
+    <!-- div class="row">
       <div class="flex xs12">
         <va-card :title="title">
 
@@ -22,7 +22,7 @@
           </va-button>
         </va-card>
       </div>
-    </div>
+    </div -->
 
     <div class="row">
       <div class="flex xs12">
@@ -57,7 +57,7 @@ export default {
     return {
       title: 'Subnets',
       subnetAll: {
-        id: 0,
+        id: 1,
         name: 'all subnets',
       },
       subnets: [],
@@ -69,7 +69,7 @@ export default {
     }
   },
   created () {
-    this.getAllSubnets()
+    // this.getAllSubnets()
     this.selectAllSubnets()
     this.hidden = false
   },

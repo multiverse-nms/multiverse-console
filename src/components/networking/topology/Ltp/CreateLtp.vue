@@ -15,7 +15,6 @@
       </div>
       <form>
         <va-input
-          readonly
           v-model="nLtp.name"
           type="text"
           label="Name"
@@ -36,7 +35,26 @@
           :error="!!descErrors.length"
           :error-messages="descErrors"
         />
-        <div>
+
+        <va-input
+          v-model="nLtp.port"
+          type="text"
+          label="Port"
+        />
+
+        <va-input
+          v-model="nLtp.bandwidth"
+          type="text"
+          label="Bandwidth"
+        />
+
+        <va-input
+          v-model="nLtp.mtu"
+          type="number"
+          label="MTU (Bytes)"
+        />
+
+        <!-- div>
           <div v-for="(info, index) in infoArray" :key="index" class="row">
             <div class="flex xs5 offset--xs1">
               <va-input
@@ -58,7 +76,7 @@
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
             </va-button>
           </div>
-        </div>
+        </div -->
         <div class="d-flex justify--center mt-3">
           <va-button small color="danger" @click="cancel">Cancel</va-button>
           <va-button small color="primary" @click="submit">Submit</va-button>
@@ -71,7 +89,7 @@
 <script>
 export default {
   name: 'CreateLtp',
-  props: ['show', 'nodeId', 'name', 'macs'],
+  props: ['show', 'nodeId', 'name'],
 
   data: function () {
     return {
@@ -84,6 +102,9 @@ export default {
         description: '',
         info: {},
         busy: false,
+        port: '',
+        bandwidth: '',
+        mtu: 0,
       },
       error: '',
       labelErrors: [],
@@ -114,8 +135,10 @@ export default {
         description: '',
         info: {},
         busy: false,
+        port: '',
+        bandwidth: '',
+        mtu: 0,
       }
-      this.infoArray = [['port', '']]
 
       this.error = ''
       this.labelErrors = []
@@ -130,16 +153,6 @@ export default {
       }
     },
     submit () {
-      const macRegex = new RegExp('^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
-      const portValue = this.infoArray.find(x => x[0] === 'port')[1]
-      if (!macRegex.test(portValue)) {
-        this.error = 'A MAC address is required for port'
-        return
-      }
-      if (this.macs.includes(portValue)) {
-        this.error = 'MAC address already assigned'
-        return
-      }
       for (var i = 0, len = this.infoArray.length; i < len; i++) {
         const item = this.infoArray[i]
         if (item[0] !== '' && item[1] !== '') {
@@ -155,7 +168,6 @@ export default {
     },
     cancel () {
       this.$emit('onCancel')
-      // this.showModal = false
     },
   },
 }

@@ -1,9 +1,9 @@
 <template>
-  <div class="lc-details mt-3">
+  <div class="trail-details mt-3">
     <div class="row">
-      <div class="lg12">
+      <div class="lg4">
         <div class="text-center">
-          <p class="display-5">LinkConn Details</p>
+          <p class="display-5">Connection Details</p>
         </div>
         <div class="mt-3">
           <va-item>
@@ -11,7 +11,7 @@
               <b>Name:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ linkConn.name }}</va-item-label>
+              <va-item-label>{{ conn.name }}</va-item-label>
             </va-item-section>
           </va-item>
 
@@ -20,7 +20,7 @@
               <b>Label:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ linkConn.label }}</va-item-label>
+              <va-item-label>{{ conn.label }}</va-item-label>
             </va-item-section>
           </va-item>
 
@@ -29,7 +29,7 @@
               <b>Description:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ linkConn.description }}</va-item-label>
+              <va-item-label>{{ conn.description }}</va-item-label>
             </va-item-section>
           </va-item>
 
@@ -38,7 +38,7 @@
               <b>Source CTP:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ linkConn.srcVctpId }}</va-item-label>
+              <va-item-label>{{ conn.srcVctpId }}</va-item-label>
             </va-item-section>
           </va-item>
 
@@ -47,16 +47,7 @@
               <b>Destination CTP:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ linkConn.destVctpId }}</va-item-label>
-            </va-item-section>
-          </va-item>
-
-          <va-item>
-            <va-item-section side>
-              <b>Link:</b>
-            </va-item-section>
-            <va-item-section>
-              <va-item-label>{{ linkConn.destVctpId }}</va-item-label>
+              <va-item-label>{{ conn.destVctpId }}</va-item-label>
             </va-item-section>
           </va-item>
 
@@ -65,7 +56,7 @@
               <b>Status:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label> <va-badge small :color="getStatusColor(linkConn.status)" > {{ linkConn.status }} </va-badge> </va-item-label>
+              <va-item-label> <va-badge small :color="getStatusColor(conn.status)" > {{ conn.status }} </va-badge> </va-item-label>
             </va-item-section>
           </va-item>
 
@@ -74,16 +65,14 @@
               <b>Created:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ linkConn.created }}</va-item-label>
+              <va-item-label>{{ conn.created }}</va-item-label>
             </va-item-section>
           </va-item>
         </div>
 
         <div class="text-center mt-3">
-          <div class="flex xs12">
-            <va-button class="ml-2" small color="danger" @click="onDelete(linkConn)"> Delete </va-button>
-            <va-button small color="info" @click="onEdit(linkConn)"> Edit </va-button>
-          </div>
+          <va-button small color="danger" @click="onDelete(conn.id)"> Delete </va-button>
+          <va-button small color="info" @click="onEdit(conn)"> Edit </va-button>
         </div>
       </div>
 
@@ -93,10 +82,13 @@
 
 <script>
 import { getStatusColor } from '../../../../assets/icons/colors.js'
-export default {
-  name: 'LinkConnItem',
-  props: ['linkConn', 'onEdit', 'onDelete'],
+// import axios from 'axios'
 
+export default {
+  name: 'ConnItem',
+  props: ['conn', 'onDelete', 'onEdit'],
+  components: {
+  },
   data: function () {
     return {
       getStatusColor,
@@ -108,7 +100,6 @@ export default {
   },
   methods: {
   },
-
   computed: {},
 }
 </script>

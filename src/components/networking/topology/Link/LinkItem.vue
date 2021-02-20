@@ -35,15 +35,6 @@
 
           <va-item>
             <va-item-section side>
-              <b>Type:</b>
-            </va-item-section>
-            <va-item-section>
-              <va-item-label>{{ link.type }}</va-item-label>
-            </va-item-section>
-          </va-item>
-
-          <va-item>
-            <va-item-section side>
               <b>Source LTP:</b>
             </va-item-section>
             <va-item-section>
@@ -71,28 +62,10 @@
 
           <va-item>
             <va-item-section side>
-              <b>Info:</b>
-            </va-item-section>
-            <va-item-section>
-              <va-item-label>{{ link.info }}</va-item-label>
-            </va-item-section>
-          </va-item>
-
-          <va-item>
-            <va-item-section side>
               <b>Created:</b>
             </va-item-section>
             <va-item-section>
               <va-item-label>{{ link.created }}</va-item-label>
-            </va-item-section>
-          </va-item>
-
-          <va-item>
-            <va-item-section side>
-              <b>Updated:</b>
-            </va-item-section>
-            <va-item-section>
-              <va-item-label>{{ link.updated }}</va-item-label>
             </va-item-section>
           </va-item>
         </div>
@@ -107,7 +80,7 @@
         <div class="text-center">
           <p class="display-5">Link Connections</p>
           <div class="mt-3">
-            <link-conn-table :lcs="link.vlinkConns" :onSelected="getLc" />
+            <link-conn-table :lcs="link.vlcs" :onSelected="getLc" />
             <va-button small color="warning" @click="initAddLc()">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
               Add LinkConn </va-button>
@@ -158,7 +131,7 @@ export default {
   methods: {
     getLc (id) {
       this.showItem = false
-      const lcApi = this.$apiURI + '/topology/linkConn/' + id.toString()
+      const lcApi = this.$apiURI + '/topology/lc/' + id.toString()
       axios.get(lcApi)
         .then(response => {
           this.selectedLc = response.data
@@ -173,7 +146,7 @@ export default {
       this.showAddLc = true
     },
     postLc (lc) {
-      axios.post(this.$apiURI + '/topology/linkConns', lc, {
+      axios.post(this.$apiURI + '/topology/lc', lc, {
         headers: {},
       })
         .then(response => {
@@ -182,7 +155,7 @@ export default {
             position: 'top-right',
             duration: 3000,
           })
-          this.$emit('refresh', 'topology.face')
+          this.$emit('refresh', 'topology.lc')
           this.getLcsByLink()
         })
         .catch(e => {
@@ -194,7 +167,7 @@ export default {
     initEditLc (lc) {},
     patchLc (lc) {},
     deleteLc (lc) {
-      axios.delete(this.$apiURI + '/topology/linkConn/' + lc.id.toString())
+      axios.delete(this.$apiURI + '/topology/lc/' + lc.id.toString())
         .then(response => {
           this.showItem = false
           this.$emit('refresh', 'topology.lc')
@@ -206,7 +179,7 @@ export default {
     },
 
     getLcsByLink () {
-      const lcsApi = this.$apiURI + '/topology/link/' + this.link.id.toString() + '/linkConns'
+      const lcsApi = this.$apiURI + '/topology/link/' + this.link.id.toString() + '/lcs'
       axios.get(lcsApi)
         .then(response => {
           this.link.vlinkConns = response.data

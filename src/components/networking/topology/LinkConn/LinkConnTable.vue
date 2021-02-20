@@ -10,12 +10,16 @@
         <tr>
           <th>Name</th>
           <th>Label</th>
+          <th>Src. CTP</th>
+          <th>Dest. CTP</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(lc, index) in lcs" :key="index" @click="onSelected(lc.id)" :class="getStatusClass(lc.status)">
           <td>{{ lc.name }}</td>
           <td>{{ lc.label }}</td>
+          <td>{{ lc.srcVctpId }}</td>
+          <td>{{ lc.destVctpId }}</td>
         </tr>
       </tbody>
     </table>

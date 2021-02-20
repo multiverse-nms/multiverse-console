@@ -5,19 +5,23 @@
       <va-chip color="gray">No CTPs to show</va-chip>
     </div>
 
-    <table v-if="ctps.length > 0" class="va-table va-table--striped va-table--hoverable">
+    <table v-if="ctps.length > 0" class="va-table va-table--hoverable">
       <thead>
         <tr>
           <th>Name</th>
+          <th>Type</th>
+          <th>Parent</th>
+          <th>Node</th>
           <th>Label</th>
-          <th>Created</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(ctp, index) in ctps" :key="index" @click="onSelected(ctp.id)" >
+        <tr v-for="(ctp, index) in ctps" :key="index" @click="onSelected(ctp.id)" :class="getStatusClass(ctp.status)">
           <td>{{ ctp.name }}</td>
+          <td>{{ ctp.connType }}</td>
+          <td>{{ ctp.parentId }}</td>
+          <td>{{ ctp.vnodeId }}</td>
           <td>{{ ctp.label }}</td>
-          <td>{{ ctp.created }}</td>
         </tr>
       </tbody>
     </table>
@@ -25,6 +29,7 @@
 </template>
 
 <script>
+import { getStatusClass } from '../../../../assets/icons/colors.js'
 export default {
   name: 'CtpTable',
   props: ['ctps', 'onSelected'],
@@ -32,6 +37,7 @@ export default {
   },
   data: function () {
     return {
+      getStatusClass,
     }
   },
   created () {

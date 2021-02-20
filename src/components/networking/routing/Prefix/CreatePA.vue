@@ -113,11 +113,7 @@ export default {
       // this.showModal = false
     },
     getNodes () {
-      let nodesApi = this.$apiURI + '/topology'
-      if (this.subnetId !== 0) {
-        nodesApi += '/subnet/' + this.subnetId.toString()
-      }
-      nodesApi += '/nodes'
+      const nodesApi = this.$apiURI + '/topology/node'
       axios.get(nodesApi)
         .then(response => {
           this.nodesNameToId = new Map()

@@ -35,10 +35,19 @@
 
           <va-item>
             <va-item-section side>
-              <b>In Node:</b>
+              <b>Port:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ ltp.vnodeId }}</va-item-label>
+              <va-item-label>{{ ltp.port }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
+              <b>MTU:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ ltp.mtu }} bytes</va-item-label>
             </va-item-section>
           </va-item>
 
@@ -57,15 +66,6 @@
             </va-item-section>
             <va-item-section>
               <va-item-label> <va-badge small :color="getStatusColor(ltp.status)" > {{ ltp.status }} </va-badge> </va-item-label>
-            </va-item-section>
-          </va-item>
-
-          <va-item>
-            <va-item-section side>
-              <b>Info:</b>
-            </va-item-section>
-            <va-item-section>
-              <va-item-label>{{ ltp.info }}</va-item-label>
             </va-item-section>
           </va-item>
 
@@ -99,21 +99,24 @@
           <p class="display-5">CTPs</p>
           <div class="mt-3">
             <ctp-table :ctps="ltp.vctps" :onSelected="getCtp" />
+            <va-button small color="warning" @click="initAddCtp()">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+              Add CTP </va-button>
           </div>
         </div>
       </div>
 
     </div>
 
-    <va-modal
+    <!-- va-modal
       v-model="showItem"
       size="large"
       hideDefaultActions
     >
       <ctp-item :ctp="selectedCtp" :onDelete="deleteCtp" :onEdit="initEditCtp" />
-    </va-modal>
+    </va-modal -->
 
-    <create-ctp @onOk="postCtp" @onCancel="showCreateCtp = false" :show="showCreateCtp" :ltpId="ltp.id" :name="nextCtpName" />
+    <create-ctp @onOk="postCtp" @onCancel="showCreateCtp = false" :show="showCreateCtp" :parentId="ltp.id" />
   </div>
 </template>
 
@@ -121,7 +124,6 @@
 import { getStatusColor, getBusyColor } from '../../../../assets/icons/colors.js'
 import axios from 'axios'
 import CtpTable from '../Ctp/CtpTable.vue'
-import CtpItem from '../Ctp/CtpItem.vue'
 import CreateCtp from '../Ctp/CreateCtp.vue'
 
 export default {
@@ -129,7 +131,6 @@ export default {
   props: ['ltp', 'onDelete', 'onEdit'],
   components: {
     CtpTable,
-    CtpItem,
     CreateCtp,
   },
   data: function () {
@@ -139,7 +140,6 @@ export default {
       showItem: false,
       showCreateCtp: false,
       selectedCtp: {},
-      nextCtpName: '',
     }
   },
   created () {
@@ -149,24 +149,13 @@ export default {
   methods: {
     // CRUD CTP
     getCtp (id) {
-      this.showItem = false
-      const ctpApi = this.$apiURI + '/topology/ctp/' + id.toString()
-      axios.get(ctpApi)
-        .then(response => {
-          this.selectedCtp = response.data
-          this.showItem = true
-        })
-        .catch(e => {
-          // console.log(e)
-        })
     },
 
     initAddCtp () {
-      this.getNextCtpName()
       this.showCreateCtp = true
     },
     postCtp (ctp) {
-      axios.post(this.$apiURI + '/topology/ctps', ctp, {
+      axios.post(this.$apiURI + '/topology/ctp', ctp, {
         headers: {},
       })
         .then(response => {
@@ -212,15 +201,6 @@ export default {
         .catch(e => {
           // console.log(e)
         })
-    },
-
-    getNextCtpName () {
-      if (this.ltp.vctps.length > 0) {
-        const maxCtpNo = this.ltp.vctps[this.ltp.vctps.length - 1].name.split(':')[3].substring(1)
-        this.nextCtpName = this.ltp.name + ':c' + (parseInt(maxCtpNo, 10) + 1)
-      } else {
-        this.nextCtpName = this.ltp.name + ':c0'
-      }
     },
   },
   computed: {},

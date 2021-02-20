@@ -135,7 +135,7 @@ export default {
         })
     },
     getNodeNames () {
-      const nUri = this.$apiURI + '/topology/nodes'
+      const nUri = this.$apiURI + '/topology/node'
       axios.get(nUri)
         .then(response => {
           this.nodes = response.data.map((o) => ({ id: o.id, name: o.name }))

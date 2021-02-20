@@ -10,10 +10,11 @@
     <div class="modal-create-node">
       <form>
         <va-input
-          readonly
           v-model="nNode.name"
           type="text"
           label="Name"
+          :error="!!nameErrors.length"
+          :error-messages="nameErrors"
         />
         <va-input
           removable
@@ -31,11 +32,11 @@
           :error="!!descErrors.length"
           :error-messages="descErrors"
         />
-        <va-input
-          readonly
+        <va-select
           v-model="nNode.type"
-          type="text"
           label="Type"
+          textBy="link"
+          :options="Array.from(nodeTypes)"
         />
         <va-input
           v-model="nNode.location"
@@ -44,7 +45,14 @@
           :error="!!locationErrors.length"
           :error-messages="locationErrors"
         />
-        <div>
+        <va-input
+          v-model="nNode.hwaddr"
+          type="text"
+          label="Hwaddr"
+          :error="!!hwaddrErrors.length"
+          :error-messages="hwaddrErrors"
+        />
+        <!-- div>
           <div v-for="(info, index) in infoArray" :key="index" class="row">
             <div class="flex xs5 offset--xs1">
               <va-input
@@ -66,7 +74,7 @@
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
             </va-button>
           </div>
-        </div>
+        </div -->
         <div class="d-flex justify--center mt-3">
           <va-button small color="danger" @click="cancel">Cancel</va-button>
           <va-button small color="primary" @click="submit">Submit</va-button>
@@ -79,12 +87,13 @@
 <script>
 export default {
   name: 'CreateNode',
-  props: ['show', 'subnetId', 'name'],
+  props: ['show', 'subnetId'],
 
   data: function () {
     return {
       showModal: false,
       infoArray: [['', '']],
+      nodeTypes: ['ipSwitch', 'ipRouter', 'ndnForwarder', 'endSystem'],
       nNode: {
         vsubnetId: this.subnetId,
         name: '',
@@ -95,10 +104,13 @@ export default {
         posx: 0,
         posy: 0,
         location: '',
+        hwaddr: '',
       },
+      nameErrors: [],
       labelErrors: [],
       descErrors: [],
       locationErrors: [],
+      hwaddrErrors: [],
     }
   },
 
@@ -120,21 +132,17 @@ export default {
     initCreateNode () {
       this.nNode = {
         vsubnetId: this.subnetId,
-        name: this.name,
+        name: '',
         label: '',
         description: '',
         info: {},
-        type: 'fwd',
+        type: this.nodeTypes[0],
         posx: Math.floor(Math.random() * Math.floor(800)),
         posy: Math.floor(Math.random() * Math.floor(500)),
         location: '',
+        hwaddr: '',
       }
-      this.infoArray = [['', '']]
-
-      this.labelErrors = []
-      this.descErrors = []
-      this.locationErrors = []
-
+      this.clearErrors()
       this.showModal = true
     },
     addInfoItem () {
@@ -144,7 +152,17 @@ export default {
       }
     },
     submit () {
-      for (var i = 0, len = this.infoArray.length; i < len; i++) {
+      this.clearErrors()
+      if (this.nNode.name === '') {
+        this.nameErrors.push('Name is required')
+        return
+      }
+      const macRegex = new RegExp('^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
+      if (!macRegex.test(this.nNode.hwaddr)) {
+        this.hwaddrErrors.push('Wrong MAC address format')
+        return
+      }
+      /* for (var i = 0, len = this.infoArray.length; i < len; i++) {
         const item = this.infoArray[i]
         if (item[0] !== '' && item[1] !== '') {
           // TODO: support boolean
@@ -154,12 +172,19 @@ export default {
             this.nNode.info[item[0]] = Number(item[1])
           }
         }
-      }
+      } */
       this.$emit('onOk', this.nNode)
     },
     cancel () {
       this.$emit('onCancel')
       // this.showModal = false
+    },
+    clearErrors () {
+      this.nameErrors = []
+      this.labelErrors = []
+      this.descErrors = []
+      this.locationErrors = []
+      this.hwaddrErrors = []
     },
   },
 }

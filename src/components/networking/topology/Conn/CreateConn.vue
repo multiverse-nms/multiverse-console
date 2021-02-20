@@ -2,21 +2,21 @@
   <va-modal
     v-model="showModal"
     size="large"
-    title="Create new linkConn"
+    title="Create connection"
     hideDefaultActions
     noOutsideDismiss
     noEscDismiss
   >
-    <div class="modal-create-link">
+    <div class="modal-create-conn">
       <form>
-        <va-select v-if="selectLink"
-          v-model="selectedLinkName"
-          label="Link"
+        <va-select v-if="!type"
+          v-model="connType"
+          label="Type"
           textBy="link"
-          :options="Array.from(linksNameToId.keys())"
+          :options="Array.from(connTypes)"
         />
         <va-input
-          v-model="nLc.name"
+          v-model="nConn.name"
           type="text"
           label="Name"
           :error="!!nameErrors.length"
@@ -24,7 +24,7 @@
         />
         <va-input
           removable
-          v-model="nLc.label"
+          v-model="nConn.label"
           type="text"
           label="Label"
           :error="!!labelErrors.length"
@@ -32,7 +32,7 @@
         />
         <va-input
           removable
-          v-model="nLc.description"
+          v-model="nConn.description"
           type="text"
           label="Description"
           :error="!!descErrors.length"
@@ -54,29 +54,6 @@
           :error="!!ctpErrors.length"
           :error-messages="ctpErrors"
         />
-        <!-- div>
-          <div v-for="(info, index) in infoArray" :key="index" class="row">
-            <div class="flex xs5 offset--xs1">
-              <va-input
-                v-model="info[0]"
-                type="text"
-                label="Info key"
-              />
-            </div>
-            <div class="flex xs5 ml-1">
-              <va-input
-                v-model="info[1]"
-                type="text"
-                label="Info value"
-              />
-            </div>
-          </div>
-          <div class="text-center">
-            <va-button color="gray" @click="addInfoItem">
-              <i class="fa fa-plus-circle" aria-hidden="true"></i>
-            </va-button>
-          </div>
-        </div -->
         <div class="d-flex justify--center mt-3">
           <va-button small color="danger" @click="cancel">Cancel</va-button>
           <va-button small color="primary" @click="submit">Submit</va-button>
@@ -90,25 +67,26 @@
 import axios from 'axios'
 
 export default {
-  name: 'CreateLinkConn',
-  props: ['show', 'linkId', 'linkName'],
+  name: 'CreateConn',
+  props: ['show', 'type'],
 
   data: function () {
     return {
       showModal: false,
+
       infoArray: [['', '']],
-      nLc: {
+
+      connType: '',
+      connTypes: ['NDN', 'IPv4'],
+
+      nConn: {
         name: '',
         label: '',
         description: '',
         info: {},
         srcVctpId: 0,
         destVctpId: 0,
-        vlinkId: 0,
       },
-      selectedLinkName: '',
-      selectLink: false,
-      linksNameToId: new Map(),
 
       nameErrors: [],
       labelErrors: [],
@@ -127,87 +105,53 @@ export default {
     show: {
       handler: function () {
         if (this.show === true) {
-          this.initCreateLc()
+          this.initCreateConn()
         } else {
           this.showModal = false
         }
       },
       deep: true,
     },
-    selectedLinkName: function (newVal, oldVal) {
-      this.setNextLcName(this.linksNameToId.get(newVal), newVal)
+    srcVctpName: function (newVal, oldVal) {
+      this.nConn.name = newVal + '#' + this.destVctpName
+    },
+    destVctpName: function (newVal, oldVal) {
+      this.nConn.name = this.srcVctpName + '#' + newVal
+    },
+    connType: function (newVal, oldVal) {
+      this.getCtps(newVal)
     },
   },
   methods: {
-    initCreateLc () {
+    initCreateConn () {
       this.nameErrors = []
       this.labelErrors = []
       this.descErrors = []
 
-      this.nLc = {
+      this.nConn = {
         name: '',
         label: '',
         description: '',
         info: {},
         srcVctpId: 0,
         destVctpId: 0,
-        vlinkId: this.linkId,
       }
+
       this.infoArray = [['', '']]
       this.srcVctpName = ''
       this.destVctpName = ''
       this.ctpErrors = []
 
-      if (this.linkId > 0) {
-        this.selectLink = false
-      } else {
-        this.getLinks()
-        this.getCtps()
-        this.selectLink = true
+      if (this.type) {
+        console.log('type given: ' + this.type)
+        this.getCtps(this.type)
       }
 
       this.showModal = true
     },
-    addInfoItem () {
-      const lastItem = this.infoArray[this.infoArray.length - 1]
-      if ((lastItem[0] !== '') && (lastItem[1] !== '')) {
-        this.infoArray.push(['', ''])
-      }
-    },
-    setNextLcName (linkId, linkName) {
-      /* const lcsApi = this.$apiURI + '/topology/link/' + linkId + '/lcs'
-      axios.get(lcsApi)
-        .then(response => {
-          const lcs = response.data
-          if (lcs.length > 0) {
-            const maxLcNo = lcs[lcs.length - 1].name.split('|')[1].substring(1)
-            this.nLc.name = linkName + '|c' + (parseInt(maxLcNo, 10) + 1)
-            this.nameErrors = ['Only ONE linkConnection is supported per link']
-          } else {
-            this.nLc.name = linkName + '|c0'
-          }
-        })
-        .catch(e => {
-          this.nLc.name = 'undefined'
-          // console.log(e)
-        }) */
-      this.nLc.name = ''
-    },
-    getLinks () {
-      const linksApi = this.$apiURI + '/topology/link'
-      axios.get(linksApi)
-        .then(response => {
-          this.linksNameToId = new Map()
-          response.data.forEach(link => {
-            this.linksNameToId.set(link.name, link.id)
-          })
-        })
-        .catch(e => {
-          // console.log(e)
-        })
-    },
-    getCtps () {
-      const ctpsApi = this.$apiURI + '/topology/ctp/type/Ether'
+    getCtps (type) {
+      console.log('get CTPs: ' + type)
+      const ctpsApi = this.$apiURI + '/topology/ctp/type/' + type
       axios.get(ctpsApi)
         .then(response => {
           this.ctpsNameToId = new Map()
@@ -219,25 +163,38 @@ export default {
           // console.log(e)
         })
     },
+    addInfoItem () {
+      const lastItem = this.infoArray[this.infoArray.length - 1]
+      if ((lastItem[0] !== '') && (lastItem[1] !== '')) {
+        this.infoArray.push(['', ''])
+      }
+    },
     submit () {
-      if (this.nameErrors.length) {
+      /* const srcNode = this.srcVctpName.split(':')[1]
+      const destNode = this.destVctpName.split(':')[1]
+      if (srcNode === destNode) {
+        this.error = 'Source and destination nodes must be different'
+        return
+      } */
+      if (this.nConn.name === '') {
+        this.error = 'Name is required'
         return
       }
-      if (this.linkId === 0) {
-        this.nLc.vlinkId = this.linksNameToId.get(this.selectedLinkName)
-      }
+      this.nConn.srcVctpId = this.ctpsNameToId.get(this.srcVctpName)
+      this.nConn.destVctpId = this.ctpsNameToId.get(this.destVctpName)
+
       for (var i = 0, len = this.infoArray.length; i < len; i++) {
         const item = this.infoArray[i]
         if (item[0] !== '' && item[1] !== '') {
           // TODO: support boolean
           if (isNaN(item[1])) {
-            this.nLc.info[item[0]] = item[1]
+            this.nConn.info[item[0]] = item[1]
           } else {
-            this.nLc.info[item[0]] = Number(item[1])
+            this.nConn.info[item[0]] = Number(item[1])
           }
         }
       }
-      this.$emit('onOk', this.nLc)
+      this.$emit('onOk', this.nConn)
     },
     cancel () {
       this.$emit('onCancel')
@@ -248,7 +205,7 @@ export default {
 </script>
 
 <style lang="scss">
-.modal-create-link {
+.modal-create-conn {
   width: 500px;
   max-width: 500px;
 }

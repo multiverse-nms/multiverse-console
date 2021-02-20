@@ -8,15 +8,6 @@
         <div class="mt-3">
           <va-item>
             <va-item-section side>
-              <b>ID:</b>
-            </va-item-section>
-            <va-item-section>
-              <va-item-label>{{ node.id }}</va-item-label>
-            </va-item-section>
-          </va-item>
-
-          <va-item>
-            <va-item-section side>
               <b>Name:</b>
             </va-item-section>
             <va-item-section>
@@ -39,15 +30,6 @@
             </va-item-section>
             <va-item-section>
               <va-item-label>{{ node.description }}</va-item-label>
-            </va-item-section>
-          </va-item>
-
-          <va-item>
-            <va-item-section side>
-              <b>In Subnet:</b>
-            </va-item-section>
-            <va-item-section>
-              <va-item-label>{{ node.vsubnetId }}</va-item-label>
             </va-item-section>
           </va-item>
 
@@ -89,10 +71,10 @@
 
           <va-item>
             <va-item-section side>
-              <b>Info:</b>
+              <b>Hwaddr:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ node.info }}</va-item-label>
+              <va-item-label>{{ node.hwaddr }}</va-item-label>
             </va-item-section>
           </va-item>
 
@@ -127,9 +109,9 @@
             <va-tab>
               <p class="display-5">LTPs</p>
             </va-tab>
-            <va-tab>
+            <!-- va-tab>
               <p class="display-5">XCs</p>
-            </va-tab>
+            </va-tab -->
             <va-tab>
               <p class="display-5">PAs</p>
             </va-tab>
@@ -141,15 +123,15 @@
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
               Add LTP </va-button>
           </div>
-          <div class="mt-3" v-if="tabValue == 1">
+          <!-- div class="mt-3" v-if="tabValue == 1">
             <xc-table :xcs="node.vxcs" :onSelected="getXc" />
             <va-button disabled small color="warning" @click="initAddXc()">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
               Add XC
             </va-button>
-          </div>
-          <div class="mt-3" v-if="tabValue == 2">
-            <p-a-table :pas="pas" :nodes="nodes" :onDelete="deletePrefixAnn" />
+          </div -->
+          <div class="mt-3" v-if="tabValue == 1">
+            <p-a-table :pas="node.pas" :nodes="nodes" :onDelete="deletePrefixAnn" />
             <va-button small color="warning" @click="initPrefixAnn()">
               <i class="fa fa-plus-circle" aria-hidden="true"></i>
               Announce Prefix </va-button>
@@ -164,11 +146,11 @@
       hideDefaultActions
     >
       <ltp-item v-if="type === 1" :ltp="selectedLtp" :onDelete="deleteLtp" :onEdit="initEditLtp" @refresh="refresh" />
-      <xc-item v-if="type === 2" :xc="selectedXc" :onDelete="deleteXc" :onEdit="initEditXc" />
+      <!-- xc-item v-if="type === 2" :xc="selectedXc" :onDelete="deleteXc" :onEdit="initEditXc" / -->
     </va-modal>
 
-    <create-ltp @onOk="postLtp" @onCancel="showCreateLtp = false" :show="showCreateLtp" :nodeId="node.id" :name="nextLtpName" :macs="macs" />
-    <create-xc @onOk="postXc" @onCancel="showCreateXc = false" :show="showCreateXc" :nodeId="node.id" :name="nextXcName" />
+    <create-ltp @onOk="postLtp" @onCancel="showCreateLtp = false" :show="showCreateLtp" :nodeId="node.id" :name="nextLtpName" />
+    <!-- create-xc @onOk="postXc" @onCancel="showCreateXc = false" :show="showCreateXc" :nodeId="node.id" :name="nextXcName" / -->
     <create-p-a @onOk="postPrefixAnn" @onCancel="showCreatePA = false" :show="showCreatePA" :originId="node.id" />
   </div>
 </template>
@@ -179,9 +161,9 @@ import axios from 'axios'
 import LtpTable from '../Ltp/LtpTable.vue'
 import LtpItem from '../Ltp/LtpItem.vue'
 import CreateLtp from '../Ltp/CreateLtp.vue'
-import XcTable from '../Xc/XcTable.vue'
-import XcItem from '../Xc/XcItem.vue'
-import CreateXc from '../Xc/CreateXc.vue'
+// import XcTable from '../Xc/XcTable.vue'
+// import XcItem from '../Xc/XcItem.vue'
+// import CreateXc from '../Xc/CreateXc.vue'
 import PATable from '../../routing/Prefix/PATable.vue'
 import CreatePA from '../../routing/Prefix/CreatePA.vue'
 
@@ -192,9 +174,9 @@ export default {
     LtpTable,
     LtpItem,
     CreateLtp,
-    XcTable,
-    XcItem,
-    CreateXc,
+    // XcTable,
+    // XcItem,
+    // CreateXc,
     PATable,
     CreatePA,
   },
@@ -205,35 +187,30 @@ export default {
       showItem: false,
       type: 0,
       selectedLtp: {},
-      selectedXc: {},
+      // selectedXc: {},
       showCreateLtp: false,
-      showCreateXc: false,
+      // showCreateXc: false,
       showCreatePA: false,
 
       nextLtpName: '',
-      nextXcName: '',
+      // nextXcName: '',
 
       nodes: [],
-      pas: [],
-      macs: [],
     }
   },
 
   created () {
-    this.pas = this.node.pas
     this.nodes.push({ id: this.node.id, name: this.node.name })
-    this.macs = this.node.vltps.map((o) => (o.info.port))
   },
   watch: {
   },
   methods: {
     // CRUD LTP
     initAddLtp () {
-      this.getNextLtpName()
       this.showCreateLtp = true
     },
     postLtp (ltp) {
-      axios.post(this.$apiURI + '/topology/ltps', ltp, {
+      axios.post(this.$apiURI + '/topology/ltp', ltp, {
         headers: {},
       })
         .then(response => {
@@ -257,11 +234,19 @@ export default {
     getLtp (id) {
       this.showItem = false
       const ltpApi = this.$apiURI + '/topology/ltp/' + id.toString()
+      const ctpsApi = this.$apiURI + '/topology/ltp/' + id.toString() + '/ctps'
       axios.get(ltpApi)
         .then(response => {
           this.selectedLtp = response.data
-          this.showItem = true
-          this.type = 1
+          axios.get(ctpsApi)
+            .then(response => {
+              this.selectedLtp.vctps = response.data
+              this.showItem = true
+              this.type = 1
+            })
+            .catch(e => {
+              // console.log(e)
+            })
         })
         .catch(e => {
           // console.log(e)
@@ -434,20 +419,13 @@ export default {
     },
 
     getNextLtpName () {
-      if (this.node.vltps.length > 0) {
+      /* if (this.node.vltps.length > 0) {
         const maxLtpNo = this.node.vltps[this.node.vltps.length - 1].name.split(':')[2].substring(1)
         this.nextLtpName = this.node.name + ':l' + (parseInt(maxLtpNo, 10) + 1)
       } else {
         this.nextLtpName = this.node.name + ':l0'
-      }
-    },
-    getNextXcName () {
-      if (this.node.vxcs.length > 0) {
-        const maxXcNo = this.node.vxcs[this.node.vxcs.length - 1].name.split(':')[2].substring(1)
-        this.nextXcName = this.node.name + ':x' + (parseInt(maxXcNo, 10) + 1)
-      } else {
-        this.nextXcName = this.node.name + ':x0'
-      }
+      } */
+      this.nextLtpName = ''
     },
   },
 

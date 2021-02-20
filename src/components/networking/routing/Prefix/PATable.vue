@@ -56,7 +56,7 @@ export default {
     findNodeName (id) {
       for (let i = 0; i < this.nodes.length; i++) {
         if (this.nodes[i].id === id) {
-          return this.nodes[i].name.split(':')[1]
+          return this.nodes[i].name
         }
       }
     },
