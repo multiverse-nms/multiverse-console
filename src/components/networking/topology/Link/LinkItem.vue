@@ -38,7 +38,7 @@
               <b>Source LTP:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ link.srcVltpId }}</va-item-label>
+              <va-item-label> <a class="link" @click="getDetails(link.srcVltpId)"> {{ link.srcVltpId }} </a></va-item-label>
             </va-item-section>
           </va-item>
 
@@ -47,7 +47,7 @@
               <b>Destination LTP:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ link.destVltpId }}</va-item-label>
+              <va-item-label><a class="link" @click="getDetails(link.destVltpId)"> {{ link.destVltpId }} </a></va-item-label>
             </va-item-section>
           </va-item>
 
@@ -74,6 +74,16 @@
           <va-button small color="danger" @click="onDelete(link)"> Delete </va-button>
           <va-button small color="info" @click="onEdit(link)"> Edit </va-button>
         </div>
+
+        <va-modal
+          v-model="details.open"
+          size="small"
+          :title="details.title"
+          hideDefaultActions
+          withoutTransitions
+        >
+          {{ details.content }}
+        </va-modal>
       </div>
 
       <div class="lg8">
@@ -122,6 +132,12 @@ export default {
       showItem: false,
       selectedLc: {},
       showAddLc: false,
+
+      details: {
+        open: false,
+        title: '',
+        message: '',
+      },
     }
   },
   created () {
@@ -129,6 +145,19 @@ export default {
   watch: {
   },
   methods: {
+    getDetails (id) {
+      this.details.title = 'LTP details'
+      const uri = this.$apiURI + '/topology/ltp/' + id.toString()
+      axios.get(uri)
+        .then(response => {
+          this.details.content = response.data
+          this.details.open = true
+        })
+        .catch(e => {
+          // console.log(e)
+        })
+    },
+
     getLc (id) {
       this.showItem = false
       const lcApi = this.$apiURI + '/topology/lc/' + id.toString()

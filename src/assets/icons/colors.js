@@ -1,10 +1,10 @@
 export function getStatusColor (status) {
   if (status === 'UP') {
-    return '#30bf6c'
+    return 'rgba(14, 150, 71, 1)'
   } else if (status === 'DOWN') {
-    return '#ff5349'
+    return 'rgba(255, 83, 73, 1)'
   } else {
-    return '#ffc200'
+    return 'rgba(255, 194, 0, 1)'
   }
 }
 

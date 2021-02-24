@@ -10,7 +10,7 @@
 
     <div class="row">
       <div class="flex md12 column">
-        <va-card title="Active measurements">
+        <va-card title="Active Specifications">
           <ReceiptTable :receipts="receipts" :onStop="sendInterrupt" :onStreamLive="streamLive" />
         </va-card>
       </div>

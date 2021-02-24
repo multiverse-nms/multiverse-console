@@ -34,15 +34,17 @@ if (process.env.VUE_APP_BUILD_VERSION) {
 if (process.env.NODE_ENV === 'production') {
   Vue.prototype.$apiURI = 'https://controller.multiverse.com:8787/api'
   Vue.prototype.$apiHost = 'controller.multiverse.com'
+  Vue.prototype.$port = 8787
 } else {
   Vue.prototype.$apiURI = 'https://controller.multiverse.com:8787/api'
   Vue.prototype.$apiHost = 'controller.multiverse.com'
+  Vue.prototype.$port = 8788
 }
 
 Vue.use(VertxEventBus, {
   host: Vue.prototype.$apiHost,
   path: '/eventbus',
-  port: 8787,
+  port: Vue.prototype.$port,
   options: {
     transports: [
       'xhr-polling',

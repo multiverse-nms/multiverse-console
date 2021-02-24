@@ -25,7 +25,8 @@
 
     <div class="row row-equal">
       <div class="flex xs12">
-        <ResultsTable :results="opResults" :graphOnly="true" />
+        <ResultsTable v-if="receipt.receipt === 'measure'" :results="opResults" :graphOnly="true" />
+        <CollectionsTable v-if="receipt.receipt === 'collect'" :results="opResults"/>
       </div>
     </div>
 
@@ -39,12 +40,14 @@
 <script>
 import axios from 'axios'
 import ResultsTable from './ResultsTable'
+import CollectionsTable from './CollectionsTable'
 
 export default {
   name: 'live-results',
   props: ['receipt'],
   components: {
     ResultsTable,
+    CollectionsTable,
   },
   data () {
     return {

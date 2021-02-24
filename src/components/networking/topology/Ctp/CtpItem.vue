@@ -38,7 +38,7 @@
               <b>Parent:</b>
             </va-item-section>
             <va-item-section>
-              <va-item-label>{{ ctp.parentId }}</va-item-label>
+              <va-item-label> <a class="link" @click="getDetails(ctp.connType, ctp.parentId)"> {{ ctp.parentId }} </a></va-item-label>
             </va-item-section>
           </va-item>
 
@@ -102,6 +102,16 @@
       </div>
     </div>
 
+    <va-modal
+      v-model="details.open"
+      size="small"
+      :title="details.title"
+      hideDefaultActions
+      withoutTransitions
+    >
+      {{ details.content }}
+    </va-modal>
+
     <create-ctp @onOk="postCtp" @onCancel="showCreateCtp = false" :show="showCreateCtp" :parentId="ctp.id" />
   </div>
 </template>
@@ -129,6 +139,12 @@ export default {
     return {
       getStatusColor,
       showCreateCtp: false,
+
+      details: {
+        open: false,
+        title: '',
+        message: '',
+      },
     }
   },
   created () {
@@ -136,6 +152,25 @@ export default {
   watch: {
   },
   methods: {
+    getDetails (type, id) {
+      let uri = this.$apiURI + '/topology'
+      if (type === 'Ether') {
+        this.details.title = 'Parent LTP'
+        uri = uri + '/ltp/' + id.toString()
+      } else {
+        this.details.title = 'Parent CTP'
+        uri = uri + '/ctp/' + id.toString()
+      }
+      axios.get(uri)
+        .then(response => {
+          this.details.content = response.data
+          this.details.open = true
+        })
+        .catch(e => {
+          // console.log(e)
+        })
+    },
+
     getCtp (id) {
     },
 
@@ -169,4 +204,7 @@ export default {
 </script>
 
 <style lang="scss">
+.popoverm {
+  z-index: 9999;
+}
 </style>

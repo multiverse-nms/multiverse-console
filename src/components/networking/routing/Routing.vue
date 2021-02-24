@@ -5,7 +5,7 @@
       <div class="flex md4 column">
         <va-card :title="tCtp">
           <div class="table-card">
-            <ctp-table :ctps="ctps" :nodes="nodes" :onSelected="getCtp"></ctp-table>
+            <ctp-table :ctps="ctps" :onSelected="getCtp"></ctp-table>
           </div>
         </va-card>
       </div>

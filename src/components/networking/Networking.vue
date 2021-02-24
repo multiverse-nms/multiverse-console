@@ -189,15 +189,15 @@ export default {
   }
 
   .row-up {
-    background-color: #40e583;
+    background-color: rgba(14, 150, 71, 0.6);
   }
 
   .row-down {
-    background-color: #e34b4a;
+    background-color: rgba(255, 83, 73, 0.6);
   }
 
   .row-disconn {
-    background-color: #ffc200;
+    background-color: rgba(255, 194, 0, 0.6);
   }
 
 </style>

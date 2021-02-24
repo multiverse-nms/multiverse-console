@@ -23,7 +23,7 @@
             </va-badge>
           </td>
           <td>
-            <va-button small v-if="rct.receipt === 'measure' && getStatus(rct.when) === 'in progress'" color="success" @click="onStreamLive(rct)" > Stream live </va-button>
+            <va-button small v-if="getStatus(rct.when) === 'in progress'" color="success" @click="onStreamLive(rct)" > Stream live </va-button>
             <va-button small color="danger" @click="onStop(rct)" > Stop </va-button>
           </td>
         </tr>
