@@ -14,7 +14,7 @@
         color="info"
       />
 
-      <table v-if="model === 'table'" class="va-table va-table--striped va-table--hoverable">
+      <table v-if="model === 'table'" class="va-table va-table--striped va-table--hoverable table-max">
         <thead>
           <tr>
             <th v-for="(header, index) in table.resultColumns" :key="index">{{ header }}</th>

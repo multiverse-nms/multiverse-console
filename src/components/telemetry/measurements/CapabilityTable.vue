@@ -5,7 +5,7 @@
       <va-chip color="gray">No capabilities to show</va-chip>
     </div>
 
-    <table v-if="capabilities.length > 0" class="va-table va-table--striped va-table--hoverable">
+    <table v-if="capabilities.length > 0" class="va-table va-table--striped va-table--hoverable table-max">
       <thead>
         <tr>
           <th v-for="(col, index) in headers" :key="index">{{ col }}</th>

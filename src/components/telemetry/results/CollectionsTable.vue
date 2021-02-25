@@ -6,7 +6,7 @@
     </div>
 
     <div v-else>
-      <table class="va-table va-table--striped va-table--hoverable">
+      <table class="va-table va-table--hoverable table-max">
         <thead>
           <tr>
             <th v-for="(header, index) in table.resultColumns" :key="index">{{ header }}</th>

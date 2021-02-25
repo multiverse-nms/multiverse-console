@@ -183,4 +183,8 @@ export default {
       margin-bottom: 0 !important;
     }
   }
+
+  .table-max {
+    width: 100%;
+  }
 </style>

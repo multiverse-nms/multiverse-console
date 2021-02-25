@@ -5,7 +5,7 @@
       <va-chip color="gray">No active measurement to show</va-chip>
     </div>
 
-    <table v-if="receipts.length > 0" class="va-table va-table--striped va-table--hoverable">
+    <table v-if="receipts.length > 0" class="va-table va-table--hoverable table-max">
       <thead>
         <tr>
           <th v-for="(col, index) in headers" :key="index">{{ col }}</th>
