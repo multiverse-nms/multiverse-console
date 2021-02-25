@@ -5,7 +5,7 @@
       <va-chip color="gray">No LTPs to show</va-chip>
     </div>
 
-    <table v-if="ltps.length > 0" class="va-table va-table--hoverable">
+    <table v-if="ltps.length > 0" class="va-table va-table--hoverable table-max">
       <thead>
         <tr>
           <th>Name</th>

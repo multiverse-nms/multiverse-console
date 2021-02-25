@@ -5,7 +5,7 @@
       <va-chip color="gray">No LinkConns to show</va-chip>
     </div>
 
-    <table v-if="lcs.length > 0" class="va-table va-table--hoverable">
+    <table v-if="lcs.length > 0" class="va-table va-table--hoverable table-max">
       <thead>
         <tr>
           <th>Name</th>

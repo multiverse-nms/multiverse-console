@@ -5,7 +5,7 @@
       <va-chip color="gray">No Routes to show</va-chip>
     </div>
 
-    <table v-if="routes.length > 0" class="va-table va-table--striped va-table--hoverable">
+    <table v-if="routes.length > 0" class="va-table table-max">
       <thead>
         <tr>
           <th>Node</th>

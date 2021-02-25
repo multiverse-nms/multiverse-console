@@ -188,6 +188,10 @@ export default {
     }
   }
 
+  .table-max {
+    width: 100%;
+  }
+
   .row-up {
     background-color: rgba(14, 150, 71, 0.6);
   }

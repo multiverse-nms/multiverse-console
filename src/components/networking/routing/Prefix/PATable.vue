@@ -5,7 +5,7 @@
       <va-chip color="gray">No Prefix Annoucements to show</va-chip>
     </div>
 
-    <table v-if="pas.length > 0" class="va-table va-table--hoverable">
+    <table v-if="pas.length > 0" class="va-table table-max">
       <thead>
         <tr>
           <th>Name</th>
