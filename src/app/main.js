@@ -36,8 +36,8 @@ if (process.env.NODE_ENV === 'production') {
   Vue.prototype.$apiHost = 'controller.multiverse.com'
   Vue.prototype.$port = 8787
 } else {
-  Vue.prototype.$apiURI = 'https://controller.multiverse.com:8787/api'
-  Vue.prototype.$apiHost = 'controller.multiverse.com'
+  Vue.prototype.$apiURI = 'http://localhost:8788/api'
+  Vue.prototype.$apiHost = 'localhost:8788'
   Vue.prototype.$port = 8788
 }
 
