@@ -80,6 +80,15 @@
 
           <va-item>
             <va-item-section side>
+              <b>Management IP:</b>
+            </va-item-section>
+            <va-item-section>
+              <va-item-label>{{ node.mgmtIp }}</va-item-label>
+            </va-item-section>
+          </va-item>
+
+          <va-item>
+            <va-item-section side>
               <b>Created:</b>
             </va-item-section>
             <va-item-section>

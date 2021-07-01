@@ -265,7 +265,7 @@ export default {
       this.showCreateNode = true
     },
     postNode (node) {
-      axios.post(this.$apiURI + '/topology/node', node, {
+      axios.put(this.$apiURI + '/topology/node', node, {
         headers: {},
       })
         .then(response => {
@@ -278,7 +278,7 @@ export default {
         })
         .catch(e => {
           // console.log(e)
-          this.showToast('Node creation failed', {
+          this.showToast('Node update failed', {
             icon: 'fa-close',
             position: 'top-right',
             duration: 3000,

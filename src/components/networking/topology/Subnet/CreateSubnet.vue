@@ -10,7 +10,6 @@
     <div class="modal-create-subnet">
       <form>
         <va-input
-          readonly
           v-model="nSubnet.name"
           type="text"
           label="Name"
@@ -68,7 +67,7 @@
 <script>
 export default {
   name: 'CreateSubnet',
-  props: ['show', 'name'],
+  props: ['show'],
 
   data: function () {
     return {
@@ -103,7 +102,7 @@ export default {
   methods: {
     initCreateModal () {
       this.nSubnet = {
-        name: this.name,
+        name: '',
         label: '',
         description: '',
         info: {},

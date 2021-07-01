@@ -52,6 +52,13 @@
           :error="!!hwaddrErrors.length"
           :error-messages="hwaddrErrors"
         />
+        <va-input
+          v-model="nNode.mgmtIp"
+          type="text"
+          label="Management IP (CIDR)"
+          :error="!!mgmtIpErrors.length"
+          :error-messages="mgmtIpErrors"
+        />
         <!-- div>
           <div v-for="(info, index) in infoArray" :key="index" class="row">
             <div class="flex xs5 offset--xs1">
@@ -105,6 +112,7 @@ export default {
         posy: 0,
         location: '',
         hwaddr: '',
+        mgmtIp: '',
         status: 'DOWN',
       },
       nameErrors: [],
@@ -112,6 +120,7 @@ export default {
       descErrors: [],
       locationErrors: [],
       hwaddrErrors: [],
+      mgmtIpErrors: [],
     }
   },
 
@@ -142,6 +151,7 @@ export default {
         posy: Math.floor(Math.random() * Math.floor(500)),
         location: '',
         hwaddr: '',
+        mgmtIp: '',
         status: 'DOWN',
       }
       this.clearErrors()
@@ -162,6 +172,11 @@ export default {
       const macRegex = new RegExp('^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$')
       if (!macRegex.test(this.nNode.hwaddr)) {
         this.hwaddrErrors.push('Wrong MAC address format')
+        return
+      }
+      const ipRegex = new RegExp('^([0-9]{1,3}.){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))$')
+      if (!ipRegex.test(this.nNode.mgmtIp)) {
+        this.mgmtIpErrors.push('Wrong IP address format')
         return
       }
       /* for (var i = 0, len = this.infoArray.length; i < len; i++) {
